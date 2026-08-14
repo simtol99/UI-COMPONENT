@@ -1,0 +1,16 @@
+{
+    "hooks": {
+        "Stop": [
+            {
+                "hooks" : [
+                    {
+                        "type": "command",
+                        "command": "/Users/simtol/Documents/ClaudeCodeStudy/UI-COMPONENT/extract-my-prompts.sh",
+                        "statusMessage": "Prompt.md 기록 갱신 중...",
+                        "timeout": 30
+                    }
+                ]
+            }
+        ]
+    }
+}

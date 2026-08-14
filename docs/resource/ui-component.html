@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIXBase - Interactive Components</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        pre { background-color: #f8fafc; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+        .tab-active { border-bottom: 2px solid #0f172a; color: #0f172a; font-weight: 600; }
+        
+        /* Range Slider Custom Styling */
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #2563eb; cursor: pointer; margin-top: -6px; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px; }
+        
+        /* Hide scrollbar for carousel but allow functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-white text-slate-900">
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-72 border-r border-slate-200 bg-slate-50 flex flex-col">
+            <div class="p-6 border-bottom border-slate-200">
+                <h1 class="text-xl font-bold flex items-center gap-2">
+                    <i data-lucide="layers" class="w-6 h-6 text-blue-600"></i> UIXBase
+                </h1>
+                <p class="text-xs text-slate-500 mt-1">Interactive V2.1</p>
+            </div>
+            <nav class="flex-1 overflow-y-auto custom-scrollbar p-4">
+                <div class="mb-4">
+                    <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2">Components</h2>
+                    <ul id="menu-list" class="space-y-1"></ul>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto bg-white relative">
+            <header class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex justify-between items-center">
+                <div id="breadcrumb" class="text-sm text-slate-500">Components / <span class="text-slate-900 font-medium" id="current-title">Accordion</span></div>
+                <div class="flex gap-2">
+                    <button onclick="copyCurrentCode()" class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+                    </button>
+                </div>
+            </header>
+
+            <div class="max-w-5xl mx-auto p-8">
+                <section id="component-info" class="mb-8">
+                    <h2 id="view-title" class="text-3xl font-bold tracking-tight mb-2">Accordion</h2>
+                    <p id="view-desc" class="text-slate-600 text-lg">설명 영역</p>
+                </section>
+
+                <div class="mb-6 border-b border-slate-200">
+                    <div class="flex gap-6">
+                        <button onclick="switchTab('preview')" id="tab-preview" class="pb-3 text-sm tab-active transition-colors">Preview</button>
+                        <button onclick="switchTab('html')" id="tab-html" class="pb-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">HTML & JS</button>
+                        <button onclick="switchTab('css')" id="tab-css" class="pb-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">CSS</button>
+                    </div>
+                </div>
+
+                <div class="min-h-[400px]">
+                    <div id="content-preview" class="p-10 border border-slate-200 rounded-xl bg-slate-50/50 flex items-center justify-center min-h-[400px] relative overflow-hidden">
+                        <div id="render-target" class="w-full max-w-md relative z-10"></div>
+                    </div>
+                    <div id="content-html" class="hidden">
+                        <div class="relative">
+                            <pre><code id="code-html" class="text-sm text-slate-800 language-html"></code></pre>
+                        </div>
+                    </div>
+                    <div id="content-css" class="hidden">
+                        <div class="relative">
+                            <pre><code id="code-css" class="text-sm text-slate-800 language-css"></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ==========================================
+        // Component Data with Logic (Script) & CSS Info
+        // ==========================================
+        const components = [
+            { 
+                id: 1, name: "Accordion", 
+                desc: "섹션을 클릭하여 내용을 펼치거나 접을 수 있습니다. (Native <details> 태그 활용)",
+                html: `<div class="border rounded-lg shadow-sm bg-white overflow-hidden w-full">
+  <details class="group border-b border-slate-200">
+    <summary class="list-none p-4 cursor-pointer flex justify-between items-center font-medium hover:bg-slate-50 select-none">
+      <span>Q. 환불 정책은 어떻게 되나요?</span>
+      <span class="transition-transform duration-300 group-open:rotate-180">
+        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+      </span>
+    </summary>
+    <div class="p-4 text-sm text-slate-600 bg-slate-50/50">
+      구매 후 7일 이내에 요청하시면 전액 환불이 가능합니다.
+    </div>
+  </details>
+  <details class="group">
+    <summary class="list-none p-4 cursor-pointer flex justify-between items-center font-medium hover:bg-slate-50 select-none">
+      <span>Q. 배송 기간은 얼마나 걸리나요?</span>
+      <span class="transition-transform duration-300 group-open:rotate-180">
+        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+      </span>
+    </summary>
+    <div class="p-4 text-sm text-slate-600 bg-slate-50/50">
+      평균적으로 주문 후 2~3 영업일 이내에 배송됩니다.
+    </div>
+  </details>
+</div>`,
+                css: `/* 기본 Tailwind CSS 유틸리티 클래스를 사용합니다. */
+/* details 태그의 기본 화살표 숨김 처리가 필요합니다. */
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}`
+            },
+            { 
+                id: 2, name: "Bento Menu", 
+                desc: "격자 형태의 네비게이션 메뉴입니다. 호버 시 반응합니다.",
+                html: `<div class="grid grid-cols-3 gap-3 p-4 bg-slate-100 rounded-2xl w-64 mx-auto">
+  <div class="aspect-square bg-white rounded-xl shadow-sm hover:shadow-md hover:scale-105 transition-all cursor-pointer flex flex-col items-center justify-center gap-1 text-slate-600 hover:text-blue-600">
+    <i data-lucide="mail" class="w-6 h-6"></i>
+    <span class="text-[10px] font-bold">Mail</span>
+  </div>
+  <div class="col-span-2 bg-blue-600 text-white rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer flex flex-col items-center justify-center gap-1">
+    <i data-lucide="calendar" class="w-6 h-6"></i>
+    <span class="text-[10px] font-bold">Schedule Meeting</span>
+  </div>
+  <div class="aspect-square bg-white rounded-xl shadow-sm hover:shadow-md hover:scale-105 transition-all cursor-pointer flex flex-col items-center justify-center gap-1 text-slate-600 hover:text-blue-600">
+    <i data-lucide="map" class="w-6 h-6"></i>
+    <span class="text-[10px] font-bold">Map</span>
+  </div>
+  <div class="aspect-square bg-white rounded-xl shadow-sm hover:shadow-md hover:scale-105 transition-all cursor-pointer flex flex-col items-center justify-center gap-1 text-slate-600 hover:text-blue-600">
+    <i data-lucide="music" class="w-6 h-6"></i>
+    <span class="text-[10px] font-bold">Music</span>
+  </div>
+  <div class="aspect-square bg-white rounded-xl shadow-sm hover:shadow-md hover:scale-105 transition-all cursor-pointer flex flex-col items-center justify-center gap-1 text-slate-600 hover:text-blue-600">
+    <i data-lucide="settings" class="w-6 h-6"></i>
+    <span class="text-[10px] font-bold">Set</span>
+  </div>
+</div>`,
+                css: `/* Tailwind Utility Classes Only */
+/* Grid Layout: grid-cols-3, gap-3 */
+/* Hover Effects: hover:scale-105, transition-all */`
+            },
+            { 
+                id: 3, name: "Breadcrumb", 
+                desc: "현재 페이지의 경로를 보여줍니다.",
+                html: `<nav class="flex" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+    <li class="inline-flex items-center">
+      <a href="#" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600">
+        <i data-lucide="home" class="w-3 h-3 me-2"></i>Home
+      </a>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 mx-1"></i>
+        <a href="#" class="text-sm font-medium text-slate-500 hover:text-blue-600">Components</a>
+      </div>
+    </li>
+    <li aria-current="page">
+      <div class="flex items-center">
+        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 mx-1"></i>
+        <span class="text-sm font-medium text-slate-900">Breadcrumb</span>
+      </div>
+    </li>
+  </ol>
+</nav>`,
+                css: `/* Tailwind Utility Classes Only */`
+            },
+            { 
+                id: 4, name: "Button", 
+                desc: "클릭 시 리플 효과 혹은 상태 변화를 보여줍니다.",
+                html: `<div class="flex flex-col gap-4 items-center w-full">
+  <button class="w-full px-5 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 active:scale-95 transition-all shadow-sm">
+    Primary Action
+  </button>
+  <button class="w-full px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 hover:text-blue-600 active:bg-slate-100 transition-all flex items-center justify-center gap-2 shadow-sm">
+    <i data-lucide="download" class="w-4 h-4"></i> Download
+  </button>
+  <button disabled class="w-full px-5 py-2.5 bg-slate-100 text-slate-400 rounded-lg text-sm font-medium cursor-not-allowed">
+    Disabled
+  </button>
+</div>`,
+                css: `/* Button States handled by Tailwind */
+/* hover:bg-slate-800 */
+/* active:scale-95 (Click effect) */
+/* disabled:cursor-not-allowed */`
+            },
+            { 
+                id: 5, name: "Card", 
+                desc: "정보를 담는 컨테이너입니다. 호버 인터랙션이 포함되어 있습니다.",
+                html: `<div class="w-full bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 group cursor-pointer">
+  <div class="h-32 bg-slate-100 flex items-center justify-center overflow-hidden">
+    <i data-lucide="image" class="w-12 h-12 text-slate-300 group-hover:scale-110 transition-transform duration-500"></i>
+  </div>
+  <div class="p-5">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">ARTICLE</span>
+      <span class="text-xs text-slate-400">5 min read</span>
+    </div>
+    <h5 class="mb-2 text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Understanding UI Patterns</h5>
+    <p class="mb-4 text-sm text-slate-500">Cards provide a flexible container for grouping related content and actions.</p>
+  </div>
+</div>`,
+                css: `/* Parent Group Hover Effects */
+/* .group-hover:scale-110 (Image Zoom) */
+/* .group-hover:text-blue-600 (Title Color) */`
+            },
+            { 
+                id: 6, name: "Carousel", 
+                desc: "좌우 버튼을 클릭하여 슬라이드를 이동시킵니다. (무한 스크롤 X, 범위 제한)",
+                html: `<div class="relative w-full max-w-[320px] overflow-hidden rounded-xl border border-slate-200 bg-white">
+  <div id="carousel-track" class="flex transition-transform duration-500 ease-out" style="transform: translateX(0%);">
+    <div class="min-w-full h-48 bg-blue-50 flex flex-col items-center justify-center text-center p-6">
+      <span class="text-4xl font-bold text-blue-200 mb-2">1</span>
+      <p class="text-sm font-medium text-slate-700">First Slide</p>
+    </div>
+    <div class="min-w-full h-48 bg-green-50 flex flex-col items-center justify-center text-center p-6">
+      <span class="text-4xl font-bold text-green-200 mb-2">2</span>
+      <p class="text-sm font-medium text-slate-700">Second Slide</p>
+    </div>
+    <div class="min-w-full h-48 bg-purple-50 flex flex-col items-center justify-center text-center p-6">
+      <span class="text-4xl font-bold text-purple-200 mb-2">3</span>
+      <p class="text-sm font-medium text-slate-700">Third Slide</p>
+    </div>
+  </div>
+  
+  <button id="prev-btn" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed">
+    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+  </button>
+  <button id="next-btn" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed">
+    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+  </button>
+  
+  <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+    <div class="w-2 h-2 rounded-full bg-slate-800 indicator"></div>
+    <div class="w-2 h-2 rounded-full bg-slate-300 indicator"></div>
+    <div class="w-2 h-2 rounded-full bg-slate-300 indicator"></div>
+  </div>
+</div>`,
+                css: `/* Hide scrollbar if overflow allows scrolling manually */
+.no-scrollbar::-webkit-scrollbar { 
+    display: none; 
+}
+.no-scrollbar { 
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+}`,
+                script: () => {
+                    const track = document.getElementById('carousel-track');
+                    const prevBtn = document.getElementById('prev-btn');
+                    const nextBtn = document.getElementById('next-btn');
+                    const indicators = document.querySelectorAll('.indicator');
+                    let currentIndex = 0;
+                    const totalSlides = 3;
+
+                    function update() {
+                        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                        // Update buttons
+                        prevBtn.disabled = currentIndex === 0;
+                        nextBtn.disabled = currentIndex === totalSlides - 1;
+                        // Update indicators
+                        indicators.forEach((ind, i) => {
+                            ind.classList.toggle('bg-slate-800', i === currentIndex);
+                            ind.classList.toggle('bg-slate-300', i !== currentIndex);
+                        });
+                    }
+
+                    nextBtn.addEventListener('click', () => {
+                        if (currentIndex < totalSlides - 1) {
+                            currentIndex++;
+                            update();
+                        }
+                    });
+
+                    prevBtn.addEventListener('click', () => {
+                        if (currentIndex > 0) {
+                            currentIndex--;
+                            update();
+                        }
+                    });
+                    
+                    update(); // Init
+                }
+            },
+            { 
+                id: 7, name: "Checkbox", 
+                desc: "선택 및 해제가 가능합니다.",
+                html: `<div class="flex flex-col gap-3 p-4 bg-white rounded-lg border border-slate-200 w-full">
+  <label class="flex items-center gap-3 cursor-pointer group">
+    <input type="checkbox" class="peer w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+    <span class="text-sm font-medium text-slate-700 peer-checked:text-slate-900 peer-checked:font-bold transition-all">Accept Terms</span>
+  </label>
+  <label class="flex items-center gap-3 cursor-pointer group">
+    <input type="checkbox" checked class="peer w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+    <span class="text-sm font-medium text-slate-700 peer-checked:text-slate-900 peer-checked:font-bold transition-all">Subscribe</span>
+  </label>
+</div>`,
+                css: `/* Tailwind "peer" class used for state styling */
+/* peer-checked:text-slate-900 */
+/* peer-checked:font-bold */`
+            },
+            { id: 8, name: "Comment", desc: "댓글 UI 예시입니다.", html: `<div class="flex gap-3 w-full bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+  <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden">
+    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" />
+  </div>
+  <div class="flex-1">
+    <div class="flex items-center justify-between mb-1">
+      <h4 class="text-sm font-bold text-slate-900">Alex Johnson</h4>
+      <span class="text-xs text-slate-500">2h ago</span>
+    </div>
+    <p class="text-sm text-slate-600 leading-relaxed">This component library is exactly what I needed. Great work!</p>
+    <div class="flex gap-4 mt-3">
+      <button class="text-xs font-medium text-slate-500 hover:text-blue-600 flex items-center gap-1 transition-colors"><i data-lucide="thumbs-up" class="w-3 h-3"></i> Like</button>
+      <button class="text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors">Reply</button>
+    </div>
+  </div>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { id: 9, name: "Döner Menu", desc: "필터나 정렬 옵션 등에 주로 쓰이는 메뉴 아이콘입니다.", html: `<div class="relative bg-white p-3 rounded-lg border border-slate-200 flex items-center justify-between w-64 shadow-sm">
+  <span class="text-sm font-medium text-slate-600">Filter Options</span>
+  <button class="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 transition active:bg-slate-200">
+    <i data-lucide="more-vertical" class="w-5 h-5"></i>
+  </button>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { 
+                id: 10, name: "Dropdown", 
+                desc: "버튼을 클릭하여 메뉴를 열고 닫습니다. 외부 클릭 시 닫힙니다.",
+                html: `<div class="relative w-full max-w-[200px]">
+  <button id="dropdown-btn" class="inline-flex w-full justify-between items-center rounded-md bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+    <span>Options</span>
+    <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 transition-transform duration-200" id="dropdown-icon"></i>
+  </button>
+  
+  <div id="dropdown-menu" class="hidden absolute right-0 left-0 z-10 mt-2 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-200 opacity-0 translate-y-2">
+    <div class="py-1">
+      <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Edit Profile</a>
+      <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Preferences</a>
+      <div class="border-t border-slate-100 my-1"></div>
+      <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Sign out</a>
+    </div>
+  </div>
+</div>`,
+                css: `/* Tailwind Transitions for Dropdown */
+/* transition-all duration-200 */
+/* opacity-0 translate-y-2 (Hidden State) */`,
+                script: () => {
+                    const btn = document.getElementById('dropdown-btn');
+                    const menu = document.getElementById('dropdown-menu');
+                    const icon = document.getElementById('dropdown-icon');
+                    
+                    const toggle = () => {
+                        const isHidden = menu.classList.contains('hidden');
+                        if (isHidden) {
+                            menu.classList.remove('hidden');
+                            // Small delay for transition to work
+                            setTimeout(() => {
+                                menu.classList.remove('opacity-0', 'translate-y-2');
+                            }, 10);
+                            icon.style.transform = 'rotate(180deg)';
+                        } else {
+                            menu.classList.add('opacity-0', 'translate-y-2');
+                            setTimeout(() => {
+                                menu.classList.add('hidden');
+                            }, 200);
+                            icon.style.transform = 'rotate(0deg)';
+                        }
+                    };
+
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggle();
+                    });
+
+                    // Close on outside click
+                    document.addEventListener('click', (e) => {
+                        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                            menu.classList.add('opacity-0', 'translate-y-2');
+                            setTimeout(() => menu.classList.add('hidden'), 200);
+                            icon.style.transform = 'rotate(0deg)';
+                        }
+                    });
+                }
+            },
+            { id: 11, name: "Feed", desc: "SNS 뉴스피드 형태입니다.", html: `<div class="w-full space-y-3">
+  <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm hover:border-blue-300 transition-colors cursor-pointer">
+    <div class="flex items-center gap-3 mb-2">
+        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">UI</div>
+        <div class="text-sm font-medium">System Update</div>
+        <span class="ml-auto text-xs text-slate-400">10m</span>
+    </div>
+    <p class="text-xs text-slate-500 line-clamp-2">Version 2.0 has been deployed. Check out the new dashboard features.</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm hover:border-blue-300 transition-colors cursor-pointer">
+    <div class="flex items-center gap-3 mb-2">
+        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold">MK</div>
+        <div class="text-sm font-medium">Marketing Team</div>
+         <span class="ml-auto text-xs text-slate-400">1h</span>
+    </div>
+    <p class="text-xs text-slate-500 line-clamp-2">New campaign assets are ready for review in the shared folder.</p>
+  </div>
+</div>`, css: `/* line-clamp-2 for text truncation */` },
+            { id: 12, name: "Form", desc: "기본적인 입력 폼 구조입니다.", html: `<form class="w-full bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4" onsubmit="event.preventDefault(); alert('Form Submitted!');">
+  <div>
+    <label class="block text-xs font-bold text-slate-700 mb-1">EMAIL ADDRESS</label>
+    <input type="email" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="you@example.com" required>
+  </div>
+  <div>
+    <label class="block text-xs font-bold text-slate-700 mb-1">MESSAGE</label>
+    <textarea class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" rows="3" placeholder="Tell us more..."></textarea>
+  </div>
+  <button type="submit" class="w-full bg-slate-900 text-white rounded-md py-2 text-sm font-medium hover:bg-slate-800 active:scale-[0.98] transition-all">Send Message</button>
+</form>`, css: `/* Focus ring handled by Tailwind */
+/* focus:ring-2 focus:ring-blue-500 */` },
+            { 
+                id: 13, name: "Hamburger Menu", 
+                desc: "아이콘 클릭 시 사이드 메뉴가 열리고, 닫기 버튼으로 닫힙니다.",
+                html: `<div class="relative w-full h-64 bg-slate-100 rounded-xl border border-slate-200 overflow-hidden flex flex-col">
+  <div class="bg-white p-4 flex justify-between items-center shadow-sm z-10">
+    <span class="font-bold text-slate-900">My App</span>
+    <button id="menu-trigger" class="p-2 -mr-2 text-slate-600 hover:bg-slate-100 rounded-md transition">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </div>
+  
+  <div class="p-4 text-slate-400 text-sm flex-1 flex items-center justify-center">App Content Area</div>
+
+  <div id="mobile-menu" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm z-20 hidden transition-opacity opacity-0">
+    <div id="menu-panel" class="absolute right-0 top-0 bottom-0 w-64 bg-white shadow-xl transform translate-x-full transition-transform duration-300 flex flex-col">
+       <div class="p-4 flex justify-end border-b border-slate-100">
+         <button id="menu-close" class="p-2 text-slate-500 hover:bg-slate-100 rounded-md">
+           <i data-lucide="x" class="w-6 h-6"></i>
+         </button>
+       </div>
+       <nav class="p-4 space-y-1">
+         <a href="#" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg">Home</a>
+         <a href="#" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg">Profile</a>
+         <a href="#" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg">Settings</a>
+       </nav>
+    </div>
+  </div>
+</div>`,
+                css: `/* Mobile Menu Transitions */
+/* Panel Slide: translate-x-full -> translate-x-0 */
+/* Overlay Fade: opacity-0 -> opacity-100 */`,
+                script: () => {
+                    const trigger = document.getElementById('menu-trigger');
+                    const close = document.getElementById('menu-close');
+                    const overlay = document.getElementById('mobile-menu');
+                    const panel = document.getElementById('menu-panel');
+
+                    trigger.addEventListener('click', () => {
+                        overlay.classList.remove('hidden');
+                        // Allow display:block to apply before changing opacity for transition
+                        requestAnimationFrame(() => {
+                            overlay.classList.remove('opacity-0');
+                            panel.classList.remove('translate-x-full');
+                        });
+                    });
+
+                    const closeMenu = () => {
+                        panel.classList.add('translate-x-full');
+                        overlay.classList.add('opacity-0');
+                        setTimeout(() => {
+                            overlay.classList.add('hidden');
+                        }, 300);
+                    };
+
+                    close.addEventListener('click', closeMenu);
+                    overlay.addEventListener('click', (e) => {
+                        if(e.target === overlay) closeMenu();
+                    });
+                }
+            },
+            { id: 14, name: "Icon", desc: "의미를 전달하는 시각적 요소들입니다.", html: `<div class="flex gap-6 items-center justify-center w-full p-6">
+  <div class="flex flex-col items-center gap-2 group cursor-pointer">
+    <div class="p-3 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors">
+        <i data-lucide="bell" class="w-5 h-5 text-blue-600"></i>
+    </div>
+    <span class="text-xs text-slate-500 font-medium">Alert</span>
+  </div>
+  <div class="flex flex-col items-center gap-2 group cursor-pointer">
+     <div class="p-3 bg-red-50 rounded-full group-hover:bg-red-100 transition-colors">
+        <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i>
+    </div>
+    <span class="text-xs text-slate-500 font-medium">Delete</span>
+  </div>
+  <div class="flex flex-col items-center gap-2 group cursor-pointer">
+     <div class="p-3 bg-green-50 rounded-full group-hover:bg-green-100 transition-colors">
+        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+    </div>
+    <span class="text-xs text-slate-500 font-medium">Done</span>
+  </div>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { id: 15, name: "Input Field", desc: "포커스 시 링 효과가 나타나는 입력 필드입니다.", html: `<div class="space-y-4 w-full">
+  <div>
+    <label class="block text-xs font-medium text-slate-700 mb-1">Username</label>
+    <input type="text" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-300" placeholder="Enter username">
+  </div>
+  <div class="relative">
+    <label class="block text-xs font-medium text-slate-700 mb-1">Search</label>
+    <div class="pointer-events-none absolute bottom-2.5 left-3 flex items-center">
+       <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+    </div>
+    <input type="text" class="block w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Search...">
+  </div>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { id: 16, name: "Kebab Menu", desc: "수평 점 세 개로 표현되는 메뉴 트리거입니다.", html: `<div class="bg-white border border-slate-200 rounded-lg p-3 flex items-center justify-between w-full shadow-sm">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold text-xs">P</div>
+    <div class="flex flex-col">
+        <span class="text-sm font-medium text-slate-900">Project Alpha</span>
+        <span class="text-xs text-slate-400">Edited 2m ago</span>
+    </div>
+  </div>
+  <button class="text-slate-400 hover:text-slate-700 p-2 rounded-full hover:bg-slate-100 transition-colors">
+    <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+  </button>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { id: 17, name: "Loader", desc: "CSS 애니메이션을 이용한 로딩 상태 표시입니다.", html: `<div class="flex flex-col items-center gap-8">
+  <div class="flex items-center gap-4">
+      <div class="animate-spin rounded-full h-6 w-6 border-[3px] border-slate-200 border-t-blue-600"></div>
+      <span class="text-xs text-slate-500">Processing...</span>
+  </div>
+  
+  <div class="w-full space-y-3 bg-white p-4 rounded-lg border border-slate-100">
+    <div class="flex gap-3">
+        <div class="w-10 h-10 bg-slate-200 rounded-full animate-pulse"></div>
+        <div class="flex-1 space-y-2 py-1">
+            <div class="h-2 bg-slate-200 rounded animate-pulse w-1/4"></div>
+            <div class="h-2 bg-slate-200 rounded animate-pulse w-3/4"></div>
+        </div>
+    </div>
+  </div>
+</div>`, css: `/* Tailwind Animations: */
+/* animate-spin */
+/* animate-pulse */` },
+            { id: 18, name: "Meatballs Menu", desc: "목록 내의 항목 별 동작을 위한 메뉴입니다.", html: `<table class="w-full border border-slate-200 rounded-lg overflow-hidden">
+    <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
+      <th class="text-left p-3 font-medium">File Name</th>
+      <th class="p-3 w-10"></th>
+    </tr>
+    <tr class="bg-white border-b border-slate-100 group">
+      <td class="p-3 text-sm text-slate-700 flex items-center gap-2">
+        <i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i> report.pdf
+      </td>
+      <td class="p-2 text-center">
+        <button class="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity">
+            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+        </button>
+      </td>
+    </tr>
+    <tr class="bg-white group">
+      <td class="p-3 text-sm text-slate-700 flex items-center gap-2">
+        <i data-lucide="image" class="w-4 h-4 text-slate-400"></i> design.png
+      </td>
+      <td class="p-2 text-center">
+        <button class="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity">
+            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+        </button>
+      </td>
+    </tr>
+</table>`, css: `/* Show/Hide button on row hover */
+/* opacity-0 group-hover:opacity-100 */` },
+            { 
+                id: 19, name: "Modal", 
+                desc: "Open 버튼을 눌러 모달을 띄우고, 닫기 버튼이나 배경을 눌러 닫을 수 있습니다.",
+                html: `<div class="w-full flex justify-center items-center h-48 relative">
+  <button id="modal-open" class="px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-medium hover:bg-slate-800 transition">
+    Open Modal
+  </button>
+
+  <div id="modal-overlay" class="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 rounded-xl">
+    <div id="modal-content" class="bg-white rounded-lg shadow-2xl p-6 max-w-[280px] w-full transform scale-95 transition-transform duration-300">
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex items-center gap-2 text-red-600">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <h3 class="text-lg font-bold text-slate-900">Confirm</h3>
+        </div>
+        <button id="modal-close" class="text-slate-400 hover:text-slate-600 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+        Are you sure you want to delete this item? This action cannot be undone.
+      </p>
+      <div class="flex justify-end gap-2">
+        <button id="modal-cancel" class="px-3 py-2 text-xs font-medium text-slate-700 bg-slate-100 rounded hover:bg-slate-200 transition">Cancel</button>
+        <button class="px-3 py-2 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700 transition shadow-sm">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>`,
+                css: `/* Modal Animations */
+/* Overlay: opacity-0 -> opacity-100 */
+/* Content: scale-95 -> scale-100 */`,
+                script: () => {
+                    const openBtn = document.getElementById('modal-open');
+                    const overlay = document.getElementById('modal-overlay');
+                    const content = document.getElementById('modal-content');
+                    const closeBtns = [
+                        document.getElementById('modal-close'), 
+                        document.getElementById('modal-cancel')
+                    ];
+
+                    openBtn.addEventListener('click', () => {
+                        overlay.classList.remove('hidden');
+                        requestAnimationFrame(() => {
+                            overlay.classList.remove('opacity-0');
+                            content.classList.remove('scale-95');
+                            content.classList.add('scale-100');
+                        });
+                    });
+
+                    const closeModal = () => {
+                        overlay.classList.add('opacity-0');
+                        content.classList.remove('scale-100');
+                        content.classList.add('scale-95');
+                        setTimeout(() => {
+                            overlay.classList.add('hidden');
+                        }, 300);
+                    };
+
+                    closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+                    overlay.addEventListener('click', (e) => {
+                        if (e.target === overlay) closeModal();
+                    });
+                }
+            },
+            { id: 20, name: "Badge", desc: "상태나 알림 수를 표시합니다.", html: `<div class="flex gap-6 items-center">
+  <div class="relative">
+    <div class="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 shadow-sm">
+      <i data-lucide="bell" class="w-5 h-5"></i>
+    </div>
+    <span class="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 rounded-full bg-red-500 ring-2 ring-white text-[10px] font-bold text-white flex items-center justify-center">3</span>
+  </div>
+  
+  <div class="flex gap-2">
+      <span class="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">New</span>
+      <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
+  </div>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { id: 21, name: "Pagination", desc: "페이지 이동을 위한 버튼 그룹입니다.", html: `<div class="flex items-center gap-1">
+  <button class="p-2 rounded-md border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 disabled:opacity-50 transition" disabled>
+    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+  </button>
+  <button class="w-9 h-9 flex items-center justify-center rounded-md bg-slate-900 text-white text-sm font-medium shadow-sm">1</button>
+  <button class="w-9 h-9 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 text-sm font-medium transition">2</button>
+  <button class="w-9 h-9 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 text-sm font-medium transition">3</button>
+  <span class="w-9 h-9 flex items-center justify-center text-slate-400 text-sm">...</span>
+  <button class="p-2 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition">
+    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+  </button>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { 
+                id: 22, name: "Picker", 
+                desc: "색상 선택 시 활성화 상태가 변경되는 인터랙티브 피커입니다.",
+                html: `<div class="flex flex-col gap-4 w-full items-center">
+  <div class="relative w-full">
+    <label class="block text-xs font-medium text-slate-700 mb-1">Date</label>
+    <div class="relative">
+        <input type="date" class="block w-full rounded-md border border-slate-300 py-2 px-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+    </div>
+  </div>
+  
+  <div class="bg-white p-3 rounded-xl border border-slate-200 w-full">
+      <label class="block text-xs font-medium text-slate-700 mb-2">Color Picker</label>
+      <div class="flex items-center gap-3" id="color-options">
+        <button class="w-8 h-8 rounded-full bg-blue-500 ring-2 ring-offset-2 ring-blue-500 transition-all hover:scale-110" data-color="blue"></button>
+        <button class="w-8 h-8 rounded-full bg-red-500 transition-all hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-red-500" data-color="red"></button>
+        <button class="w-8 h-8 rounded-full bg-green-500 transition-all hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-green-500" data-color="green"></button>
+        <button class="w-8 h-8 rounded-full bg-purple-500 transition-all hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-purple-500" data-color="purple"></button>
+      </div>
+  </div>
+</div>`,
+                css: `/* Tailwind Utility Classes Only */`,
+                script: () => {
+                    const buttons = document.querySelectorAll('#color-options button');
+                    buttons.forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            // Reset all
+                            buttons.forEach(b => {
+                                b.className = `w-8 h-8 rounded-full transition-all hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-${b.dataset.color}-500 bg-${b.dataset.color}-500`;
+                            });
+                            // Active this
+                            this.className = `w-8 h-8 rounded-full transition-all scale-110 ring-2 ring-offset-2 ring-${this.dataset.color}-500 bg-${this.dataset.color}-500`;
+                        });
+                    });
+                }
+            },
+            { 
+                id: 23, name: "Progress Bar", 
+                desc: "Simulate 버튼을 눌러 진행 상태를 시뮬레이션할 수 있습니다.",
+                html: `<div class="w-full space-y-6">
+  <div>
+    <div class="flex justify-between mb-1">
+      <span class="text-xs font-bold text-slate-700">Downloading Update</span>
+      <span id="progress-text" class="text-xs font-medium text-blue-600">0%</span>
+    </div>
+    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+      <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+    </div>
+  </div>
+  <button id="start-progress" class="w-full py-2 bg-white border border-slate-300 text-slate-700 text-xs font-medium rounded hover:bg-slate-50 active:scale-95 transition">
+    Simulate Download
+  </button>
+</div>`,
+                css: `/* Tailwind Utility Classes Only */`,
+                script: () => {
+                    const bar = document.getElementById('progress-bar');
+                    const text = document.getElementById('progress-text');
+                    const btn = document.getElementById('start-progress');
+                    
+                    btn.addEventListener('click', () => {
+                        let width = 0;
+                        btn.disabled = true;
+                        btn.innerText = "Downloading...";
+                        
+                        const interval = setInterval(() => {
+                            if (width >= 100) {
+                                clearInterval(interval);
+                                btn.disabled = false;
+                                btn.innerText = "Done (Click to Reset)";
+                                width = 100;
+                            } else {
+                                width += Math.random() * 10;
+                                if(width > 100) width = 100;
+                            }
+                            bar.style.width = width + '%';
+                            text.innerText = Math.floor(width) + '%';
+                            
+                            if (width === 100) {
+                                setTimeout(() => {
+                                     btn.onclick = () => {
+                                         bar.style.width = '0%';
+                                         text.innerText = '0%';
+                                         btn.innerText = "Simulate Download";
+                                         btn.onclick = null; // Remove temp handler to fall back to main listener
+                                     }
+                                }, 500);
+                            }
+                        }, 200);
+                    });
+                }
+            },
+            { id: 24, name: "Radio Buttons", desc: "단일 선택만 가능한 폼 요소입니다.", html: `<div class="flex flex-col gap-3 w-full">
+  <label class="flex items-center justify-between p-3 border border-blue-500 bg-blue-50 rounded-lg cursor-pointer transition-all">
+    <div class="flex items-center gap-3">
+        <input type="radio" name="plan" checked class="w-4 h-4 border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+        <span class="text-sm font-bold text-slate-900">Pro Plan</span>
+    </div>
+    <span class="text-xs font-medium text-blue-600">$12/mo</span>
+  </label>
+  <label class="flex items-center justify-between p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-slate-300 transition-all">
+    <div class="flex items-center gap-3">
+        <input type="radio" name="plan" class="w-4 h-4 border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+        <span class="text-sm font-medium text-slate-600">Basic Plan</span>
+    </div>
+    <span class="text-xs font-medium text-slate-500">$0/mo</span>
+  </label>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { id: 25, name: "Search Field", desc: "아이콘과 함께 사용되는 검색창입니다.", html: `<div class="relative w-full">
+  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+    <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+  </div>
+  <input type="search" class="block w-full p-2.5 pl-10 text-sm text-slate-900 border border-slate-200 rounded-full bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none transition-all shadow-sm" placeholder="Search documentation..." required>
+  <button type="submit" class="absolute right-1.5 bottom-1.5 bg-slate-900 text-white hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-200 font-medium rounded-full text-xs px-3 py-1.5 transition-colors">Go</button>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { id: 26, name: "Sidebar", desc: "탐색 링크를 담는 수직 영역입니다.", html: `<div class="w-full max-w-[200px] bg-slate-900 rounded-xl flex flex-col text-slate-300 p-3 shadow-lg">
+  <div class="text-white font-bold mb-6 px-2 flex items-center gap-2 pt-2">
+      <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-[10px]">UI</div> 
+      Dashboard
+  </div>
+  <ul class="space-y-1 text-sm flex-1">
+    <li class="bg-white/10 text-white px-3 py-2 rounded-md cursor-pointer flex items-center gap-2 border-l-2 border-blue-500">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
+    </li>
+    <li class="hover:bg-white/5 hover:text-white px-3 py-2 rounded-md cursor-pointer flex items-center gap-2 transition-colors">
+        <i data-lucide="users" class="w-4 h-4"></i> Team
+    </li>
+    <li class="hover:bg-white/5 hover:text-white px-3 py-2 rounded-md cursor-pointer flex items-center gap-2 transition-colors">
+        <i data-lucide="folder" class="w-4 h-4"></i> Projects
+    </li>
+  </ul>
+  <div class="mt-4 flex items-center gap-2 text-xs pt-4 border-t border-slate-800 px-2">
+    <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-400 to-purple-400"></div>
+    <span>Jane Doe</span>
+  </div>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { 
+                id: 27, name: "Slider Controls", 
+                desc: "슬라이더를 드래그하면 상단 수치 값이 실시간으로 변경됩니다.",
+                html: `<div class="w-full space-y-6">
+  <div>
+    <div class="flex justify-between mb-2">
+        <label for="range1" class="text-xs font-bold text-slate-700">VOLUME</label>
+        <span id="range1-val" class="text-xs font-bold text-blue-600">70%</span>
+    </div>
+    <input id="range1" type="range" min="0" max="100" value="70" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+  </div>
+</div>`,
+                css: `/* Custom Range Slider Styling (Needed even with Tailwind) */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px; 
+    width: 16px; 
+    border-radius: 50%; 
+    background: #2563eb; 
+    cursor: pointer; 
+    margin-top: -6px; 
+}
+input[type=range]::-webkit-slider-runnable-track { 
+    width: 100%; 
+    height: 4px; 
+    cursor: pointer; 
+    background: #e2e8f0; 
+    border-radius: 2px; 
+}`,
+                script: () => {
+                    const range = document.getElementById('range1');
+                    const val = document.getElementById('range1-val');
+                    range.addEventListener('input', (e) => {
+                        val.innerText = e.target.value + '%';
+                    });
+                }
+            },
+            { 
+                id: 28, name: "Stepper", 
+                desc: "+, - 버튼을 눌러 수량을 조절할 수 있습니다.",
+                html: `<div class="flex items-center gap-3">
+    <label class="text-sm font-medium text-slate-600">Quantity:</label>
+    <div class="flex items-center border border-slate-300 rounded-lg w-max overflow-hidden shadow-sm">
+      <button id="step-minus" class="px-3 py-2 bg-white hover:bg-slate-50 border-r border-slate-300 text-slate-600 active:bg-slate-100 transition">
+        <i data-lucide="minus" class="w-3 h-3"></i>
+      </button>
+      <input id="step-input" type="text" value="1" class="w-12 text-center text-sm font-bold text-slate-900 focus:outline-none border-none py-2" readonly>
+      <button id="step-plus" class="px-3 py-2 bg-white hover:bg-slate-50 border-l border-slate-300 text-slate-600 active:bg-slate-100 transition">
+        <i data-lucide="plus" class="w-3 h-3"></i>
+      </button>
+    </div>
+</div>`,
+                css: `/* Tailwind Utility Classes Only */`,
+                script: () => {
+                    const input = document.getElementById('step-input');
+                    document.getElementById('step-minus').addEventListener('click', () => {
+                        let v = parseInt(input.value);
+                        if(v > 1) input.value = v - 1;
+                    });
+                    document.getElementById('step-plus').addEventListener('click', () => {
+                        let v = parseInt(input.value);
+                        if(v < 99) input.value = v + 1;
+                    });
+                }
+            },
+            { id: 29, name: "Tag", desc: "분류를 위한 라벨입니다. 삭제 가능한 태그도 포함됩니다.", html: `<div class="flex flex-wrap gap-2">
+  <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-slate-200">Design</span>
+  <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-200">Development</span>
+  <span class="bg-purple-50 text-purple-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-purple-200 flex items-center gap-1 cursor-pointer hover:bg-purple-100 transition">
+    Feature <i data-lucide="x" class="w-3 h-3"></i>
+  </span>
+</div>`, css: `/* Tailwind Utility Classes Only */` },
+            { 
+                id: 30, name: "Tab Bar", 
+                desc: "하단 탭을 클릭하여 활성화 상태를 변경합니다.",
+                html: `<div class="w-full max-w-[280px] bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm flex flex-col h-40">
+  <div id="tab-content" class="flex-1 bg-slate-50 flex items-center justify-center text-slate-400 text-sm p-4 text-center">
+    Home View
+  </div>
+  
+  <div class="grid grid-cols-3 border-t border-slate-200 bg-white">
+    <button class="tab-btn flex flex-col items-center justify-center py-3 text-blue-600 relative hover:bg-slate-50 transition" data-target="Home View">
+      <i data-lucide="home" class="w-5 h-5 mb-1"></i>
+      <span class="text-[10px] font-medium">Home</span>
+      <span class="absolute top-0 left-0 right-0 h-0.5 bg-blue-600"></span>
+    </button>
+    <button class="tab-btn flex flex-col items-center justify-center py-3 text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition" data-target="Favorites View">
+      <i data-lucide="heart" class="w-5 h-5 mb-1"></i>
+      <span class="text-[10px] font-medium">Likes</span>
+    </button>
+    <button class="tab-btn flex flex-col items-center justify-center py-3 text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition" data-target="Profile View">
+      <i data-lucide="user" class="w-5 h-5 mb-1"></i>
+      <span class="text-[10px] font-medium">Profile</span>
+    </button>
+  </div>
+</div>`,
+                css: `/* Tailwind Utility Classes Only */`,
+                script: () => {
+                    const btns = document.querySelectorAll('.tab-btn');
+                    const content = document.getElementById('tab-content');
+                    
+                    btns.forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            // Reset styles
+                            btns.forEach(b => {
+                                b.classList.remove('text-blue-600');
+                                b.classList.add('text-slate-400');
+                                const line = b.querySelector('.bg-blue-600');
+                                if(line) line.remove();
+                            });
+                            
+                            // Active style
+                            this.classList.remove('text-slate-400');
+                            this.classList.add('text-blue-600');
+                            
+                            // Add Top Line
+                            const line = document.createElement('span');
+                            line.className = "absolute top-0 left-0 right-0 h-0.5 bg-blue-600";
+                            this.appendChild(line);
+                            
+                            // Change Content
+                            content.innerText = this.dataset.target;
+                            // Lucide icons re-render might remove inner SVG content if handled by lib, 
+                            // but here we modify classes only, icons are preserved.
+                        });
+                    });
+                }
+            },
+            { id: 31, name: "Tooltip", desc: "마우스 오버 시 툴팁이 나타납니다.", html: `<div class="flex items-center justify-center h-20 pt-6">
+  <div class="relative group">
+    <button class="p-2 bg-white border border-slate-200 text-slate-600 rounded-md shadow-sm hover:border-slate-400 transition">
+      <i data-lucide="help-circle" class="w-5 h-5"></i>
+    </button>
+    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 text-xs font-medium text-white bg-slate-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg transform translate-y-1 group-hover:translate-y-0 duration-200">
+      Help Information
+      <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+    </div>
+  </div>
+</div>`, css: `/* Group Hover Logic for Tooltip */
+/* group-hover:opacity-100 */
+/* group-hover:translate-y-0 */` },
+            { 
+                id: 32, name: "Toggle", 
+                desc: "스위치를 클릭하여 On/Off 상태를 전환합니다.",
+                html: `<div class="flex flex-col gap-4">
+  <label class="relative inline-flex items-center cursor-pointer">
+    <input type="checkbox" id="toggle-1" class="sr-only peer">
+    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+    <span class="ml-3 text-sm font-medium text-slate-700 select-none">Notifications</span>
+  </label>
+</div>`, css: `/* Tailwind Utility Classes Only */` 
+            }
+        ];
+
+        let currentComponent = components[0];
+        let currentTab = 'preview';
+
+        function init() {
+            const menuList = document.getElementById('menu-list');
+            
+            components.forEach((comp, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <button onclick="selectComponent(${comp.id})" class="w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${index === 0 ? 'bg-slate-200 font-semibold text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}">
+                        ${comp.id}. ${comp.name}
+                    </button>
+                `;
+                menuList.appendChild(li);
+            });
+            
+            render();
+        }
+
+        function selectComponent(id) {
+            currentComponent = components.find(c => c.id === id);
+            
+            const buttons = document.querySelectorAll('#menu-list button');
+            buttons.forEach(btn => {
+                if(btn.innerText.includes(`${id}. ${currentComponent.name}`)) {
+                    btn.className = 'w-full text-left px-3 py-2 text-sm rounded-md transition-colors bg-slate-200 font-semibold text-slate-900';
+                } else {
+                    btn.className = 'w-full text-left px-3 py-2 text-sm rounded-md transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900';
+                }
+            });
+
+            render();
+        }
+
+        function render() {
+            // Setup Text
+            document.getElementById('current-title').innerText = currentComponent.name;
+            document.getElementById('view-title').innerText = currentComponent.name;
+            document.getElementById('view-desc').innerText = currentComponent.desc;
+            
+            // Render HTML
+            const renderTarget = document.getElementById('render-target');
+            renderTarget.innerHTML = currentComponent.html;
+            
+            // Show Code
+            let codeDisplay = currentComponent.html;
+            if (currentComponent.script) {
+                const scriptStr = currentComponent.script.toString();
+                const scriptBody = scriptStr.substring(scriptStr.indexOf("{") + 1, scriptStr.lastIndexOf("}"));
+                codeDisplay += `\n\n<script>\n  // Logic for ${currentComponent.name}\n${scriptBody}<\/script>`;
+            }
+            document.getElementById('code-html').innerText = codeDisplay;
+            
+            // CSS Code Display
+            document.getElementById('code-css').innerText = currentComponent.css || "/* No custom CSS required (Tailwind Used) */";
+            
+            // Execute Script if exists
+            if (currentComponent.script) {
+                try {
+                    currentComponent.script();
+                } catch (e) {
+                    console.error("Script Error:", e);
+                }
+            }
+
+            // Re-init Icons
+            lucide.createIcons();
+            switchTab('preview');
+        }
+
+        function switchTab(type) {
+            currentTab = type;
+            const tabs = ['preview', 'html', 'css'];
+            tabs.forEach(t => {
+                document.getElementById(`content-${t}`).classList.add('hidden');
+                const tabBtn = document.getElementById(`tab-${t}`);
+                tabBtn.classList.remove('tab-active');
+                tabBtn.classList.add('text-slate-500');
+            });
+            
+            document.getElementById(`content-${type}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${type}`);
+            activeBtn.classList.add('tab-active');
+            activeBtn.classList.remove('text-slate-500');
+        }
+
+        function copyCurrentCode() {
+            let code = "";
+            if (currentTab === 'css') {
+                code = currentComponent.css || "/* No custom CSS */";
+            } else {
+                code = document.getElementById('code-html').innerText;
+            }
+            navigator.clipboard.writeText(code).then(() => {
+                alert(`${currentTab.toUpperCase()} 코드가 클립보드에 복사되었습니다.`);
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

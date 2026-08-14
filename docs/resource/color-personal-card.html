@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>프로필 배경색 팔레트</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f11; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; padding: 32px 20px; color: #f0f0f0; }
+  h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  p { font-size: 12px; color: #666; margin-bottom: 28px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .tab { padding: 6px 18px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; transition: all .2s; }
+  .tab.active { background: #fff; color: #000; }
+  .tab:not(.active) { background: #1e1e22; color: #888; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+  .card { border-radius: 16px; padding: 16px 10px 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform .15s; }
+  .card:hover { transform: scale(1.04); }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; }
+  .cname { font-size: 11px; font-weight: 700; text-align: center; }
+  .chex { font-size: 10px; font-family: monospace; opacity: .7; }
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .row { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: #16161a; border-radius: 12px; border: 1px solid #2a2a30; cursor: pointer; transition: border-color .2s; }
+  .row:hover { border-color: var(--c); }
+  .num { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .rname { font-size: 13px; font-weight: 700; color: #eee; }
+  .ren { font-size: 11px; color: #555; }
+  .swatch { width: 56px; height: 18px; border-radius: 4px; flex-shrink: 0; }
+  .rhex { font-family: monospace; font-size: 11px; color: #666; width: 68px; }
+  .rhsl { font-family: monospace; font-size: 10px; color: #444; }
+  .copied { color: #6fbf6f !important; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99; }
+  .toast.show { opacity: 1; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div style="max-width:860px;margin:0 auto">
+  <div style="font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Profile Identity System</div>
+  <h1>프로필 배경색 팔레트</h1>
+  <p>색상환 전체 균등 분배 · 인접색 혼동 최소화 · 20가지 고유 식별 색상</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchView('grid',this)">그리드</button>
+    <button class="tab" onclick="switchView('list',this)">리스트</button>
+  </div>
+
+  <div id="view-grid" class="grid"></div>
+  <div id="view-list" class="list hidden"></div>
+</div>
+<div class="toast" id="toast">HEX 복사됨 ✓</div>
+
+<script>
+const COLORS = [
+  { id:1,  name:"크림슨",   en:"Crimson Red",  hex:"#E8392A", hsl:"hsl(4,82%,56%)" },
+  { id:2,  name:"탠저린",   en:"Tangerine",    hex:"#F5671A", hsl:"hsl(25,90%,55%)" },
+  { id:3,  name:"앰버",     en:"Amber",        hex:"#F5A008", hsl:"hsl(38,95%,52%)" },
+  { id:4,  name:"골드",     en:"Gold",         hex:"#F0C800", hsl:"hsl(52,95%,48%)" },
+  { id:5,  name:"라임",     en:"Lime",         hex:"#7AB518", hsl:"hsl(80,70%,42%)" },
+  { id:6,  name:"포레스트", en:"Forest",       hex:"#279957", hsl:"hsl(140,60%,38%)" },
+  { id:7,  name:"에메랄드", en:"Emerald",      hex:"#18A870", hsl:"hsl(162,72%,40%)" },
+  { id:8,  name:"틸",       en:"Teal",         hex:"#0F9DA0", hsl:"hsl(178,75%,38%)" },
+  { id:9,  name:"스카이",   en:"Sky",          hex:"#19A3D4", hsl:"hsl(200,80%,50%)" },
+  { id:10, name:"코발트",   en:"Cobalt",       hex:"#2B72D8", hsl:"hsl(218,78%,52%)" },
+  { id:11, name:"인디고",   en:"Indigo",       hex:"#4B52DB", hsl:"hsl(238,72%,55%)" },
+  { id:12, name:"바이올렛", en:"Violet",       hex:"#7048D8", hsl:"hsl(258,68%,56%)" },
+  { id:13, name:"퍼플",     en:"Purple",       hex:"#9030C4", hsl:"hsl(278,65%,52%)" },
+  { id:14, name:"마젠타",   en:"Magenta",      hex:"#B825B8", hsl:"hsl(298,68%,50%)" },
+  { id:15, name:"로즈",     en:"Rose",         hex:"#E82C7A", hsl:"hsl(330,78%,55%)" },
+  { id:16, name:"시에나",   en:"Sienna",       hex:"#B5521C", hsl:"hsl(18,60%,44%)" },
+  { id:17, name:"올리브",   en:"Olive",        hex:"#8A9B18", hsl:"hsl(68,55%,38%)" },
+  { id:18, name:"스틸블루", en:"Steel Blue",   hex:"#3B7EA0", hsl:"hsl(208,45%,45%)" },
+  { id:19, name:"슬레이트", en:"Slate",        hex:"#5A5898", hsl:"hsl(248,30%,48%)" },
+  { id:20, name:"딥로즈",   en:"Hot Pink",     hex:"#F0324A", hsl:"hsl(348,80%,58%)" },
+];
+const NAMES = ["김민준","이서연","박지호","최수아","정하은","윤도윤","강나연","임준서","한소희","오태양","신유나","백준혁","류아영","전민서","남윤호","곽다인","황재원","문소율","조현우","송이레"];
+
+function contrast(hex) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return (0.299*r+0.587*g+0.114*b)/255 > 0.55 ? "#1a1a1a" : "#ffffff";
+}
+
+function copyHex(hex) {
+  navigator.clipboard?.writeText(hex);
+  const t = document.getElementById('toast');
+  t.textContent = hex + ' 복사됨 ✓';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+// Grid
+const grid = document.getElementById('view-grid');
+COLORS.forEach((c, i) => {
+  const fg = contrast(c.hex);
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.style.cssText = `background:${c.hex};box-shadow:0 4px 18px ${c.hex}55`;
+  el.onclick = () => copyHex(c.hex);
+  el.innerHTML = `
+    <div class="avatar" style="color:${fg}">${NAMES[i][0]}</div>
+    <div class="cname" style="color:${fg}">${c.name}</div>
+    <div class="chex" style="color:${fg}">${c.hex}</div>`;
+  grid.appendChild(el);
+});
+
+// List
+const list = document.getElementById('view-list');
+COLORS.forEach((c, i) => {
+  const fg = contrast(c.hex);
+  const el = document.createElement('div');
+  el.className = 'row';
+  el.style.setProperty('--c', c.hex);
+  el.onclick = () => copyHex(c.hex);
+  el.innerHTML = `
+    <div class="num" style="background:${c.hex};color:${fg};box-shadow:0 2px 10px ${c.hex}55">${i+1}</div>
+    <div style="flex:1"><div class="rname">${c.name}</div><div class="ren">${c.en}</div></div>
+    <div class="swatch" style="background:${c.hex}"></div>
+    <div class="rhex">${c.hex}</div>
+    <div class="rhsl">${c.hsl}</div>`;
+  list.appendChild(el);
+});
+
+function switchView(v, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-grid').classList.toggle('hidden', v !== 'grid');
+  document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
+}
+</script>
+</body>
+</html>

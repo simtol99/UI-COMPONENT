@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Picker</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0F0F13;
+      --surface: #1A1A22;
+      --border: #2E2E3A;
+      --text: #E8E8F0;
+      --text-muted: #6B6B80;
+      --radius: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Pretendard', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    header {
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Preview Bar */
+    .preview-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .preview-swatch {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: #172B4D;
+      transition: background 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    .preview-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .preview-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-hex {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 8px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      border-color: #555;
+      color: var(--text);
+    }
+
+    .copy-btn.copied {
+      border-color: #22A06B;
+      color: #22A06B;
+    }
+
+    /* Grid */
+    .picker-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .row-labels {
+      display: grid;
+      grid-template-columns: 80px repeat(10, 1fr);
+      gap: 5px;
+      margin-bottom: 8px;
+      padding: 0 2px;
+    }
+
+    .col-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    .color-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .color-row {
+      display: grid;
+      grid-template-columns: 80px repeat(10, 1fr);
+      gap: 5px;
+      align-items: center;
+    }
+
+    .row-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: right;
+      padding-right: 10px;
+      line-height: 1.3;
+    }
+
+    .swatch {
+      aspect-ratio: 1;
+      border-radius: 7px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      border: 2px solid transparent;
+    }
+
+    .swatch:hover {
+      transform: scale(1.15);
+      z-index: 10;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    }
+
+    .swatch.active {
+      border-color: rgba(255,255,255,0.7);
+      transform: scale(1.12);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.15);
+    }
+
+    /* White swatch special border */
+    .swatch[data-hex="#FFFFFF"] {
+      border-color: var(--border);
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    /* Hex input */
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-row label {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .hex-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .hex-input:focus {
+      border-color: #555;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: #22A06B;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 999px;
+      opacity: 0;
+      transition: all 0.25s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <header>
+    <h1>Atlassian Design System</h1>
+    <p>Color Picker</p>
+  </header>
+
+  <div class="preview-bar">
+    <div class="preview-swatch" id="previewSwatch"></div>
+    <div class="preview-info">
+      <div class="preview-label" id="previewLabel">기본 텍스트 회색</div>
+      <div class="preview-hex" id="previewHex">#172B4D</div>
+    </div>
+    <button class="copy-btn" id="copyBtn" onclick="copyColor()">COPY HEX</button>
+  </div>
+
+  <div class="picker-panel">
+    <div class="row-labels">
+      <div></div>
+      <div class="col-label">회색</div>
+      <div class="col-label">빨간</div>
+      <div class="col-label">주황</div>
+      <div class="col-label">노란</div>
+      <div class="col-label">라임</div>
+      <div class="col-label">녹색</div>
+      <div class="col-label">청록</div>
+      <div class="col-label">파란</div>
+      <div class="col-label">분홍</div>
+      <div class="col-label">보라</div>
+    </div>
+
+    <div class="color-grid" id="colorGrid"></div>
+
+    <div class="divider"></div>
+
+    <div class="input-row">
+      <label>#</label>
+      <input class="hex-input" id="hexInput" type="text" maxlength="6" placeholder="172B4D" oninput="onHexInput(this)" />
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">클립보드에 복사되었습니다!</div>
+
+<script>
+  const ROWS = [
+    {
+      label: '가장\n진한',
+      colors: [
+        { hex: '#172B4D', name: '기본 텍스트 회색' },
+        { hex: '#5D1F1A', name: '가장 진한 빨간색' },
+        { hex: '#702E00', name: '가장 진한 주황색' },
+        { hex: '#533F04', name: '가장 진한 노란색' },
+        { hex: '#37471F', name: '가장 진한 라임색' },
+        { hex: '#164B35', name: '가장 진한 녹색' },
+        { hex: '#164555', name: '가장 진한 청록색' },
+        { hex: '#09326C', name: '가장 진한 파란색' },
+        { hex: '#50253F', name: '가장 진한 분홍색' },
+        { hex: '#352C63', name: '가장 진한 보라색' },
+      ]
+    },
+    {
+      label: '더\n진한',
+      colors: [
+        { hex: '#44546F', name: '더 진한 회색' },
+        { hex: '#AE2E24', name: '더 진한 빨간색' },
+        { hex: '#A54800', name: '더 진한 주황색' },
+        { hex: '#946F00', name: '더 진한 노란색' },
+        { hex: '#4C6B1F', name: '더 진한 라임색' },
+        { hex: '#216E4E', name: '더 진한 녹색' },
+        { hex: '#206A83', name: '더 진한 청록색' },
+        { hex: '#0055CC', name: '더 진한 파란색' },
+        { hex: '#943D73', name: '더 진한 분홍색' },
+        { hex: '#5E4DB2', name: '더 진한 보라색' },
+      ]
+    },
+    {
+      label: '중간',
+      colors: [
+        { hex: '#626F86', name: '회색' },
+        { hex: '#C9372C', name: '빨간색' },
+        { hex: '#C25100', name: '주황색' },
+        { hex: '#CF9F02', name: '노란색' },
+        { hex: '#5B7F24', name: '라임색' },
+        { hex: '#1F845A', name: '녹색' },
+        { hex: '#227D9B', name: '청록색' },
+        { hex: '#0C66E4', name: '파란색' },
+        { hex: '#AE4787', name: '분홍색' },
+        { hex: '#6E5DC6', name: '보라색' },
+      ]
+    },
+    {
+      label: '연한',
+      colors: [
+        { hex: '#8590A2', name: '연한 회색' },
+        { hex: '#F87168', name: '연한 빨간색' },
+        { hex: '#FEA362', name: '연한 주황색' },
+        { hex: '#F5CD47', name: '연한 노란색' },
+        { hex: '#6A9A23', name: '연한 라임색' },
+        { hex: '#22A06B', name: '연한 녹색' },
+        { hex: '#2898BD', name: '연한 청록색' },
+        { hex: '#1D7AFC', name: '연한 파란색' },
+        { hex: '#CD519D', name: '연한 분홍색' },
+        { hex: '#8270DB', name: '연한 보라색' },
+      ]
+    },
+    {
+      label: '가장\n연한',
+      colors: [
+        { hex: '#FFFFFF', name: '가장 연한 회색 (흰색)' },
+        { hex: '#FFD5D2', name: '가장 연한 빨간색' },
+        { hex: '#FEDEC8', name: '가장 연한 주황색' },
+        { hex: '#F8E6A0', name: '가장 연한 노란색' },
+        { hex: '#D3F1A7', name: '가장 연한 라임색' },
+        { hex: '#BAF3DB', name: '가장 연한 녹색' },
+        { hex: '#C6EDFB', name: '가장 연한 청록색' },
+        { hex: '#CCE0FF', name: '가장 연한 파란색' },
+        { hex: '#FDD0EC', name: '가장 연한 분홍색' },
+        { hex: '#DFD8FD', name: '가장 연한 보라색' },
+      ]
+    }
+  ];
+
+  let selectedHex = '#172B4D';
+  let selectedName = '기본 텍스트 회색';
+
+  function buildGrid() {
+    const grid = document.getElementById('colorGrid');
+    ROWS.forEach(row => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'color-row';
+
+      const labelEl = document.createElement('div');
+      labelEl.className = 'row-label';
+      labelEl.textContent = row.label;
+      rowEl.appendChild(labelEl);
+
+      row.colors.forEach(c => {
+        const swatch = document.createElement('div');
+        swatch.className = 'swatch';
+        swatch.style.background = c.hex;
+        swatch.dataset.hex = c.hex;
+        swatch.dataset.name = c.name;
+        swatch.title = c.name;
+        swatch.addEventListener('click', () => selectColor(c.hex, c.name, swatch));
+        rowEl.appendChild(swatch);
+      });
+
+      grid.appendChild(rowEl);
+    });
+
+    // activate first
+    const first = grid.querySelector('.swatch');
+    if (first) selectColor(first.dataset.hex, first.dataset.name, first);
+  }
+
+  function selectColor(hex, name, el) {
+    document.querySelectorAll('.swatch.active').forEach(s => s.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    selectedHex = hex;
+    selectedName = name;
+
+    document.getElementById('previewSwatch').style.background = hex;
+    document.getElementById('previewLabel').textContent = name;
+    document.getElementById('previewHex').textContent = hex;
+    document.getElementById('hexInput').value = hex.replace('#', '');
+    document.getElementById('copyBtn').classList.remove('copied');
+    document.getElementById('copyBtn').textContent = 'COPY HEX';
+  }
+
+  function onHexInput(input) {
+    let val = input.value.replace(/[^0-9a-fA-F]/g, '');
+    input.value = val;
+    if (val.length === 6) {
+      const hex = '#' + val.toUpperCase();
+      document.getElementById('previewSwatch').style.background = hex;
+      document.getElementById('previewHex').textContent = hex;
+      document.getElementById('previewLabel').textContent = '커스텀 색상';
+      selectedHex = hex;
+      selectedName = '커스텀 색상';
+      document.querySelectorAll('.swatch.active').forEach(s => s.classList.remove('active'));
+    }
+  }
+
+  function copyColor() {
+    navigator.clipboard.writeText(selectedHex).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'COPIED!';
+      btn.classList.add('copied');
+
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+        btn.textContent = 'COPY HEX';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  buildGrid();
+</script>
+</body>
+</html>

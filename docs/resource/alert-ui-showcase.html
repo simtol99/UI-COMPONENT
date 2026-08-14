@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alert UI Showcase</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface-hover: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --text-dim: #7a7a90;
+    --accent: #ff6b3d;
+    --accent-glow: rgba(255, 107, 61, 0.15);
+    --danger: #ff4757;
+    --success: #2ed573;
+    --warning: #ffa502;
+    --info: #3742fa;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Layout ─── */
+  .app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ─── Sidebar ─── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0 24px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar h1 {
+    font-size: 22px;
+    font-weight: 700;
+    padding: 0 24px;
+    margin-bottom: 32px;
+    background: linear-gradient(135deg, var(--accent), #ff9f43);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .menu-group {
+    margin-bottom: 24px;
+  }
+
+  .menu-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0 24px;
+    margin-bottom: 8px;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+
+  .menu-item:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  .menu-item.active {
+    background: var(--accent-glow);
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .menu-item .icon {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .menu-item .badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 6px;
+    background: var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+  }
+
+  /* ─── Main Content ─── */
+  .main {
+    padding: 48px;
+    position: relative;
+  }
+
+  .demo-header {
+    margin-bottom: 40px;
+  }
+
+  .demo-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .demo-header p {
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  .demo-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    min-height: 500px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .demo-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+
+  .demo-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .demo-dot:nth-child(1) { background: #ff5f57; }
+  .demo-dot:nth-child(2) { background: #febc2e; }
+  .demo-dot:nth-child(3) { background: #28c840; }
+
+  .demo-url {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    background: var(--bg);
+    padding: 6px 16px;
+    border-radius: 6px;
+    margin-left: 8px;
+  }
+
+  .demo-body {
+    padding: 32px;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .trigger-btn {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--accent), #e55a2b);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(255, 107, 61, 0.3);
+  }
+
+  .trigger-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 107, 61, 0.4);
+  }
+
+  .trigger-btn:active {
+    transform: translateY(0);
+  }
+
+  /* ─── Code Block ─── */
+  .code-section {
+    margin-top: 24px;
+  }
+
+  .code-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .code-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .code-block {
+    display: none;
+    margin-top: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .code-block.show { display: block; }
+
+  .code-block pre {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .code-block .kw { color: var(--accent); }
+  .code-block .str { color: var(--success); }
+  .code-block .cm { color: #555; }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 1. Toast ─── */
+  /* ═══════════════════════════════════════════ */
+  .toast-container {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #1e1e2e;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    min-width: 300px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 3px solid var(--success);
+  }
+
+  .toast.error { border-left-color: var(--danger); }
+  .toast.warning { border-left-color: var(--warning); }
+
+  .toast-icon { font-size: 18px; }
+  .toast-close {
+    margin-left: auto;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+    font-size: 18px;
+  }
+  .toast-close:hover { opacity: 1; }
+
+  .toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--success);
+    border-radius: 0 0 0 10px;
+    animation: toastProgress 3s linear forwards;
+  }
+
+  .toast.error .toast-progress { background: var(--danger); }
+  .toast.warning .toast-progress { background: var(--warning); }
+
+  @keyframes toastIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes toastProgress {
+    from { width: 100%; }
+    to { width: 0%; }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 2. Top Banner ─── */
+  /* ═══════════════════════════════════════════ */
+  .banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    animation: bannerSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+  }
+
+  .banner.danger {
+    background: linear-gradient(90deg, #ff4757, #ff6b81);
+    color: white;
+  }
+
+  .banner.warning {
+    background: linear-gradient(90deg, #ffa502, #ffbe42);
+    color: #1a1a2e;
+  }
+
+  .banner.info {
+    background: linear-gradient(90deg, #3742fa, #5f6cff);
+    color: white;
+  }
+
+  .banner-close {
+    margin-left: auto;
+    cursor: pointer;
+    opacity: 0.7;
+    font-size: 20px;
+    transition: opacity 0.2s;
+  }
+  .banner-close:hover { opacity: 1; }
+
+  @keyframes bannerSlide {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 3. Inline Alert ─── */
+  /* ═══════════════════════════════════════════ */
+  .inline-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    animation: inlineFade 0.4s ease;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .inline-alert.danger {
+    background: rgba(255, 71, 87, 0.1);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    color: #ff6b7a;
+  }
+
+  .inline-alert.success {
+    background: rgba(46, 213, 115, 0.1);
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    color: #5ae88c;
+  }
+
+  .inline-alert.warning {
+    background: rgba(255, 165, 2, 0.1);
+    border: 1px solid rgba(255, 165, 2, 0.3);
+    color: #ffbe42;
+  }
+
+  .inline-alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .inline-alert-title { font-weight: 600; margin-bottom: 4px; }
+
+  @keyframes inlineFade {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 4. Slide-over Panel ─── */
+  /* ═══════════════════════════════════════════ */
+  .slideover-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 90;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .slideover {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 380px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    z-index: 100;
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slideover-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .slideover-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .slideover-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+  }
+  .slideover-close:hover { background: var(--surface-hover); color: var(--text); }
+
+  .slideover-body {
+    padding: 24px;
+    flex: 1;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .slideover-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .slideover-footer button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-cancel {
+    background: var(--surface-hover);
+    color: var(--text);
+    border: 1px solid var(--border) !important;
+  }
+
+  .btn-danger {
+    background: var(--danger);
+    color: white;
+    box-shadow: 0 4px 16px rgba(255, 71, 87, 0.3);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 5. Shake Effect ─── */
+  /* ═══════════════════════════════════════════ */
+  .shake-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 320px;
+  }
+
+  .shake-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .shake-input-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+  }
+
+  .shake-input {
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .shake-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .shake-input.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.15);
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  .shake-error-text {
+    font-size: 12px;
+    color: var(--danger);
+    display: none;
+  }
+
+  .shake-error-text.show { display: block; }
+
+  .shake-btn {
+    padding: 12px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  @keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 6. Full-screen Takeover ─── */
+  /* ═══════════════════════════════════════════ */
+  .fullscreen-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 15, 0.92);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .fullscreen-card {
+    text-align: center;
+    padding: 48px;
+    animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .fullscreen-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 71, 87, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 24px;
+    border: 2px solid rgba(255, 71, 87, 0.3);
+  }
+
+  .fullscreen-card h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .fullscreen-card p {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    max-width: 400px;
+  }
+
+  .fullscreen-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .fullscreen-actions button {
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 7. Popover ─── */
+  /* ═══════════════════════════════════════════ */
+  .popover-demo {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .popover-trigger {
+    padding: 12px 20px;
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .popover-trigger:hover { border-color: var(--accent); }
+
+  .popover {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e1e2e;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-width: 240px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    animation: popoverIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: none;
+    z-index: 50;
+  }
+
+  .popover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: #1e1e2e;
+  }
+
+  .popover.show { display: block; }
+
+  .popover-title {
+    font-weight: 600;
+    color: var(--warning);
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  @keyframes popoverIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 8. Command Bar ─── */
+  /* ═══════════════════════════════════════════ */
+  .command-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    z-index: 100;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .command-bar {
+    width: 520px;
+    background: #1a1a28;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    overflow: hidden;
+    animation: commandIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .command-bar-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .command-bar-icon {
+    color: var(--warning);
+    font-size: 20px;
+  }
+
+  .command-bar-content {
+    flex: 1;
+  }
+
+  .command-bar-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .command-bar-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .command-bar-actions {
+    padding: 12px 20px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .command-bar-actions button {
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .command-bar-actions .kbd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    background: var(--border);
+    border-radius: 4px;
+    margin-left: 8px;
+    color: var(--text-dim);
+  }
+
+  @keyframes commandIn {
+    from { transform: scale(0.96) translateY(-10px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 9. Notification Drawer ─── */
+  /* ═══════════════════════════════════════════ */
+  .notif-list {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .notif-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #1a1a28;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    animation: notifSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  .notif-item:nth-child(2) { animation-delay: 0.08s; }
+  .notif-item:nth-child(3) { animation-delay: 0.16s; }
+  .notif-item:nth-child(4) { animation-delay: 0.24s; }
+
+  .notif-item:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .notif-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .notif-dot.red { background: var(--danger); box-shadow: 0 0 8px rgba(255,71,87,0.5); }
+  .notif-dot.yellow { background: var(--warning); box-shadow: 0 0 8px rgba(255,165,2,0.5); }
+  .notif-dot.green { background: var(--success); box-shadow: 0 0 8px rgba(46,213,115,0.5); }
+  .notif-dot.blue { background: var(--info); box-shadow: 0 0 8px rgba(55,66,250,0.5); }
+
+  .notif-content { flex: 1; }
+  .notif-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .notif-desc { font-size: 12px; color: var(--text-dim); }
+  .notif-time { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  @keyframes notifSlide {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ─── 10. Destructive Confetti ─── */
+  /* ═══════════════════════════════════════════ */
+  .confetti-demo {
+    text-align: center;
+  }
+
+  .confetti-btn {
+    padding: 14px 32px;
+    background: transparent;
+    border: 2px solid var(--danger);
+    color: var(--danger);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .confetti-btn:hover {
+    background: var(--danger);
+    color: white;
+    box-shadow: 0 4px 20px rgba(255, 71, 87, 0.3);
+  }
+
+  .particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  @keyframes particleFly {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+  }
+
+  /* ─── Placeholder content ─── */
+  .placeholder-lines {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    opacity: 0.3;
+  }
+
+  .placeholder-line {
+    height: 12px;
+    background: var(--border);
+    border-radius: 6px;
+  }
+
+  .placeholder-line:nth-child(1) { width: 80%; }
+  .placeholder-line:nth-child(2) { width: 100%; }
+  .placeholder-line:nth-child(3) { width: 65%; }
+  .placeholder-line:nth-child(4) { width: 90%; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: auto;
+      z-index: 1000;
+      display: flex;
+      overflow-x: auto;
+      padding: 12px;
+      gap: 4px;
+    }
+    .sidebar-title, .sidebar h1, .menu-group-label { display: none; }
+    .menu-group { display: flex; gap: 4px; margin: 0; }
+    .menu-item {
+      padding: 8px 14px;
+      white-space: nowrap;
+      font-size: 13px;
+      border-left: none;
+      border-radius: 8px;
+    }
+    .menu-item.active {
+      border-left: none;
+      border-radius: 8px;
+    }
+    .main { padding: 24px 16px 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar Menu -->
+  <nav class="sidebar">
+    <div class="sidebar-title">UI COMPONENTS</div>
+    <h1>Alert Showcase</h1>
+
+    <div class="menu-group">
+      <div class="menu-group-label">Lightweight</div>
+      <div class="menu-item active" data-demo="toast">
+        <span class="icon">🔔</span> Toast / Snackbar
+        <span class="badge">HOT</span>
+      </div>
+      <div class="menu-item" data-demo="banner">
+        <span class="icon">📢</span> Top Banner
+      </div>
+      <div class="menu-item" data-demo="inline">
+        <span class="icon">📌</span> Inline Alert
+      </div>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-group-label">Interactive</div>
+      <div class="menu-item" data-demo="slideover">
+        <span class="icon">📋</span> Slide-over Panel
+      </div>
+      <div class="menu-item" data-demo="shake">
+        <span class="icon">📳</span> Shake Effect
+      </div>
+      <div class="menu-item" data-demo="popover">
+        <span class="icon">💬</span> Popover Warning
+      </div>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-group-label">Heavy</div>
+      <div class="menu-item" data-demo="fullscreen">
+        <span class="icon">🛑</span> Full-screen Takeover
+      </div>
+      <div class="menu-item" data-demo="command">
+        <span class="icon">⌨️</span> Command Bar
+      </div>
+      <div class="menu-item" data-demo="notifications">
+        <span class="icon">📬</span> Notification List
+      </div>
+      <div class="menu-item" data-demo="confetti">
+        <span class="icon">💥</span> Destructive Confetti
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main" id="mainContent">
+    <!-- Injected by JS -->
+  </main>
+</div>
+
+<script>
+const demos = {
+  toast: {
+    title: 'Toast / Snackbar',
+    desc: '화면 구석에 슬라이드 형태로 나타났다가 자동으로 사라지는 알림. 사용자의 작업 흐름을 방해하지 않으면서 중요한 정보를 전달합니다.',
+    url: 'myapp.io/dashboard',
+    render(body) {
+      body.innerHTML = `
+        <button class="trigger-btn" onclick="demos.toast.fire()">🔔 Toast 띄우기</button>
+        <div class="toast-container" id="toastContainer"></div>
+        <div class="placeholder-lines">
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+        </div>
+      `;
+    },
+    fire() {
+      const types = [
+        { cls: '', icon: '✅', msg: '파일이 성공적으로 저장되었습니다.' },
+        { cls: 'error', icon: '❌', msg: '네트워크 연결에 실패했습니다.' },
+        { cls: 'warning', icon: '⚠️', msg: '저장 공간이 90%를 초과했습니다.' },
+      ];
+      const t = types[Math.floor(Math.random() * types.length)];
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = `toast ${t.cls}`;
+      el.style.position = 'relative';
+      el.innerHTML = `
+        <span class="toast-icon">${t.icon}</span>
+        <span>${t.msg}</span>
+        <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+        <div class="toast-progress"></div>
+      `;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    },
+    code: `toast('파일이 저장되었습니다.', {\n  type: 'success',\n  duration: 3000,\n  position: 'top-right'\n});`
+  },
+
+  banner: {
+    title: 'Top Banner',
+    desc: '페이지 상단에 전체 너비로 표시되는 배너 알림. 시스템 공지, 점검 안내, 긴급 경고 등에 효과적입니다.',
+    url: 'myapp.io/settings',
+    render(body) {
+      body.innerHTML = `
+        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+          <button class="trigger-btn" onclick="demos.banner.fire('danger')">🔴 긴급 배너</button>
+          <button class="trigger-btn" onclick="demos.banner.fire('warning')" style="background:linear-gradient(135deg,#ffa502,#e59400)">🟡 경고 배너</button>
+          <button class="trigger-btn" onclick="demos.banner.fire('info')" style="background:linear-gradient(135deg,#3742fa,#2a32c9)">🔵 안내 배너</button>
+        </div>
+        <div class="placeholder-lines" style="margin-top:40px">
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+        </div>
+      `;
+    },
+    fire(type) {
+      const msgs = {
+        danger: '⚠️ 긴급: 서버 점검이 10분 후 시작됩니다. 작업을 저장해주세요.',
+        warning: '⚡ 주의: 브라우저 버전이 오래되어 일부 기능이 제한될 수 있습니다.',
+        info: '🚀 새 버전 v2.4.0이 출시되었습니다. 새로운 기능을 확인해보세요!'
+      };
+      document.querySelectorAll('.banner').forEach(b => b.remove());
+      const body = document.querySelector('.demo-body');
+      const el = document.createElement('div');
+      el.className = `banner ${type}`;
+      el.innerHTML = `${msgs[type]}<span class="banner-close" onclick="this.parentElement.remove()">×</span>`;
+      body.prepend(el);
+    },
+    code: `<div class="banner danger">\n  ⚠️ 서버 점검이 10분 후 시작됩니다.\n  <button onclick="dismiss()">×</button>\n</div>`
+  },
+
+  inline: {
+    title: 'Inline Alert',
+    desc: '컨텐츠 흐름 안에 자연스럽게 포함되는 경고 메시지. 관련 요소 바로 옆에 배치하여 맥락을 유지합니다.',
+    url: 'myapp.io/form',
+    render(body) {
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:16px; align-items:center; width:100%;">
+          <button class="trigger-btn" onclick="demos.inline.fire()">📌 Inline Alert 표시</button>
+          <div id="inlineContainer" style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:500px;"></div>
+        </div>
+      `;
+    },
+    fire() {
+      const alerts = [
+        { cls: 'danger', icon: '🚫', title: '결제 실패', msg: '카드 정보를 확인하고 다시 시도해주세요.' },
+        { cls: 'warning', icon: '⚠️', title: '비밀번호 만료 예정', msg: '3일 내에 비밀번호를 변경해주세요.' },
+        { cls: 'success', icon: '✅', title: '인증 완료', msg: '이메일 인증이 성공적으로 완료되었습니다.' },
+      ];
+      const a = alerts[Math.floor(Math.random() * alerts.length)];
+      const container = document.getElementById('inlineContainer');
+      container.innerHTML = '';
+      const el = document.createElement('div');
+      el.className = `inline-alert ${a.cls}`;
+      el.innerHTML = `
+        <span class="inline-alert-icon">${a.icon}</span>
+        <div>
+          <div class="inline-alert-title">${a.title}</div>
+          <div>${a.msg}</div>
+        </div>
+      `;
+      container.appendChild(el);
+    },
+    code: `<div class="inline-alert danger">\n  <span>🚫</span>\n  <div>\n    <strong>결제 실패</strong>\n    <p>카드 정보를 확인해주세요.</p>\n  </div>\n</div>`
+  },
+
+  slideover: {
+    title: 'Slide-over Panel',
+    desc: '화면 옆에서 슬라이드하며 나타나는 패널. 삭제 확인, 상세 경고 등 추가 정보가 필요한 경고에 적합합니다.',
+    url: 'myapp.io/projects',
+    render(body) {
+      body.innerHTML = `
+        <button class="trigger-btn" onclick="demos.slideover.fire()">📋 Slide Panel 열기</button>
+        <div class="placeholder-lines">
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+        </div>
+      `;
+    },
+    fire() {
+      const body = document.querySelector('.demo-body');
+      document.querySelectorAll('.slideover-overlay,.slideover').forEach(e => e.remove());
+      const overlay = document.createElement('div');
+      overlay.className = 'slideover-overlay';
+      overlay.onclick = () => { overlay.remove(); panel.remove(); };
+      const panel = document.createElement('div');
+      panel.className = 'slideover';
+      panel.innerHTML = `
+        <div class="slideover-header">
+          <h3>🗑️ 프로젝트 삭제</h3>
+          <button class="slideover-close" onclick="document.querySelectorAll('.slideover-overlay,.slideover').forEach(e=>e.remove())">×</button>
+        </div>
+        <div class="slideover-body">
+          <p style="margin-bottom:16px"><strong>"Tika 프로젝트"</strong>를 정말 삭제하시겠습니까?</p>
+          <p>이 작업은 되돌릴 수 없으며, 다음 항목이 영구적으로 삭제됩니다:</p>
+          <ul style="margin-top:12px;padding-left:20px;display:flex;flex-direction:column;gap:8px;">
+            <li>모든 태스크 (42개)</li>
+            <li>첨부 파일 (128MB)</li>
+            <li>팀 멤버 설정</li>
+            <li>연결된 웹훅</li>
+          </ul>
+        </div>
+        <div class="slideover-footer">
+          <button class="btn-cancel" onclick="document.querySelectorAll('.slideover-overlay,.slideover').forEach(e=>e.remove())">취소</button>
+          <button class="btn-danger" onclick="document.querySelectorAll('.slideover-overlay,.slideover').forEach(e=>e.remove())">삭제하기</button>
+        </div>
+      `;
+      body.appendChild(overlay);
+      body.appendChild(panel);
+    },
+    code: `<SlidePanel open={showPanel} onClose={close}>\n  <h3>프로젝트 삭제</h3>\n  <p>이 작업은 되돌릴 수 없습니다.</p>\n  <button onClick={handleDelete}>삭제</button>\n</SlidePanel>`
+  },
+
+  shake: {
+    title: 'Shake Effect',
+    desc: '잘못된 입력 시 필드가 흔들리는 효과. iOS의 비밀번호 오류 애니메이션처럼 직관적이고 시각적인 피드백을 제공합니다.',
+    url: 'myapp.io/login',
+    render(body) {
+      body.innerHTML = `
+        <div class="shake-demo">
+          <div class="shake-input-group">
+            <label>이메일</label>
+            <input class="shake-input" type="email" placeholder="email@example.com" id="shakeEmail">
+            <span class="shake-error-text" id="emailError">올바른 이메일을 입력해주세요.</span>
+          </div>
+          <div class="shake-input-group">
+            <label>비밀번호</label>
+            <input class="shake-input" type="password" placeholder="••••••••" id="shakePassword">
+            <span class="shake-error-text" id="passError">비밀번호가 일치하지 않습니다.</span>
+          </div>
+          <button class="shake-btn" onclick="demos.shake.fire()">로그인</button>
+        </div>
+      `;
+    },
+    fire() {
+      const email = document.getElementById('shakeEmail');
+      const pass = document.getElementById('shakePassword');
+      [email, pass].forEach(el => {
+        el.classList.remove('error');
+        void el.offsetWidth;
+        el.classList.add('error');
+      });
+      document.getElementById('emailError').classList.add('show');
+      document.getElementById('passError').classList.add('show');
+      setTimeout(() => {
+        [email, pass].forEach(el => el.classList.remove('error'));
+      }, 600);
+    },
+    code: `input.classList.add('error');\n// CSS:\n.error {\n  animation: shake 0.5s ease;\n  border-color: red;\n}`
+  },
+
+  fullscreen: {
+    title: 'Full-screen Takeover',
+    desc: '전체 화면을 덮는 강력한 경고. 결제 실패, 보안 경고, 세션 만료 등 반드시 확인이 필요한 경우에 사용합니다.',
+    url: 'myapp.io/billing',
+    render(body) {
+      body.innerHTML = `
+        <button class="trigger-btn" onclick="demos.fullscreen.fire()">🛑 Full-screen 경고</button>
+        <div class="placeholder-lines">
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+        </div>
+      `;
+    },
+    fire() {
+      const body = document.querySelector('.demo-body');
+      const el = document.createElement('div');
+      el.className = 'fullscreen-overlay';
+      el.innerHTML = `
+        <div class="fullscreen-card">
+          <div class="fullscreen-icon">🔒</div>
+          <h3>세션이 만료되었습니다</h3>
+          <p>보안을 위해 30분 이상 활동이 없어 자동으로 로그아웃 되었습니다. 다시 로그인해주세요.</p>
+          <div class="fullscreen-actions">
+            <button style="background:var(--surface-hover);color:var(--text);border:1px solid var(--border)" onclick="this.closest('.fullscreen-overlay').remove()">홈으로</button>
+            <button style="background:var(--accent);color:white;box-shadow:0 4px 16px rgba(255,107,61,0.3)" onclick="this.closest('.fullscreen-overlay').remove()">다시 로그인</button>
+          </div>
+        </div>
+      `;
+      body.appendChild(el);
+    },
+    code: `<FullscreenAlert\n  icon="🔒"\n  title="세션 만료"\n  message="다시 로그인해주세요."\n  actions={[\n    { label: '로그인', primary: true }\n  ]}\n/>`
+  },
+
+  popover: {
+    title: 'Popover Warning',
+    desc: '요소에 마우스를 올리거나 클릭했을 때 말풍선 형태로 경고를 표시합니다. 맥락적인 힌트 제공에 효과적입니다.',
+    url: 'myapp.io/editor',
+    render(body) {
+      body.innerHTML = `
+        <div class="popover-demo">
+          <div class="popover-trigger" onclick="demos.popover.toggle(this, 0)">
+            🗑️ 삭제
+            <div class="popover" id="pop0">
+              <div class="popover-title">⚠️ 주의</div>
+              삭제된 항목은 30일 후 영구 삭제됩니다. 휴지통에서 복구할 수 있습니다.
+            </div>
+          </div>
+          <div class="popover-trigger" onclick="demos.popover.toggle(this, 1)">
+            🔓 권한 변경
+            <div class="popover" id="pop1">
+              <div class="popover-title">⚠️ 보안 경고</div>
+              공개 권한으로 변경하면 링크를 가진 모든 사용자가 접근할 수 있습니다.
+            </div>
+          </div>
+          <div class="popover-trigger" onclick="demos.popover.toggle(this, 2)">
+            📤 내보내기
+            <div class="popover" id="pop2">
+              <div class="popover-title">ℹ️ 안내</div>
+              대용량 파일은 내보내기에 최대 5분이 소요될 수 있습니다.
+            </div>
+          </div>
+        </div>
+      `;
+    },
+    toggle(el, id) {
+      const pop = document.getElementById('pop' + id);
+      document.querySelectorAll('.popover.show').forEach(p => { if (p !== pop) p.classList.remove('show'); });
+      pop.classList.toggle('show');
+    },
+    code: `<Popover trigger="click">\n  <Button>🗑️ 삭제</Button>\n  <PopoverContent>\n    ⚠️ 삭제된 항목은 30일 후 영구 삭제\n  </PopoverContent>\n</Popover>`
+  },
+
+  command: {
+    title: 'Command Bar Alert',
+    desc: 'Spotlight / ⌘K 스타일의 모던한 경고 바. 화면 중앙 상단에 나타나 세련된 느낌을 줍니다.',
+    url: 'myapp.io/workspace',
+    render(body) {
+      body.innerHTML = `
+        <button class="trigger-btn" onclick="demos.command.fire()">⌨️ Command Bar 경고</button>
+        <div class="placeholder-lines">
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+          <div class="placeholder-line"></div>
+        </div>
+      `;
+    },
+    fire() {
+      const body = document.querySelector('.demo-body');
+      document.querySelectorAll('.command-overlay').forEach(e => e.remove());
+      const el = document.createElement('div');
+      el.className = 'command-overlay';
+      el.onclick = (e) => { if (e.target === el) el.remove(); };
+      el.innerHTML = `
+        <div class="command-bar">
+          <div class="command-bar-header">
+            <span class="command-bar-icon">⚠️</span>
+            <div class="command-bar-content">
+              <div class="command-bar-title">저장되지 않은 변경사항이 있습니다</div>
+              <div class="command-bar-desc">이 페이지를 떠나면 변경사항이 모두 사라집니다.</div>
+            </div>
+          </div>
+          <div class="command-bar-actions">
+            <button style="background:var(--surface-hover);color:var(--text)" onclick="this.closest('.command-overlay').remove()">
+              저장하지 않고 나가기 <span class="kbd">Esc</span>
+            </button>
+            <button style="background:var(--accent);color:white" onclick="this.closest('.command-overlay').remove()">
+              저장하기 <span class="kbd">⌘S</span>
+            </button>
+          </div>
+        </div>
+      `;
+      body.appendChild(el);
+    },
+    code: `<CommandAlert\n  title="저장되지 않은 변경사항"\n  description="나가면 변경사항이 사라집니다."\n  actions={[\n    { label: '나가기', key: 'Esc' },\n    { label: '저장', key: '⌘S', primary: true }\n  ]}\n/>`
+  },
+
+  notifications: {
+    title: 'Notification List',
+    desc: '알림 목록 형태로 여러 경고를 한 번에 보여주는 패턴. 중요도에 따라 색상과 순서를 구분합니다.',
+    url: 'myapp.io/notifications',
+    render(body) {
+      body.innerHTML = `
+        <div class="notif-list" id="notifList">
+          <div class="notif-item">
+            <div class="notif-dot red"></div>
+            <div class="notif-content">
+              <div class="notif-title">배포 실패</div>
+              <div class="notif-desc">main 브랜치 빌드에서 에러가 발생했습니다.</div>
+            </div>
+            <div class="notif-time">2분 전</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-dot yellow"></div>
+            <div class="notif-content">
+              <div class="notif-title">CPU 사용률 경고</div>
+              <div class="notif-desc">서버 cpu-02의 사용률이 85%를 초과했습니다.</div>
+            </div>
+            <div class="notif-time">15분 전</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-dot green"></div>
+            <div class="notif-content">
+              <div class="notif-title">SSL 인증서 갱신 완료</div>
+              <div class="notif-desc">*.myapp.io 인증서가 갱신되었습니다.</div>
+            </div>
+            <div class="notif-time">1시간 전</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-dot blue"></div>
+            <div class="notif-content">
+              <div class="notif-title">새로운 팀원 합류</div>
+              <div class="notif-desc">김개발님이 Backend 팀에 합류했습니다.</div>
+            </div>
+            <div class="notif-time">3시간 전</div>
+          </div>
+        </div>
+      `;
+    },
+    code: `<NotificationList>\n  <Notification\n    type="error"\n    title="배포 실패"\n    time="2분 전"\n  />\n</NotificationList>`
+  },
+
+  confetti: {
+    title: 'Destructive Confetti',
+    desc: '삭제 같은 위험한 액션 실행 시 빨간 파티클이 터지는 효과. 시각적 임팩트로 "이건 되돌릴 수 없다"는 느낌을 줍니다.',
+    url: 'myapp.io/danger-zone',
+    render(body) {
+      body.innerHTML = `
+        <div class="confetti-demo">
+          <p style="color:var(--text-dim);margin-bottom:20px;font-size:14px;">버튼을 클릭하면 파티클 효과가 발생합니다</p>
+          <button class="confetti-btn" onclick="demos.confetti.fire(event)">💥 프로젝트 삭제</button>
+        </div>
+      `;
+    },
+    fire(e) {
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      const demoBody = document.querySelector('.demo-body');
+      const bodyRect = demoBody.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2 - bodyRect.left;
+      const cy = rect.top + rect.height / 2 - bodyRect.top;
+      const colors = ['#ff4757', '#ff6b81', '#ff9f43', '#ee5a24', '#c44569'];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const angle = (Math.PI * 2 * i) / 30;
+        const velocity = 60 + Math.random() * 100;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+        p.style.cssText = `
+          position:absolute;
+          left:${cx}px;top:${cy}px;
+          width:${4 + Math.random() * 6}px;
+          height:${4 + Math.random() * 6}px;
+          background:${colors[Math.floor(Math.random() * colors.length)]};
+          border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+          --tx:${tx}px;--ty:${ty}px;
+          animation:particleFly ${0.5 + Math.random() * 0.5}s ease-out forwards;
+          pointer-events:none;
+        `;
+        demoBody.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
+      }
+      btn.style.transform = 'scale(0.95)';
+      setTimeout(() => btn.style.transform = '', 150);
+    },
+    code: `function destructiveConfetti(el) {\n  for (let i = 0; i < 30; i++) {\n    const angle = (Math.PI * 2 * i) / 30;\n    createParticle(el, angle);\n  }\n}`
+  }
+};
+
+// ─── Render Logic ───
+function renderDemo(name) {
+  const demo = demos[name];
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <div class="demo-header">
+      <h2>${demo.title}</h2>
+      <p>${demo.desc}</p>
+    </div>
+    <div class="demo-area">
+      <div class="demo-toolbar">
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-url">${demo.url}</div>
+      </div>
+      <div class="demo-body" id="demoBody"></div>
+    </div>
+    <div class="code-section">
+      <button class="code-toggle" onclick="document.getElementById('codeBlock').classList.toggle('show')">
+        &lt;/&gt; 코드 보기
+      </button>
+      <div class="code-block" id="codeBlock">
+        <pre>${demo.code}</pre>
+      </div>
+    </div>
+  `;
+  demo.render(document.getElementById('demoBody'));
+}
+
+// ─── Menu Click ───
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    renderDemo(item.dataset.demo);
+  });
+});
+
+// ─── Initial Render ───
+renderDemo('toast');
+</script>
+</body>
+</html>

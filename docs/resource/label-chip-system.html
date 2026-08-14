@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tika — 라벨 칩 컴포넌트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --font-display:'Plus Jakarta Sans','Noto Sans KR',sans-serif;
+  --font-body:'Noto Sans KR','Plus Jakarta Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --bg:#F0F2F5;
+  --card:#FFFFFF;
+  --border:#E2E6EC;
+  --border-strong:#CDD3DC;
+  --text-primary:#1E2D3D;
+  --text-secondary:#4A5C6E;
+  --text-muted:#8A96A4;
+  --accent:#629584;
+  --accent-hover:#527D6F;
+  --accent-light:#E8F5F0;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{font-family:var(--font-body);font-size:14px;color:var(--text-primary);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+.page{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+
+/* ── Page Header ── */
+.page-header{margin-bottom:40px}
+.page-title{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--text-primary);margin-bottom:6px}
+.page-sub{font-size:13px;color:var(--text-muted);line-height:1.6}
+.tika-tag{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border-radius:4px;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:600;margin-bottom:10px}
+
+/* ── Section ── */
+.section{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:28px;margin-bottom:20px}
+.section-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── CHIP BASE ── */
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:0 10px;border-radius:5px;
+  font-family:var(--font-body);font-weight:600;
+  white-space:nowrap;cursor:default;
+  transition:filter .15s, transform .1s;
+  border:none;
+  line-height:1;
+}
+.chip:hover{filter:brightness(.93);transform:translateY(-1px)}
+.chip-sm{height:20px;font-size:10px;padding:0 7px;border-radius:4px;gap:4px}
+.chip-md{height:24px;font-size:11px;padding:0 9px;border-radius:5px}
+.chip-lg{height:28px;font-size:12px;padding:0 11px;border-radius:6px}
+
+/* Remove button */
+.chip-rm{
+  width:13px;height:13px;display:inline-flex;align-items:center;justify-content:center;
+  border:none;background:rgba(0,0,0,0.18);border-radius:50%;
+  color:inherit;cursor:pointer;flex-shrink:0;
+  font-style:normal;font-size:9px;line-height:1;padding:0;
+  transition:background .12s;
+}
+.chip-rm:hover{background:rgba(0,0,0,0.38)}
+/* light-bg chips need darker rm */
+.chip.light .chip-rm{background:rgba(0,0,0,0.12)}
+.chip.light .chip-rm:hover{background:rgba(0,0,0,0.25)}
+
+/* dot icon */
+.chip-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7;flex-shrink:0}
+
+/* ── Color grid ── */
+.color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.color-card{
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;
+  transition:box-shadow .15s,transform .15s;cursor:default;
+}
+.color-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);transform:translateY(-2px)}
+.cc-swatch{height:52px;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 12px}
+.cc-info{padding:10px 12px;border-top:1px solid var(--border);background:var(--card)}
+.cc-name{font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:2px}
+.cc-hex{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+.cc-text-hex{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin-top:1px}
+
+/* ── Sizes row ── */
+.sizes-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.size-label{font-size:11px;color:var(--text-muted);font-weight:500;min-width:32px}
+
+/* ── Chip group ── */
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* ── State demo ── */
+.state-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.state-card{border:1px solid var(--border);border-radius:8px;padding:14px}
+.state-name{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+
+/* ── Usage example ── */
+.ticket-mock{
+  border:1px solid var(--border);border-radius:8px;padding:14px 16px;
+  background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.ticket-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.ticket-title-mock{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1.4}
+.ticket-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.ticket-footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text-muted)}
+.priority-badge{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:4px;font-size:10px;font-weight:600}
+
+/* ── Palette swatch strip ── */
+.swatch-strip{display:flex;gap:6px;flex-wrap:wrap}
+.swatch{
+  width:36px;height:36px;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .12s,box-shadow .12s;
+  border:2px solid transparent;
+  position:relative;
+}
+.swatch:hover{transform:scale(1.15);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.swatch.selected::after{
+  content:'✓';position:absolute;font-size:14px;font-weight:700;
+  color:inherit;
+}
+
+/* ── Priority badge ── */
+.priority-icon-demo{display:flex;align-items:center;justify-content:center}
+.priority-badge-demo{
+  display:inline-flex;align-items:center;height:22px;padding:0 9px;
+  border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.2px;
+}
+/* pbadge = priority badge with icon */
+.pbadge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-weight:700;border-radius:5px;letter-spacing:.2px;white-space:nowrap;
+  cursor:default;
+}
+.pbadge-sm{height:20px;font-size:10px;padding:0 6px;gap:3px}
+.pbadge-md{height:24px;font-size:11px;padding:0 8px;gap:4px}
+.pbadge-lg{height:28px;font-size:12px;padding:0 10px;gap:5px}
+.picon{
+  flex-shrink:0;fill:none;stroke:currentColor;
+  stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+}
+.pbadge-sm .picon{width:10px;height:10px}
+.pbadge-md .picon{width:11px;height:11px}
+.pbadge-lg .picon{width:13px;height:13px}
+/* icon-only circle */
+.picon-only{
+  width:28px;height:28px;border-radius:7px;
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:default;transition:filter .15s,transform .12s;
+}
+.picon-only:hover{filter:brightness(.9);transform:scale(1.1)}
+.picon-only svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── Priority Select mock (trigger closed) ── */
+.psel-mock{
+  display:flex;align-items:center;justify-content:space-between;
+  height:32px;padding:0 10px;
+  border:1px solid var(--border);border-radius:6px;
+  background:#F4F6F9;cursor:pointer;
+}
+.psel-mock.psel-open{
+  border-color:var(--accent);background:#fff;
+  box-shadow:0 0 0 3px var(--accent-light);
+}
+
+/* ── Priority Select interactive wrap ── */
+.psel-wrap{position:relative;width:100%}
+.psel-trigger{
+  width:100%;height:32px;padding:0 10px;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  border:1px solid var(--border);border-radius:6px;
+  background:#F4F6F9;cursor:pointer;transition:all .15s;
+}
+.psel-trigger:hover{border-color:var(--border-strong);background:#EAEDF1}
+.psel-wrap.ps-open .psel-trigger{
+  border-color:var(--accent);background:#fff;
+  box-shadow:0 0 0 3px var(--accent-light);
+}
+.psel-chevron{color:var(--text-muted);flex-shrink:0;transition:transform .18s}
+.psel-wrap.ps-open .psel-chevron{transform:rotate(180deg)}
+
+.psel-menu{
+  display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#fff;border:1px solid var(--border);border-radius:8px;
+  box-shadow:0 6px 20px rgba(0,0,0,.12);padding:4px;z-index:50;
+}
+.psel-wrap.ps-open .psel-menu{display:block;animation:pdrop .14s ease-out}
+@keyframes pdrop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+.psel-item{
+  width:100%;padding:5px 6px;display:flex;align-items:center;
+  border:none;background:transparent;cursor:pointer;border-radius:5px;
+  transition:background .12s;
+}
+.psel-item:hover{background:#F0F4F8}
+.psel-item.psel-item-sel{background:var(--accent-light)}
+
+/* ── Open state static diagram ── */
+.psel-menu-static{
+  background:#fff;border:1px solid var(--border);border-radius:8px;
+  box-shadow:0 6px 20px rgba(0,0,0,.12);padding:4px;width:160px;
+}
+.psel-item-static{
+  padding:5px 6px;display:flex;align-items:center;justify-content:space-between;
+  border-radius:5px;
+}
+.psel-item-active{background:var(--accent-light)}
+
+/* ── Priority select demo ── */
+.meta-select-demo{
+  width:100%;height:34px;padding:0 10px;
+  border:1px solid var(--border);border-radius:6px;
+  font-family:var(--font-body);font-size:13px;color:var(--text-primary);
+  background:#F4F6F9;outline:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A96A4' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
+}
+.meta-select-demo:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-light)}
+.sel-opt-preview{
+  display:flex;align-items:center;gap:6px;
+  padding:3px 0;font-size:12px;
+}
+.sel-opt-label{font-weight:500;color:var(--text-primary);flex:1}
+.sel-opt-hex{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+
+/* ── Token table ── */
+.token-table{width:100%;border-collapse:collapse;font-size:12px}
+.token-table th{text-align:left;padding:8px 10px;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.token-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.token-table tr:last-child td{border-bottom:none}
+.token-table tr:hover td{background:#F8FAFC}
+.mono{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary)}
+.swatch-sm{width:14px;height:14px;border-radius:3px;display:inline-block;flex-shrink:0;vertical-align:middle;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="tika-tag">Tika Design System</div>
+    <div class="page-title">라벨 칩 컴포넌트</div>
+    <div class="page-sub">프로젝트 라벨 태그에 적용되는 색상 팔레트 · 크기 · 상태 · 사용 예시</div>
+  </div>
+
+  <!-- ══ 1. 전체 컬러 팔레트 ══ -->
+  <div class="section">
+    <div class="section-title">전체 컬러 팔레트 (17 Colors)</div>
+    <div class="color-grid">
+
+      <!-- Preset 6 -->
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#2b7fff">
+          <span class="chip chip-md" style="background:#2b7fff;color:#fff">프론트엔드</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Frontend</div>
+          <div class="cc-hex">BG #2b7fff</div>
+          <div class="cc-text-hex">TXT #FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#00c950">
+          <span class="chip chip-md" style="background:#00c950;color:#fff">백엔드</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Backend</div>
+          <div class="cc-hex">BG #00c950</div>
+          <div class="cc-text-hex">TXT #FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#ad46ff">
+          <span class="chip chip-md" style="background:#ad46ff;color:#fff">디자인</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Design</div>
+          <div class="cc-hex">BG #ad46ff</div>
+          <div class="cc-text-hex">TXT #FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#fb2c36">
+          <span class="chip chip-md" style="background:#fb2c36;color:#fff">버그</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Bug</div>
+          <div class="cc-hex">BG #fb2c36</div>
+          <div class="cc-text-hex">TXT #FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#ffac6d">
+          <span class="chip chip-md" style="background:#ffac6d;color:#3D2200">문서</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Docs</div>
+          <div class="cc-hex">BG #ffac6d</div>
+          <div class="cc-text-hex">TXT #3D2200</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#615fff">
+          <span class="chip chip-md" style="background:#615fff;color:#fff">인프라</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Infra</div>
+          <div class="cc-hex">BG #615fff</div>
+          <div class="cc-text-hex">TXT #FFFFFF</div>
+        </div>
+      </div>
+
+      <!-- Extended 11 -->
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#ff29d3">
+          <span class="chip chip-md" style="background:#ff29d3;color:#fff">마케팅</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c7 — Hot Pink</div>
+          <div class="cc-hex">BG #ff29d3</div>
+          <div class="cc-text-hex">TXT #FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#a0628c">
+          <span class="chip chip-md" style="background:#a0628c;color:#fff">보안</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c8 — Mauve</div>
+          <div class="cc-hex">BG #a0628c</div>
+          <div class="cc-text-hex">TXT #FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#89d0f0">
+          <span class="chip chip-md" style="background:#89d0f0;color:#1A3D4D">리서치</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c9 — Sky</div>
+          <div class="cc-hex">BG #89d0f0</div>
+          <div class="cc-text-hex">TXT #1A3D4D</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#71e4bf">
+          <span class="chip chip-md" style="background:#71e4bf;color:#0A3D2A">QA</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c10 — Mint</div>
+          <div class="cc-hex">BG #71e4bf</div>
+          <div class="cc-text-hex">TXT #0A3D2A</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#46e264">
+          <span class="chip chip-md" style="background:#46e264;color:#0D3A14">테스트</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c11 — Lime Green</div>
+          <div class="cc-hex">BG #46e264</div>
+          <div class="cc-text-hex">TXT #0D3A14</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#caee68">
+          <span class="chip chip-md" style="background:#caee68;color:#3A4200">데이터</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c12 — Yellow-Green</div>
+          <div class="cc-hex">BG #caee68</div>
+          <div class="cc-text-hex">TXT #3A4200</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#fffe92">
+          <span class="chip chip-md" style="background:#fffe92;color:#4A4500">기획</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c13 — Pale Yellow</div>
+          <div class="cc-hex">BG #fffe92</div>
+          <div class="cc-text-hex">TXT #4A4500</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#f7d1d1">
+          <span class="chip chip-md" style="background:#f7d1d1;color:#5C1A1A">검토</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c14 — Blush</div>
+          <div class="cc-hex">BG #f7d1d1</div>
+          <div class="cc-text-hex">TXT #5C1A1A</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#f7a2ff">
+          <span class="chip chip-md" style="background:#f7a2ff;color:#4A0050">이벤트</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c15 — Lavender Pink</div>
+          <div class="cc-hex">BG #f7a2ff</div>
+          <div class="cc-text-hex">TXT #4A0050</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#c1d1ff">
+          <span class="chip chip-md" style="background:#c1d1ff;color:#1A2A5C">배포</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c16 — Periwinkle</div>
+          <div class="cc-hex">BG #c1d1ff</div>
+          <div class="cc-text-hex">TXT #1A2A5C</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#c5dbdc">
+          <span class="chip chip-md" style="background:#c5dbdc;color:#2A3D3E">운영</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">c17 — Sage</div>
+          <div class="cc-hex">BG #c5dbdc</div>
+          <div class="cc-text-hex">TXT #2A3D3E</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 2. 크기 ══ -->
+  <div class="section">
+    <div class="section-title">크기 (Size)</div>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px">Small — 20px height · 10px font</div>
+        <div class="chip-group">
+          <span class="chip chip-sm" style="background:#2b7fff;color:#fff">프론트엔드</span>
+          <span class="chip chip-sm" style="background:#00c950;color:#fff">백엔드</span>
+          <span class="chip chip-sm" style="background:#ad46ff;color:#fff">디자인</span>
+          <span class="chip chip-sm" style="background:#fb2c36;color:#fff">버그</span>
+          <span class="chip chip-sm" style="background:#ffac6d;color:#3D2200">문서</span>
+          <span class="chip chip-sm" style="background:#615fff;color:#fff">인프라</span>
+          <span class="chip chip-sm" style="background:#89d0f0;color:#1A3D4D">리서치</span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px">Medium — 24px height · 11px font <span style="background:var(--accent-light);color:var(--accent);padding:2px 7px;border-radius:4px;font-size:10px;margin-left:6px">Default</span></div>
+        <div class="chip-group">
+          <span class="chip chip-md" style="background:#2b7fff;color:#fff">프론트엔드</span>
+          <span class="chip chip-md" style="background:#00c950;color:#fff">백엔드</span>
+          <span class="chip chip-md" style="background:#ad46ff;color:#fff">디자인</span>
+          <span class="chip chip-md" style="background:#fb2c36;color:#fff">버그</span>
+          <span class="chip chip-md" style="background:#ffac6d;color:#3D2200">문서</span>
+          <span class="chip chip-md" style="background:#615fff;color:#fff">인프라</span>
+          <span class="chip chip-md" style="background:#89d0f0;color:#1A3D4D">리서치</span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px">Large — 28px height · 12px font</div>
+        <div class="chip-group">
+          <span class="chip chip-lg" style="background:#2b7fff;color:#fff">프론트엔드</span>
+          <span class="chip chip-lg" style="background:#00c950;color:#fff">백엔드</span>
+          <span class="chip chip-lg" style="background:#ad46ff;color:#fff">디자인</span>
+          <span class="chip chip-lg" style="background:#fb2c36;color:#fff">버그</span>
+          <span class="chip chip-lg" style="background:#ffac6d;color:#3D2200">문서</span>
+          <span class="chip chip-lg" style="background:#615fff;color:#fff">인프라</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 3. 상태 및 변형 ══ -->
+  <div class="section">
+    <div class="section-title">상태 및 변형 (States & Variants)</div>
+    <div class="state-grid">
+
+      <!-- Default -->
+      <div class="state-card">
+        <div class="state-name">기본 (Default)</div>
+        <div class="chip-group">
+          <span class="chip chip-md" style="background:#2b7fff;color:#fff">프론트엔드</span>
+          <span class="chip chip-md" style="background:#71e4bf;color:#0A3D2A">QA</span>
+          <span class="chip chip-md" style="background:#fffe92;color:#4A4500">기획</span>
+        </div>
+      </div>
+
+      <!-- With Remove -->
+      <div class="state-card">
+        <div class="state-name">삭제 가능 (Removable)</div>
+        <div class="chip-group">
+          <span class="chip chip-md" style="background:#2b7fff;color:#fff">프론트엔드 <button class="chip-rm" onclick="this.parentElement.remove()">✕</button></span>
+          <span class="chip chip-md" style="background:#fb2c36;color:#fff">버그 <button class="chip-rm" onclick="this.parentElement.remove()">✕</button></span>
+          <span class="chip chip-md light" style="background:#c1d1ff;color:#1A2A5C">배포 <button class="chip-rm" onclick="this.parentElement.remove()">✕</button></span>
+        </div>
+      </div>
+
+      <!-- With Dot -->
+      <div class="state-card">
+        <div class="state-name">점 아이콘 (With Dot)</div>
+        <div class="chip-group">
+          <span class="chip chip-md" style="background:#2b7fff;color:#fff"><span class="chip-dot"></span>프론트엔드</span>
+          <span class="chip chip-md" style="background:#00c950;color:#fff"><span class="chip-dot"></span>백엔드</span>
+          <span class="chip chip-md light" style="background:#f7d1d1;color:#5C1A1A"><span class="chip-dot"></span>검토</span>
+        </div>
+      </div>
+
+      <!-- Outline style -->
+      <div class="state-card">
+        <div class="state-name">아웃라인 (Outlined)</div>
+        <div class="chip-group">
+          <span class="chip chip-md" style="background:transparent;color:#2b7fff;border:1.5px solid #2b7fff">프론트엔드</span>
+          <span class="chip chip-md" style="background:transparent;color:#fb2c36;border:1.5px solid #fb2c36">버그</span>
+          <span class="chip chip-md" style="background:transparent;color:#ad46ff;border:1.5px solid #ad46ff">디자인</span>
+        </div>
+      </div>
+
+      <!-- Subtle (light bg) style -->
+      <div class="state-card">
+        <div class="state-name">연한 배경 (Subtle)</div>
+        <div class="chip-group">
+          <span class="chip chip-md" style="background:#EFF6FF;color:#1D4ED8">프론트엔드</span>
+          <span class="chip chip-md" style="background:#F0FDF4;color:#166534">백엔드</span>
+          <span class="chip chip-md" style="background:#FDF4FF;color:#7E22CE">디자인</span>
+          <span class="chip chip-md" style="background:#FFF7ED;color:#C2410C">문서</span>
+        </div>
+      </div>
+
+      <!-- Disabled -->
+      <div class="state-card">
+        <div class="state-name">비활성 (Disabled)</div>
+        <div class="chip-group">
+          <span class="chip chip-md" style="background:#2b7fff;color:#fff;opacity:.35;cursor:not-allowed;filter:none;transform:none">프론트엔드</span>
+          <span class="chip chip-md" style="background:#00c950;color:#fff;opacity:.35;cursor:not-allowed;filter:none;transform:none">백엔드</span>
+          <span class="chip chip-md" style="background:#ad46ff;color:#fff;opacity:.35;cursor:not-allowed;filter:none;transform:none">디자인</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 4. 컬러 스와치 피커 ══ -->
+  <div class="section">
+    <div class="section-title">색상 선택 팔레트 (Swatch Picker)</div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">라벨 생성/수정 시 색상 선택 UI에서 사용됩니다. 색상 클릭 시 프리뷰가 업데이트됩니다.</p>
+
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px">17 Color Swatches</div>
+        <div class="swatch-strip" id="swatchStrip">
+          <div class="swatch selected" style="background:#fb2c36;color:#fff" onclick="selectSwatch(this,'#fb2c36','#fff')"></div>
+          <div class="swatch" style="background:#615fff;color:#fff" onclick="selectSwatch(this,'#615fff','#fff')"></div>
+          <div class="swatch" style="background:#00c950;color:#fff" onclick="selectSwatch(this,'#00c950','#fff')"></div>
+          <div class="swatch" style="background:#2b7fff;color:#fff" onclick="selectSwatch(this,'#2b7fff','#fff')"></div>
+          <div class="swatch" style="background:#ad46ff;color:#fff" onclick="selectSwatch(this,'#ad46ff','#fff')"></div>
+          <div class="swatch" style="background:#ff29d3;color:#fff" onclick="selectSwatch(this,'#ff29d3','#fff')"></div>
+          <div class="swatch" style="background:#a0628c;color:#fff" onclick="selectSwatch(this,'#a0628c','#fff')"></div>
+          <div class="swatch" style="background:#89d0f0;color:#1A3D4D" onclick="selectSwatch(this,'#89d0f0','#1A3D4D')"></div>
+          <div class="swatch" style="background:#71e4bf;color:#0A3D2A" onclick="selectSwatch(this,'#71e4bf','#0A3D2A')"></div>
+          <div class="swatch" style="background:#46e264;color:#0D3A14" onclick="selectSwatch(this,'#46e264','#0D3A14')"></div>
+          <div class="swatch" style="background:#caee68;color:#3A4200" onclick="selectSwatch(this,'#caee68','#3A4200')"></div>
+          <div class="swatch" style="background:#fffe92;color:#4A4500" onclick="selectSwatch(this,'#fffe92','#4A4500')"></div>
+          <div class="swatch" style="background:#ffac6d;color:#3D2200" onclick="selectSwatch(this,'#ffac6d','#3D2200')"></div>
+          <div class="swatch" style="background:#f7d1d1;color:#5C1A1A" onclick="selectSwatch(this,'#f7d1d1','#5C1A1A')"></div>
+          <div class="swatch" style="background:#f7a2ff;color:#4A0050" onclick="selectSwatch(this,'#f7a2ff','#4A0050')"></div>
+          <div class="swatch" style="background:#c1d1ff;color:#1A2A5C" onclick="selectSwatch(this,'#c1d1ff','#1A2A5C')"></div>
+          <div class="swatch" style="background:#c5dbdc;color:#2A3D3E" onclick="selectSwatch(this,'#c5dbdc','#2A3D3E')"></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px">프리뷰</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span class="chip chip-sm" id="previewSm" style="background:#fb2c36;color:#fff">라벨 이름</span>
+          <span class="chip chip-md" id="previewMd" style="background:#fb2c36;color:#fff">라벨 이름</span>
+          <span class="chip chip-lg" id="previewLg" style="background:#fb2c36;color:#fff">라벨 이름 <button class="chip-rm">✕</button></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 5. 사용 예시 — 티켓 카드 ══ -->
+  <div class="section">
+    <div class="section-title">사용 예시 — 티켓 카드</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+      <div class="ticket-mock">
+        <div class="ticket-chips">
+          <span class="chip chip-sm" style="background:#2b7fff;color:#fff">프론트엔드</span>
+          <span class="chip chip-sm" style="background:#ad46ff;color:#fff">디자인</span>
+        </div>
+        <div class="ticket-title-mock">로그인 화면 UI 구현</div>
+        <div class="ticket-footer" style="margin-top:10px">
+          <span class="priority-badge" style="background:#FFEDD5;color:#C2410C">↑ 높음</span>
+          <span>2월 28일</span>
+        </div>
+      </div>
+
+      <div class="ticket-mock">
+        <div class="ticket-chips">
+          <span class="chip chip-sm" style="background:#00c950;color:#fff">백엔드</span>
+          <span class="chip chip-sm" style="background:#fb2c36;color:#fff">버그</span>
+          <span class="chip chip-sm" style="background:#615fff;color:#fff">인프라</span>
+        </div>
+        <div class="ticket-title-mock">DB 연결 타임아웃 오류 수정</div>
+        <div class="ticket-footer" style="margin-top:10px">
+          <span class="priority-badge" style="background:#FEE2E2;color:#DC2626">!! 긴급</span>
+          <span style="color:#DC2626">⚠ 2월 22일</span>
+        </div>
+      </div>
+
+      <div class="ticket-mock">
+        <div class="ticket-chips">
+          <span class="chip chip-sm" style="background:#89d0f0;color:#1A3D4D">리서치</span>
+          <span class="chip chip-sm" style="background:#fffe92;color:#4A4500">기획</span>
+        </div>
+        <div class="ticket-title-mock">경쟁사 칸반 UX 벤치마킹</div>
+        <div class="ticket-footer" style="margin-top:10px">
+          <span class="priority-badge" style="background:#FEF9C3;color:#A16207">— 중간</span>
+          <span>3월 10일</span>
+        </div>
+      </div>
+
+      <div class="ticket-mock">
+        <div class="ticket-chips">
+          <span class="chip chip-sm" style="background:#71e4bf;color:#0A3D2A">QA</span>
+          <span class="chip chip-sm" style="background:#ffac6d;color:#3D2200">문서</span>
+          <span class="chip chip-sm" style="background:#c1d1ff;color:#1A2A5C">배포</span>
+        </div>
+        <div class="ticket-title-mock">API 테스트 케이스 작성 및 Swagger 업데이트</div>
+        <div class="ticket-footer" style="margin-top:10px">
+          <span class="priority-badge" style="background:#F3F4F6;color:#6B7280">↓ 낮음</span>
+          <span>3월 15일</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 6. 우선순위 Select ══ -->
+  <div class="section">
+    <div class="section-title">우선순위 Select (Priority Select)</div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px">색상 이모지로 우선순위를 직관적으로 구분하는 네이티브 select 컴포넌트입니다.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start">
+
+      <!-- 기본 4단계 -->
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">기본 4단계</div>
+        <select class="meta-select-demo">
+          <option value="critical">🔴 긴급 (Critical)</option>
+          <option value="high" selected>🟠 높음 (High)</option>
+          <option value="medium">🟡 중간 (Medium)</option>
+          <option value="low">⚪ 낮음 (Low)</option>
+        </select>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px">
+          <div class="sel-opt-preview"><span>🔴</span><span class="sel-opt-label">긴급</span><span class="sel-opt-hex">#DC2626</span></div>
+          <div class="sel-opt-preview"><span>🟠</span><span class="sel-opt-label">높음</span><span class="sel-opt-hex">#C2410C</span></div>
+          <div class="sel-opt-preview"><span>🟡</span><span class="sel-opt-label">중간</span><span class="sel-opt-hex">#A16207</span></div>
+          <div class="sel-opt-preview"><span>⚪</span><span class="sel-opt-label">낮음</span><span class="sel-opt-hex">#6B7280</span></div>
+        </div>
+      </div>
+
+      <!-- 확장 — 원형 이모지 팔레트 -->
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">확장 색상 팔레트</div>
+        <select class="meta-select-demo">
+          <option value="c1">🔴 빨강</option>
+          <option value="c2">🟠 주황</option>
+          <option value="c3">🟡 노랑</option>
+          <option value="c4">🟢 초록</option>
+          <option value="c5">🔵 파랑</option>
+          <option value="c6">🟣 보라</option>
+          <option value="c7">🟤 갈색</option>
+          <option value="c8">⚫ 검정</option>
+          <option value="c9" selected>⚪ 흰색</option>
+          <option value="c10">🔶 진한주황</option>
+          <option value="c11">🔷 진한파랑</option>
+          <option value="c12">🔸 연한주황</option>
+          <option value="c13">🔹 연한파랑</option>
+          <option value="c14">🟥 빨강사각</option>
+          <option value="c15">🟧 주황사각</option>
+          <option value="c16">🟨 노랑사각</option>
+          <option value="c17">🟩 초록사각</option>
+          <option value="c18">🟦 파랑사각</option>
+          <option value="c19">🟪 보라사각</option>
+          <option value="c20">🟫 갈색사각</option>
+        </select>
+        <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px">
+          <span style="font-size:20px" title="🔴 빨강">🔴</span>
+          <span style="font-size:20px" title="🟠 주황">🟠</span>
+          <span style="font-size:20px" title="🟡 노랑">🟡</span>
+          <span style="font-size:20px" title="🟢 초록">🟢</span>
+          <span style="font-size:20px" title="🔵 파랑">🔵</span>
+          <span style="font-size:20px" title="🟣 보라">🟣</span>
+          <span style="font-size:20px" title="🟤 갈색">🟤</span>
+          <span style="font-size:20px" title="⚫ 검정">⚫</span>
+          <span style="font-size:20px" title="⚪ 흰색">⚪</span>
+          <span style="font-size:20px" title="🔶 진한주황">🔶</span>
+          <span style="font-size:20px" title="🔷 진한파랑">🔷</span>
+          <span style="font-size:20px" title="🔸 연한주황">🔸</span>
+          <span style="font-size:20px" title="🔹 연한파랑">🔹</span>
+          <span style="font-size:20px" title="🟥">🟥</span>
+          <span style="font-size:20px" title="🟧">🟧</span>
+          <span style="font-size:20px" title="🟨">🟨</span>
+          <span style="font-size:20px" title="🟩">🟩</span>
+          <span style="font-size:20px" title="🟦">🟦</span>
+          <span style="font-size:20px" title="🟪">🟪</span>
+          <span style="font-size:20px" title="🟫">🟫</span>
+        </div>
+      </div>
+
+      <!-- 라벨 색상 연동 -->
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">라벨 색상 연동</div>
+        <select class="meta-select-demo">
+          <option value="fe">🔵 프론트엔드</option>
+          <option value="be">🟢 백엔드</option>
+          <option value="ui">🟣 디자인</option>
+          <option value="bug" selected>🔴 버그</option>
+          <option value="doc">🟠 문서</option>
+          <option value="inf">🟣 인프라</option>
+          <option value="c7">🟣 마케팅</option>
+          <option value="c8">🟤 보안</option>
+          <option value="c9">🔵 리서치</option>
+          <option value="c10">🟢 QA</option>
+          <option value="c11">🟢 테스트</option>
+          <option value="c12">🟡 데이터</option>
+          <option value="c13">🟡 기획</option>
+          <option value="c14">🔴 검토</option>
+          <option value="c15">🟣 이벤트</option>
+          <option value="c16">🔵 배포</option>
+          <option value="c17">⚪ 운영</option>
+        </select>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px">
+          <div class="sel-opt-preview"><span>🔵</span><span class="sel-opt-label">프론트엔드</span><span class="sel-opt-hex">#2b7fff</span></div>
+          <div class="sel-opt-preview"><span>🟢</span><span class="sel-opt-label">백엔드</span><span class="sel-opt-hex">#00c950</span></div>
+          <div class="sel-opt-preview"><span>🟣</span><span class="sel-opt-label">디자인</span><span class="sel-opt-hex">#ad46ff</span></div>
+          <div class="sel-opt-preview"><span>🔴</span><span class="sel-opt-label">버그</span><span class="sel-opt-hex">#fb2c36</span></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">+ 13개 더…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 7. 토큰 레퍼런스 테이블 ══ -->
+  <div class="section">
+    <div class="section-title">토큰 레퍼런스 (COLOR.json)</div>
+    <table class="token-table">
+      <thead>
+        <tr>
+          <th>라벨명</th>
+          <th>배경색</th>
+          <th>폰트색</th>
+          <th>프리뷰</th>
+          <th>CSS Key</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>프론트엔드</td><td><span class="swatch-sm" style="background:#2b7fff"></span><span class="mono">#2b7fff</span></td><td><span class="swatch-sm" style="background:#FFFFFF;border:1px solid #ddd"></span><span class="mono">#FFFFFF</span></td><td><span class="chip chip-sm" style="background:#2b7fff;color:#fff">Frontend</span></td><td><span class="mono">fe</span></td></tr>
+        <tr><td>백엔드</td><td><span class="swatch-sm" style="background:#00c950"></span><span class="mono">#00c950</span></td><td><span class="swatch-sm" style="background:#FFFFFF;border:1px solid #ddd"></span><span class="mono">#FFFFFF</span></td><td><span class="chip chip-sm" style="background:#00c950;color:#fff">Backend</span></td><td><span class="mono">be</span></td></tr>
+        <tr><td>디자인</td><td><span class="swatch-sm" style="background:#ad46ff"></span><span class="mono">#ad46ff</span></td><td><span class="swatch-sm" style="background:#FFFFFF;border:1px solid #ddd"></span><span class="mono">#FFFFFF</span></td><td><span class="chip chip-sm" style="background:#ad46ff;color:#fff">Design</span></td><td><span class="mono">ui</span></td></tr>
+        <tr><td>버그</td><td><span class="swatch-sm" style="background:#fb2c36"></span><span class="mono">#fb2c36</span></td><td><span class="swatch-sm" style="background:#FFFFFF;border:1px solid #ddd"></span><span class="mono">#FFFFFF</span></td><td><span class="chip chip-sm" style="background:#fb2c36;color:#fff">Bug</span></td><td><span class="mono">bug</span></td></tr>
+        <tr><td>문서</td><td><span class="swatch-sm" style="background:#ffac6d"></span><span class="mono">#ffac6d</span></td><td><span class="swatch-sm" style="background:#3D2200"></span><span class="mono">#3D2200</span></td><td><span class="chip chip-sm" style="background:#ffac6d;color:#3D2200">Docs</span></td><td><span class="mono">doc</span></td></tr>
+        <tr><td>인프라</td><td><span class="swatch-sm" style="background:#615fff"></span><span class="mono">#615fff</span></td><td><span class="swatch-sm" style="background:#FFFFFF;border:1px solid #ddd"></span><span class="mono">#FFFFFF</span></td><td><span class="chip chip-sm" style="background:#615fff;color:#fff">Infra</span></td><td><span class="mono">inf</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#ff29d3"></span><span class="mono">#ff29d3</span></td><td><span class="swatch-sm" style="background:#FFFFFF;border:1px solid #ddd"></span><span class="mono">#FFFFFF</span></td><td><span class="chip chip-sm" style="background:#ff29d3;color:#fff">c7</span></td><td><span class="mono">c7</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#a0628c"></span><span class="mono">#a0628c</span></td><td><span class="swatch-sm" style="background:#FFFFFF;border:1px solid #ddd"></span><span class="mono">#FFFFFF</span></td><td><span class="chip chip-sm" style="background:#a0628c;color:#fff">c8</span></td><td><span class="mono">c8</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#89d0f0"></span><span class="mono">#89d0f0</span></td><td><span class="swatch-sm" style="background:#1A3D4D"></span><span class="mono">#1A3D4D</span></td><td><span class="chip chip-sm" style="background:#89d0f0;color:#1A3D4D">c9</span></td><td><span class="mono">c9</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#71e4bf"></span><span class="mono">#71e4bf</span></td><td><span class="swatch-sm" style="background:#0A3D2A"></span><span class="mono">#0A3D2A</span></td><td><span class="chip chip-sm" style="background:#71e4bf;color:#0A3D2A">c10</span></td><td><span class="mono">c10</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#46e264"></span><span class="mono">#46e264</span></td><td><span class="swatch-sm" style="background:#0D3A14"></span><span class="mono">#0D3A14</span></td><td><span class="chip chip-sm" style="background:#46e264;color:#0D3A14">c11</span></td><td><span class="mono">c11</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#caee68"></span><span class="mono">#caee68</span></td><td><span class="swatch-sm" style="background:#3A4200"></span><span class="mono">#3A4200</span></td><td><span class="chip chip-sm" style="background:#caee68;color:#3A4200">c12</span></td><td><span class="mono">c12</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#fffe92"></span><span class="mono">#fffe92</span></td><td><span class="swatch-sm" style="background:#4A4500"></span><span class="mono">#4A4500</span></td><td><span class="chip chip-sm" style="background:#fffe92;color:#4A4500">c13</span></td><td><span class="mono">c13</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#f7d1d1"></span><span class="mono">#f7d1d1</span></td><td><span class="swatch-sm" style="background:#5C1A1A"></span><span class="mono">#5C1A1A</span></td><td><span class="chip chip-sm" style="background:#f7d1d1;color:#5C1A1A">c14</span></td><td><span class="mono">c14</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#f7a2ff"></span><span class="mono">#f7a2ff</span></td><td><span class="swatch-sm" style="background:#4A0050"></span><span class="mono">#4A0050</span></td><td><span class="chip chip-sm" style="background:#f7a2ff;color:#4A0050">c15</span></td><td><span class="mono">c15</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#c1d1ff"></span><span class="mono">#c1d1ff</span></td><td><span class="swatch-sm" style="background:#1A2A5C"></span><span class="mono">#1A2A5C</span></td><td><span class="chip chip-sm" style="background:#c1d1ff;color:#1A2A5C">c16</span></td><td><span class="mono">c16</span></td></tr>
+        <tr><td>—</td><td><span class="swatch-sm" style="background:#c5dbdc"></span><span class="mono">#c5dbdc</span></td><td><span class="swatch-sm" style="background:#2A3D3E"></span><span class="mono">#2A3D3E</span></td><td><span class="chip chip-sm" style="background:#c5dbdc;color:#2A3D3E">c17</span></td><td><span class="mono">c17</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ 8. 우선순위 아이콘 배지 ══ -->
+  <div class="section">
+    <div class="section-title">우선순위 배지 (Priority Badge)</div>
+
+    <!-- 4종 카드 그리드 -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">
+
+      <!-- Critical -->
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#FEE2E2;gap:8px">
+          <span class="priority-icon-demo" style="color:#DC2626">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 9v4"/><path d="M12 17h.01"/>
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            </svg>
+          </span>
+          <span class="priority-badge-demo" style="background:#FEE2E2;color:#DC2626">긴급</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Critical · 긴급</div>
+          <div class="cc-hex">BG #FEE2E2</div>
+          <div class="cc-text-hex">TXT #DC2626</div>
+        </div>
+      </div>
+
+      <!-- High -->
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#FFEDD5;gap:8px">
+          <span class="priority-icon-demo" style="color:#C2410C">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m18 15-6-6-6 6"/>
+            </svg>
+          </span>
+          <span class="priority-badge-demo" style="background:#FFEDD5;color:#C2410C">높음</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">High · 높음</div>
+          <div class="cc-hex">BG #FFEDD5</div>
+          <div class="cc-text-hex">TXT #C2410C</div>
+        </div>
+      </div>
+
+      <!-- Medium -->
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#FEF9C3;gap:8px">
+          <span class="priority-icon-demo" style="color:#A16207">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/>
+            </svg>
+          </span>
+          <span class="priority-badge-demo" style="background:#FEF9C3;color:#A16207">중간</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Medium · 중간</div>
+          <div class="cc-hex">BG #FEF9C3</div>
+          <div class="cc-text-hex">TXT #A16207</div>
+        </div>
+      </div>
+
+      <!-- Low -->
+      <div class="color-card">
+        <div class="cc-swatch" style="background:#F3F4F6;gap:8px">
+          <span class="priority-icon-demo" style="color:#6B7280">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </span>
+          <span class="priority-badge-demo" style="background:#F3F4F6;color:#6B7280">낮음</span>
+        </div>
+        <div class="cc-info">
+          <div class="cc-name">Low · 낮음</div>
+          <div class="cc-hex">BG #F3F4F6</div>
+          <div class="cc-text-hex">TXT #6B7280</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 크기별 배지 -->
+    <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">크기별 프리뷰</div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Small — 20px</div>
+        <div class="chip-group">
+          <span class="pbadge pbadge-sm" style="background:#FEE2E2;color:#DC2626">
+            <svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+            긴급
+          </span>
+          <span class="pbadge pbadge-sm" style="background:#FFEDD5;color:#C2410C">
+            <svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+            높음
+          </span>
+          <span class="pbadge pbadge-sm" style="background:#FEF9C3;color:#A16207">
+            <svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+            중간
+          </span>
+          <span class="pbadge pbadge-sm" style="background:#F3F4F6;color:#6B7280">
+            <svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            낮음
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Medium — 24px <span style="background:var(--accent-light);color:var(--accent);padding:2px 7px;border-radius:4px;font-size:10px;margin-left:6px">Default</span></div>
+        <div class="chip-group">
+          <span class="pbadge pbadge-md" style="background:#FEE2E2;color:#DC2626">
+            <svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+            긴급
+          </span>
+          <span class="pbadge pbadge-md" style="background:#FFEDD5;color:#C2410C">
+            <svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+            높음
+          </span>
+          <span class="pbadge pbadge-md" style="background:#FEF9C3;color:#A16207">
+            <svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+            중간
+          </span>
+          <span class="pbadge pbadge-md" style="background:#F3F4F6;color:#6B7280">
+            <svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            낮음
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Large — 28px</div>
+        <div class="chip-group">
+          <span class="pbadge pbadge-lg" style="background:#FEE2E2;color:#DC2626">
+            <svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+            긴급
+          </span>
+          <span class="pbadge pbadge-lg" style="background:#FFEDD5;color:#C2410C">
+            <svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+            높음
+          </span>
+          <span class="pbadge pbadge-lg" style="background:#FEF9C3;color:#A16207">
+            <svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+            중간
+          </span>
+          <span class="pbadge pbadge-lg" style="background:#F3F4F6;color:#6B7280">
+            <svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            낮음
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 아이콘 단독 -->
+    <div style="margin-top:24px">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">아이콘 단독 (Icon Only)</div>
+      <div class="chip-group" style="gap:6px">
+        <span class="picon-only" style="background:#FEE2E2;color:#DC2626" title="긴급">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        </span>
+        <span class="picon-only" style="background:#FFEDD5;color:#C2410C" title="높음">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+        </span>
+        <span class="picon-only" style="background:#FEF9C3;color:#A16207" title="중간">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+        </span>
+        <span class="picon-only" style="background:#F3F4F6;color:#6B7280" title="낮음">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- 우선순위 토큰 테이블 -->
+    <div style="margin-top:24px">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">토큰 레퍼런스</div>
+      <table class="token-table">
+        <thead>
+          <tr>
+            <th>우선순위</th>
+            <th>아이콘</th>
+            <th>배경색</th>
+            <th>폰트색</th>
+            <th>배지 프리뷰</th>
+            <th>CSS Class</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Critical</strong> · 긴급</td>
+            <td>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 9v4"/><path d="M12 17h.01"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              </svg>
+              <span style="font-size:10px;color:var(--text-muted);margin-left:4px">triangle-alert</span>
+            </td>
+            <td><span class="swatch-sm" style="background:#FEE2E2"></span><span class="mono">#FEE2E2</span></td>
+            <td><span class="swatch-sm" style="background:#DC2626"></span><span class="mono">#DC2626</span></td>
+            <td><span class="pbadge pbadge-md" style="background:#FEE2E2;color:#DC2626"><svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>긴급</span></td>
+            <td><span class="mono">.b-crit</span></td>
+          </tr>
+          <tr>
+            <td><strong>High</strong> · 높음</td>
+            <td>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m18 15-6-6-6 6"/>
+              </svg>
+              <span style="font-size:10px;color:var(--text-muted);margin-left:4px">chevron-up</span>
+            </td>
+            <td><span class="swatch-sm" style="background:#FFEDD5"></span><span class="mono">#FFEDD5</span></td>
+            <td><span class="swatch-sm" style="background:#C2410C"></span><span class="mono">#C2410C</span></td>
+            <td><span class="pbadge pbadge-md" style="background:#FFEDD5;color:#C2410C"><svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>높음</span></td>
+            <td><span class="mono">.b-high</span></td>
+          </tr>
+          <tr>
+            <td><strong>Medium</strong> · 중간</td>
+            <td>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A16207" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"/>
+              </svg>
+              <span style="font-size:10px;color:var(--text-muted);margin-left:4px">minus</span>
+            </td>
+            <td><span class="swatch-sm" style="background:#FEF9C3"></span><span class="mono">#FEF9C3</span></td>
+            <td><span class="swatch-sm" style="background:#A16207"></span><span class="mono">#A16207</span></td>
+            <td><span class="pbadge pbadge-md" style="background:#FEF9C3;color:#A16207"><svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>중간</span></td>
+            <td><span class="mono">.b-med</span></td>
+          </tr>
+          <tr>
+            <td><strong>Low</strong> · 낮음</td>
+            <td>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+              <span style="font-size:10px;color:var(--text-muted);margin-left:4px">chevron-down</span>
+            </td>
+            <td><span class="swatch-sm" style="background:#F3F4F6;border:1px solid #ddd"></span><span class="mono">#F3F4F6</span></td>
+            <td><span class="swatch-sm" style="background:#6B7280"></span><span class="mono">#6B7280</span></td>
+            <td><span class="pbadge pbadge-md" style="background:#F3F4F6;color:#6B7280"><svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>낮음</span></td>
+            <td><span class="mono">.b-low</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 티켓 카드 사용 예시 -->
+    <div style="margin-top:24px">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">티켓 카드 사용 예시</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+
+        <div class="ticket-mock">
+          <div class="ticket-chips">
+            <span class="chip chip-sm" style="background:#fb2c36;color:#fff">버그</span>
+            <span class="chip chip-sm" style="background:#615fff;color:#fff">인프라</span>
+          </div>
+          <div class="ticket-title-mock">DB 연결 타임아웃 오류 수정</div>
+          <div class="ticket-footer" style="margin-top:10px">
+            <span class="pbadge pbadge-sm" style="background:#FEE2E2;color:#DC2626">
+              <svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+              긴급
+            </span>
+            <span style="font-size:11px;color:#DC2626">⚠ 2월 22일</span>
+          </div>
+        </div>
+
+        <div class="ticket-mock">
+          <div class="ticket-chips">
+            <span class="chip chip-sm" style="background:#2b7fff;color:#fff">프론트엔드</span>
+            <span class="chip chip-sm" style="background:#ad46ff;color:#fff">디자인</span>
+          </div>
+          <div class="ticket-title-mock">로그인 화면 UI 구현</div>
+          <div class="ticket-footer" style="margin-top:10px">
+            <span class="pbadge pbadge-sm" style="background:#FFEDD5;color:#C2410C">
+              <svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+              높음
+            </span>
+            <span style="font-size:11px;color:var(--text-muted)">2월 28일</span>
+          </div>
+        </div>
+
+        <div class="ticket-mock">
+          <div class="ticket-chips">
+            <span class="chip chip-sm" style="background:#89d0f0;color:#1A3D4D">리서치</span>
+            <span class="chip chip-sm" style="background:#fffe92;color:#4A4500">기획</span>
+          </div>
+          <div class="ticket-title-mock">경쟁사 UX 벤치마킹</div>
+          <div class="ticket-footer" style="margin-top:10px">
+            <span class="pbadge pbadge-sm" style="background:#FEF9C3;color:#A16207">
+              <svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+              중간
+            </span>
+            <span style="font-size:11px;color:var(--text-muted)">3월 10일</span>
+          </div>
+        </div>
+
+        <div class="ticket-mock">
+          <div class="ticket-chips">
+            <span class="chip chip-sm" style="background:#c5dbdc;color:#2A3D3E">운영</span>
+            <span class="chip chip-sm" style="background:#ffac6d;color:#3D2200">문서</span>
+          </div>
+          <div class="ticket-title-mock">분기 보고서 정리</div>
+          <div class="ticket-footer" style="margin-top:10px">
+            <span class="pbadge pbadge-sm" style="background:#F3F4F6;color:#6B7280">
+              <svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              낮음
+            </span>
+            <span style="font-size:11px;color:var(--text-muted)">3월 31일</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Select UI 프리뷰 ── -->
+    <div style="margin-top:28px">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px">Select UI 상태별 프리뷰</div>
+
+      <!-- 선택 상태 4종 나란히 -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px">
+
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;text-align:center">긴급 선택됨</div>
+          <div class="psel-mock">
+            <span class="pbadge pbadge-md" style="background:#FEE2E2;color:#DC2626">
+              <svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>긴급
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8A96A4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;text-align:center">높음 선택됨</div>
+          <div class="psel-mock psel-open">
+            <span class="pbadge pbadge-md" style="background:#FFEDD5;color:#C2410C">
+              <svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>높음
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#629584" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;text-align:center">중간 선택됨</div>
+          <div class="psel-mock">
+            <span class="pbadge pbadge-md" style="background:#FEF9C3;color:#A16207">
+              <svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>중간
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8A96A4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;text-align:center">낮음 선택됨</div>
+          <div class="psel-mock">
+            <span class="pbadge pbadge-md" style="background:#F3F4F6;color:#6B7280">
+              <svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>낮음
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8A96A4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 드롭다운 열린 상태 + 인터랙티브 -->
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:start">
+
+        <!-- 인터랙티브 select -->
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px">인터랙티브 (클릭해보세요)</div>
+          <div class="psel-wrap" id="psDemo">
+            <button class="psel-trigger" id="psDemoTrigger" onclick="togglePsDemo()">
+              <span id="psDemoVal"></span>
+              <svg class="psel-chevron" id="psDemoChevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="psel-menu" id="psDemoMenu">
+              <button class="psel-item" data-v="critical" onclick="pickPs('critical')">
+                <span class="pbadge pbadge-md" style="background:#FEE2E2;color:#DC2626">
+                  <svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>긴급
+                </span>
+              </button>
+              <button class="psel-item" data-v="high" onclick="pickPs('high')">
+                <span class="pbadge pbadge-md" style="background:#FFEDD5;color:#C2410C">
+                  <svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>높음
+                </span>
+              </button>
+              <button class="psel-item" data-v="medium" onclick="pickPs('medium')">
+                <span class="pbadge pbadge-md" style="background:#FEF9C3;color:#A16207">
+                  <svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>중간
+                </span>
+              </button>
+              <button class="psel-item" data-v="low" onclick="pickPs('low')">
+                <span class="pbadge pbadge-md" style="background:#F3F4F6;color:#6B7280">
+                  <svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>낮음
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 드롭다운 오픈 상태 정적 도식 -->
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px">열린 상태 (Open State)</div>
+          <div style="display:inline-block">
+            <div class="psel-mock psel-open" style="margin-bottom:4px;width:160px">
+              <span class="pbadge pbadge-md" style="background:#FFEDD5;color:#C2410C">
+                <svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>높음
+              </span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#629584" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+            <div class="psel-menu-static">
+              <div class="psel-item-static"><span class="pbadge pbadge-md" style="background:#FEE2E2;color:#DC2626"><svg class="picon" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>긴급</span></div>
+              <div class="psel-item-static psel-item-active"><span class="pbadge pbadge-md" style="background:#FFEDD5;color:#C2410C"><svg class="picon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>높음</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#629584" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="psel-item-static"><span class="pbadge pbadge-md" style="background:#FEF9C3;color:#A16207"><svg class="picon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>중간</span></div>
+              <div class="psel-item-static"><span class="pbadge pbadge-md" style="background:#F3F4F6;color:#6B7280"><svg class="picon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>낮음</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ── Priority select interactive demo ── */
+const PS_MAP = {
+  critical:{ bg:'#FEE2E2', color:'#DC2626', label:'긴급',
+    icon:'<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>'},
+  high:    { bg:'#FFEDD5', color:'#C2410C', label:'높음', icon:'<path d="m18 15-6-6-6 6"/>'},
+  medium:  { bg:'#FEF9C3', color:'#A16207', label:'중간', icon:'<path d="M5 12h14"/>'},
+  low:     { bg:'#F3F4F6', color:'#6B7280', label:'낮음', icon:'<path d="m6 9 6 6 6-6"/>'},
+};
+let psVal = 'high';
+
+function renderPsDemo(v) {
+  const p = PS_MAP[v];
+  document.getElementById('psDemoVal').innerHTML =
+    `<span class="pbadge pbadge-md" style="background:${p.bg};color:${p.color}"><svg class="picon" viewBox="0 0 24 24">${p.icon}</svg>${p.label}</span>`;
+  document.querySelectorAll('#psDemoMenu .psel-item').forEach(el =>
+    el.classList.toggle('psel-item-sel', el.dataset.v === v));
+  psVal = v;
+}
+function togglePsDemo() {
+  const wrap = document.getElementById('psDemo');
+  wrap.classList.toggle('ps-open');
+  document.getElementById('psDemoChevron').style.transform =
+    wrap.classList.contains('ps-open') ? 'rotate(180deg)' : '';
+}
+function pickPs(v) {
+  renderPsDemo(v);
+  document.getElementById('psDemo').classList.remove('ps-open');
+  document.getElementById('psDemoChevron').style.transform = '';
+}
+document.addEventListener('click', e => {
+  const w = document.getElementById('psDemo');
+  if (w && !w.contains(e.target)) {
+    w.classList.remove('ps-open');
+    document.getElementById('psDemoChevron').style.transform = '';
+  }
+});
+renderPsDemo('high');
+
+function selectSwatch(el, bg, txt) {
+  document.querySelectorAll('#swatchStrip .swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  ['previewSm','previewMd','previewLg'].forEach(id => {
+    const el2 = document.getElementById(id);
+    el2.style.background = bg;
+    el2.style.color = txt;
+  });
+}
+</script>
+</body>
+</html>

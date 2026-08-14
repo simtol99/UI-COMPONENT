@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>32 UI Components — 클로드 코드 실습 카탈로그</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f8fafc;
+    --bg-code: #1e293b;
+    --bg-code-text: #e2e8f0;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --teal: #14b8a6;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --gray: #64748b;
+    --cat-input: #14b8a6;
+    --cat-nav: #6366f1;
+    --cat-info: #f59e0b;
+    --cat-container: #64748b;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); }
+  body {
+    margin: 0;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .ui-container { max-width: 1400px; margin: 0 auto; padding: 48px 32px; }
+
+  .ui-header { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .ui-header h1 { font-size: 36px; margin: 0 0 12px 0; font-weight: 700; letter-spacing: -0.02em; }
+  .ui-header h1 .num {
+    background: linear-gradient(135deg, var(--teal), var(--primary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .ui-header .subtitle { color: var(--text-muted); font-size: 16px; margin: 0; }
+  .ui-header .help {
+    color: var(--text-muted); font-size: 13px; margin: 12px 0 0;
+    padding: 12px 14px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 6px;
+  }
+  .ui-header .help b { color: var(--text); }
+  .ui-header .source { margin-top: 12px; font-size: 13px; color: var(--text-dim); }
+  .ui-header .source a { color: var(--primary); text-decoration: none; border-bottom: 1px dashed var(--primary); }
+
+  .ui-categories {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+  }
+  .ui-cat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .ui-cat-card .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .ui-cat-card .nm { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .ui-cat-card .ds { font-size: 13px; color: var(--text-muted); }
+  .ui-cat-card[data-cat="input"]     { border-left: 3px solid var(--cat-input); }
+  .ui-cat-card[data-cat="nav"]       { border-left: 3px solid var(--cat-nav); }
+  .ui-cat-card[data-cat="info"]      { border-left: 3px solid var(--cat-info); }
+  .ui-cat-card[data-cat="container"] { border-left: 3px solid var(--cat-container); }
+  .ui-cat-card[data-cat="input"] .lbl     { color: var(--cat-input); }
+  .ui-cat-card[data-cat="nav"] .lbl       { color: var(--cat-nav); }
+  .ui-cat-card[data-cat="info"] .lbl      { color: var(--cat-info); }
+  .ui-cat-card[data-cat="container"] .lbl { color: var(--cat-container); }
+
+  .ui-filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; align-items: center; }
+  .ui-filter-btn {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text-muted);
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;
+    transition: all 0.15s ease; font-family: inherit;
+  }
+  .ui-filter-btn:hover { background: var(--bg-alt); color: var(--text); }
+  .ui-filter-btn.active { background: var(--text); color: white; border-color: var(--text); }
+  .ui-search {
+    flex: 1; min-width: 200px; max-width: 280px;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 6px; font-size: 13px; font-family: inherit; margin-left: auto;
+  }
+  .ui-search:focus { outline: none; border-color: var(--primary); }
+  .ui-progress-info { font-size: 13px; color: var(--text-muted); }
+  .ui-progress-info strong { color: var(--primary); }
+
+  .ui-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 20px; }
+
+  .ui-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; display: flex; flex-direction: column; position: relative;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .ui-card:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.06); transform: translateY(-1px); }
+  .ui-card.hidden { display: none; }
+  .ui-card.done .ui-card-head { background: #f0fdf4; }
+
+  .ui-card-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--bg-alt);
+  }
+  .ui-card-head-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .ui-card-num {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text-muted);
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+    flex-shrink: 0; font-family: 'SF Mono', Menlo, Consolas, monospace;
+  }
+  .ui-card-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ui-card-title-ko { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-left: 4px; }
+  .ui-card-cat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 4px; flex-shrink: 0; }
+  .ui-card-cat[data-cat="input"]     { background: #ccfbf1; color: #0f766e; }
+  .ui-card-cat[data-cat="nav"]       { background: #e0e7ff; color: #4338ca; }
+  .ui-card-cat[data-cat="info"]      { background: #fef3c7; color: #92400e; }
+  .ui-card-cat[data-cat="container"] { background: #f1f5f9; color: #475569; }
+
+  .ui-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg-alt); padding: 0 12px; }
+  .ui-tab {
+    background: transparent; border: none; padding: 10px 14px; font-size: 12px; font-weight: 600;
+    color: var(--text-muted); cursor: pointer; font-family: inherit;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .ui-tab:hover { color: var(--text); }
+  .ui-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  .ui-panel { display: none; }
+  .ui-panel.active { display: block; }
+
+  .ui-preview {
+    padding: 24px 18px; min-height: 120px; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; position: relative;
+  }
+  .ui-preview-inner { width: 100%; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; }
+
+  .ui-code-wrap { position: relative; background: var(--bg-code); }
+  .ui-code-copy {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,0.1); color: var(--bg-code-text);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600;
+    cursor: pointer; font-family: inherit; z-index: 2;
+  }
+  .ui-code-copy:hover { background: rgba(255,255,255,0.2); }
+  .ui-code-copy.copied { background: var(--teal); border-color: var(--teal); color: white; }
+  .ui-code-pre { margin: 0; padding: 16px 18px; overflow-x: auto; max-height: 280px; overflow-y: auto; }
+  .ui-code-pre code {
+    color: var(--bg-code-text); font-family: 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 12px; line-height: 1.6; white-space: pre;
+  }
+
+  .ui-meta { padding: 14px 18px; border-top: 1px solid var(--border); background: var(--bg); }
+  .ui-meta p { margin: 0 0 8px 0; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .ui-meta-row { display: flex; gap: 8px; font-size: 12px; margin-top: 6px; }
+  .ui-meta-label { color: var(--text); font-weight: 600; flex-shrink: 0; min-width: 64px; }
+  .ui-meta-text { color: var(--text-muted); }
+
+  .ui-card-foot { padding: 12px 18px; border-top: 1px solid var(--border); background: var(--bg-alt); display: flex; align-items: center; justify-content: space-between; }
+  .ui-check-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); cursor: pointer; user-select: none; }
+
+  .ui-footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 13px; text-align: center; line-height: 1.7; }
+  .ui-footer a { color: var(--primary); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .ui-container { padding: 24px 16px; }
+    .ui-header h1 { font-size: 26px; }
+    .ui-categories { grid-template-columns: 1fr 1fr; }
+    .ui-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- 컴포넌트 동작용 CSS (학습자가 복사할 코드와 동일) -->
+<style id="components-style">
+/* 01 Accordion */
+.accordion { width: 100%; max-width: 320px; }
+.accordion-item { border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px; overflow: hidden; background: #fff; }
+.accordion-header { width: 100%; text-align: left; background: #fff; border: none; padding: 10px 14px; font-size: 13px; font-weight: 600; color: #0f172a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit; }
+.accordion-header::after { content: '+'; font-size: 16px; color: #64748b; transition: transform 0.2s; }
+.accordion-item.open .accordion-header::after { transform: rotate(45deg); }
+.accordion-body { display: none; padding: 4px 14px 12px; color: #64748b; font-size: 12px; }
+.accordion-item.open .accordion-body { display: block; }
+
+/* 02 Bento */
+.bento-wrap { position: relative; display: inline-block; }
+.bento-trigger { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+.bento-trigger .brow { display: flex; gap: 3px; }
+.bento-trigger .bdot { width: 5px; height: 5px; background: #0f172a; border-radius: 1px; }
+.bento-popover { display: none; position: absolute; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; box-shadow: 0 8px 24px rgba(15,23,42,.08); grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; z-index: 10; }
+.bento-wrap.open .bento-popover { display: grid; }
+.bento-popover .bapp { width: 48px; height: 48px; background: #f1f5f9; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+.bento-popover .bapp:hover { background: #e0e7ff; }
+
+/* 03 Breadcrumb */
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #64748b; flex-wrap: wrap; }
+.breadcrumb a { color: #6366f1; text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb .sep { color: #cbd5e1; }
+.breadcrumb .current { color: #0f172a; font-weight: 500; }
+
+/* 04 Button */
+.btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: all .15s ease; }
+.btn-primary { background: #6366f1; color: #fff; }
+.btn-primary:hover { background: #4f46e5; }
+.btn-secondary { background: #fff; color: #0f172a; border-color: #e2e8f0; }
+.btn-secondary:hover { background: #f8fafc; }
+.btn-danger { background: #f43f5e; color: #fff; }
+.btn-danger:hover { background: #e11d48; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* 05 Card */
+.product-card { width: 160px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; cursor: pointer; transition: box-shadow .15s ease; }
+.product-card:hover { box-shadow: 0 4px 12px rgba(15,23,42,.08); }
+.product-card .pc-image { height: 90px; background: linear-gradient(135deg,#c7d2fe,#a5f3fc); }
+.product-card .pc-body { padding: 10px; }
+.product-card .pc-title { font-size: 13px; font-weight: 600; margin: 0 0 4px; color: #0f172a; }
+.product-card .pc-desc { font-size: 12px; color: #64748b; margin: 0 0 6px; }
+.product-card .pc-price { font-size: 13px; font-weight: 700; color: #6366f1; }
+
+/* 06 Carousel */
+.carousel { width: 100%; max-width: 320px; position: relative; }
+.carousel-track { display: flex; overflow: hidden; border-radius: 8px; background: #f1f5f9; }
+.carousel-slide { min-width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #fff; transition: margin-left .3s ease; }
+.carousel-slide.s1 { background: linear-gradient(135deg,#6366f1,#a855f7); }
+.carousel-slide.s2 { background: linear-gradient(135deg,#14b8a6,#06b6d4); }
+.carousel-slide.s3 { background: linear-gradient(135deg,#f59e0b,#f43f5e); }
+.carousel-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.carousel-btn { background: #fff; border: 1px solid #e2e8f0; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; color: #0f172a; font-family: inherit; }
+.carousel-dots { display: flex; gap: 6px; }
+.carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; cursor: pointer; }
+.carousel-dot.active { background: #6366f1; }
+
+/* 07 Checkbox */
+.cb-group { display: flex; flex-direction: column; gap: 8px; }
+.cb-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #0f172a; cursor: pointer; }
+.cb-label input[type="checkbox"] { accent-color: #6366f1; width: 16px; height: 16px; }
+
+/* 08 Comment */
+.comment-list { width: 100%; max-width: 320px; }
+.comment { display: flex; gap: 8px; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+.comment:last-child { border-bottom: none; }
+.comment-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#a855f7); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.comment-avatar.b { background: linear-gradient(135deg,#14b8a6,#06b6d4); }
+.comment-body { font-size: 12px; flex: 1; }
+.comment-author { font-weight: 700; color: #0f172a; margin-right: 6px; }
+.comment-time { color: #94a3b8; font-size: 11px; }
+.comment-text { color: #475569; margin-top: 2px; }
+
+/* 09 Doner */
+.doner-wrap { position: relative; }
+.doner-trigger { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 9px 12px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+.doner-trigger span { height: 2px; background: #0f172a; border-radius: 1px; }
+.doner-trigger span:nth-child(1) { width: 18px; }
+.doner-trigger span:nth-child(2) { width: 14px; }
+.doner-trigger span:nth-child(3) { width: 10px; }
+.doner-panel { display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 8px 24px rgba(15,23,42,.08); padding: 8px; min-width: 160px; z-index: 10; }
+.doner-wrap.open .doner-panel { display: block; }
+.doner-panel .filter-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; padding: 4px 8px; }
+.doner-panel label { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 8px; cursor: pointer; }
+.doner-panel label input { accent-color: #6366f1; }
+
+/* 10 Dropdown */
+.dropdown { position: relative; }
+.dropdown-trigger { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 14px; font-size: 13px; color: #0f172a; cursor: pointer; display: flex; align-items: center; gap: 10px; min-width: 140px; font-family: inherit; }
+.dropdown-trigger::after { content: '▾'; margin-left: auto; color: #94a3b8; font-size: 10px; }
+.dropdown-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 8px 24px rgba(15,23,42,.08); overflow: hidden; z-index: 10; }
+.dropdown.open .dropdown-menu { display: block; }
+.dropdown-item { padding: 8px 14px; font-size: 13px; cursor: pointer; color: #0f172a; }
+.dropdown-item:hover { background: #f1f5f9; }
+
+/* 11 Feed */
+.feed { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 8px; }
+.feed-post { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; }
+.feed-post-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.feed-avatar { width: 24px; height: 24px; border-radius: 50%; background: #c7d2fe; }
+.feed-name { font-size: 12px; font-weight: 700; color: #0f172a; }
+.feed-time { font-size: 11px; color: #94a3b8; margin-left: auto; }
+.feed-text { font-size: 12px; color: #475569; }
+
+/* 12 Form */
+.form { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-label { font-size: 12px; font-weight: 600; color: #0f172a; }
+.form-input { border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-family: inherit; color: #0f172a; }
+.form-input:focus { outline: none; border-color: #6366f1; }
+.form-input.error { border-color: #f43f5e; }
+.form-error { font-size: 11px; color: #f43f5e; min-height: 14px; }
+.form-submit { background: #6366f1; color: #fff; border: none; padding: 9px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+/* 13 Hamburger */
+.hamburger-wrap { position: relative; }
+.hamburger-trigger { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 9px 12px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+.hamburger-trigger span { width: 18px; height: 2px; background: #0f172a; border-radius: 1px; }
+.hamburger-drawer { display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 8px 24px rgba(15,23,42,.08); min-width: 160px; z-index: 10; }
+.hamburger-wrap.open .hamburger-drawer { display: block; }
+.hamburger-drawer a { display: block; padding: 9px 14px; font-size: 13px; color: #0f172a; text-decoration: none; border-bottom: 1px solid #f1f5f9; }
+.hamburger-drawer a:last-child { border-bottom: none; }
+.hamburger-drawer a:hover { background: #f8fafc; }
+
+/* 14 Icon */
+.icon-row { display: flex; gap: 14px; align-items: center; }
+.icon-btn { width: 36px; height: 36px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+.icon-btn:hover { background: #f1f5f9; }
+.icon-btn.primary { background: #6366f1; color: #fff; border-color: #6366f1; }
+.icon-btn.success { background: #14b8a6; color: #fff; border-color: #14b8a6; }
+.icon-btn.warn { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+
+/* 15 Input */
+.input-group { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 280px; }
+.input-label { font-size: 12px; font-weight: 600; color: #0f172a; }
+.input-field { border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-family: inherit; color: #0f172a; background: #fff; }
+.input-field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
+.input-hint { font-size: 11px; color: #94a3b8; }
+
+/* 16 Kebab */
+.kebab-wrap { position: relative; }
+.kebab-trigger { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+.kebab-trigger span { width: 4px; height: 4px; background: #0f172a; border-radius: 50%; }
+.kebab-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 6px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 8px 24px rgba(15,23,42,.08); min-width: 140px; z-index: 10; }
+.kebab-wrap.open .kebab-menu { display: block; }
+.kebab-menu a { display: block; padding: 8px 12px; font-size: 12px; color: #0f172a; text-decoration: none; }
+.kebab-menu a:hover { background: #f1f5f9; }
+.kebab-menu a.danger { color: #f43f5e; }
+
+/* 17 Loader */
+.loader-row { display: flex; gap: 18px; align-items: center; }
+.loader-spinner { width: 28px; height: 28px; border: 3px solid #e2e8f0; border-top-color: #6366f1; border-radius: 50%; animation: loader-spin .8s linear infinite; }
+@keyframes loader-spin { to { transform: rotate(360deg); } }
+.loader-dots { display: flex; gap: 5px; }
+.loader-dots span { width: 7px; height: 7px; border-radius: 50%; background: #6366f1; animation: loader-bounce 1s infinite; }
+.loader-dots span:nth-child(2) { animation-delay: .15s; }
+.loader-dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes loader-bounce { 0%,80%,100% { transform: scale(.6); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
+.loader-bar { width: 80px; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; position: relative; }
+.loader-bar::after { content: ''; position: absolute; width: 30%; height: 100%; background: #6366f1; border-radius: 2px; animation: loader-slide 1.2s ease-in-out infinite; }
+@keyframes loader-slide { 0% { left: -30%; } 100% { left: 100%; } }
+
+/* 18 Meatballs */
+.meatballs-wrap { position: relative; }
+.meatballs-trigger { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 8px; display: flex; gap: 4px; cursor: pointer; }
+.meatballs-trigger span { width: 4px; height: 4px; background: #0f172a; border-radius: 50%; }
+.meatballs-menu { display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 8px 24px rgba(15,23,42,.08); min-width: 140px; z-index: 10; }
+.meatballs-wrap.open .meatballs-menu { display: block; }
+.meatballs-menu a { display: block; padding: 8px 12px; font-size: 12px; color: #0f172a; text-decoration: none; }
+.meatballs-menu a:hover { background: #f1f5f9; }
+
+/* 19 Modal */
+.modal-trigger-btn { background: #6366f1; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.4); align-items: center; justify-content: center; z-index: 1000; }
+.modal-backdrop.open { display: flex; }
+.modal-box { background: #fff; border-radius: 10px; padding: 24px; width: 320px; max-width: calc(100vw - 32px); box-shadow: 0 20px 50px rgba(0,0,0,.2); }
+.modal-title { font-size: 16px; font-weight: 700; margin: 0 0 8px; color: #0f172a; }
+.modal-text { font-size: 13px; color: #64748b; margin: 0 0 16px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; }
+.modal-btn-cancel { background: #fff; color: #0f172a; border: 1px solid #e2e8f0; }
+.modal-btn-confirm { background: #f43f5e; color: #fff; }
+
+/* 20 Notification */
+.noti-row { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.noti-bell { position: relative; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+.noti-badge { position: absolute; top: -4px; right: -4px; background: #f43f5e; color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 6px; min-width: 18px; text-align: center; }
+.noti-toast { background: #fff; border: 1px solid #e2e8f0; border-left: 3px solid #14b8a6; border-radius: 6px; padding: 10px 14px; display: flex; gap: 10px; align-items: center; font-size: 12px; box-shadow: 0 4px 12px rgba(15,23,42,.06); }
+.noti-toast.error { border-left-color: #f43f5e; }
+.noti-toast .ic { font-size: 16px; }
+
+/* 21 Pagination */
+.pagination { display: flex; gap: 4px; align-items: center; }
+.pg-btn { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; min-width: 32px; height: 32px; padding: 0 8px; font-size: 12px; font-weight: 600; color: #0f172a; cursor: pointer; font-family: inherit; }
+.pg-btn:hover:not(:disabled) { background: #f1f5f9; }
+.pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+.pg-btn.active { background: #6366f1; color: #fff; border-color: #6366f1; }
+
+/* 22 Picker */
+.picker-wrap { position: relative; }
+.picker-input { border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-family: inherit; cursor: pointer; background: #fff; width: 160px; }
+.picker-calendar { display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 8px 24px rgba(15,23,42,.08); padding: 12px; z-index: 10; }
+.picker-wrap.open .picker-calendar { display: block; }
+.picker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.picker-header button { background: transparent; border: none; font-size: 14px; cursor: pointer; color: #64748b; font-family: inherit; padding: 4px 8px; }
+.picker-header .month { font-size: 13px; font-weight: 700; color: #0f172a; }
+.picker-grid { display: grid; grid-template-columns: repeat(7, 28px); gap: 2px; }
+.picker-grid .pday-head { font-size: 10px; font-weight: 600; color: #94a3b8; text-align: center; padding: 4px 0; }
+.picker-grid .pday { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #0f172a; cursor: pointer; }
+.picker-grid .pday:hover { background: #f1f5f9; }
+.picker-grid .pday.selected { background: #6366f1; color: #fff; font-weight: 700; }
+.picker-grid .pday.empty { visibility: hidden; }
+
+/* 23 Progress */
+.progress-wrap { width: 100%; max-width: 280px; }
+.progress-row { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 4px; }
+.progress { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg,#14b8a6,#6366f1); transition: width .3s ease; border-radius: 4px; }
+.progress-steps { display: flex; justify-content: space-between; margin-top: 10px; }
+.progress-steps .step { font-size: 10px; color: #94a3b8; text-align: center; }
+.progress-steps .step.done { color: #6366f1; font-weight: 700; }
+
+/* 24 Radio */
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #0f172a; cursor: pointer; }
+.radio-label input[type="radio"] { accent-color: #6366f1; width: 16px; height: 16px; }
+
+/* 25 Search */
+.search-field { position: relative; width: 100%; max-width: 280px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; color: #94a3b8; }
+.search-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 20px; padding: 8px 12px 8px 32px; font-size: 13px; font-family: inherit; background: #fff; }
+.search-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
+.search-suggest { display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 8px 24px rgba(15,23,42,.08); overflow: hidden; z-index: 10; }
+.search-field.open .search-suggest { display: block; }
+.search-suggest div { padding: 8px 14px; font-size: 12px; cursor: pointer; }
+.search-suggest div:hover { background: #f1f5f9; }
+
+/* 26 Sidebar */
+.sidebar-demo { display: flex; width: 100%; max-width: 320px; height: 120px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+.sidebar { width: 90px; background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.sidebar-item { padding: 6px 8px; font-size: 11px; color: #64748b; cursor: pointer; border-radius: 4px; font-weight: 500; }
+.sidebar-item:hover { background: #e2e8f0; }
+.sidebar-item.active { background: #6366f1; color: #fff; }
+.sidebar-content { flex: 1; padding: 12px; font-size: 12px; color: #64748b; }
+
+/* 27 Slider */
+.slider-group { width: 100%; max-width: 240px; }
+.slider-row { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 6px; }
+.slider-value { font-weight: 700; color: #6366f1; }
+.slider-input { width: 100%; accent-color: #6366f1; }
+
+/* 28 Stepper */
+.stepper { display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; width: fit-content; background: #fff; }
+.stepper button { background: #fff; border: none; width: 32px; height: 32px; font-size: 16px; font-weight: 700; color: #0f172a; cursor: pointer; font-family: inherit; }
+.stepper button:hover:not(:disabled) { background: #f1f5f9; }
+.stepper button:disabled { color: #cbd5e1; cursor: not-allowed; }
+.stepper .stepper-value { min-width: 40px; text-align: center; font-size: 13px; font-weight: 600; color: #0f172a; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 6px 8px; }
+
+/* 29 Tag */
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; max-width: 320px; }
+.tag { background: #e0e7ff; color: #4338ca; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.tag.teal { background: #ccfbf1; color: #0f766e; }
+.tag.amber { background: #fef3c7; color: #92400e; }
+.tag.removable { display: inline-flex; align-items: center; gap: 6px; }
+.tag-remove { background: rgba(67,56,202,.2); border: none; width: 14px; height: 14px; border-radius: 50%; font-size: 10px; cursor: pointer; padding: 0; color: #4338ca; display: inline-flex; align-items: center; justify-content: center; }
+
+/* 30 Tab Bar */
+.tabbar { display: flex; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 6px; width: 100%; max-width: 320px; gap: 4px; }
+.tabbar-btn { flex: 1; background: transparent; border: none; padding: 6px 4px; font-size: 11px; color: #64748b; cursor: pointer; border-radius: 8px; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tabbar-btn:hover { background: #f1f5f9; }
+.tabbar-btn.active { background: #eef2ff; color: #6366f1; font-weight: 600; }
+.tabbar-btn .ic { font-size: 18px; }
+
+/* 31 Tooltip */
+.tooltip-row { display: flex; gap: 14px; }
+.tooltip-target { position: relative; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 14px; font-size: 13px; color: #0f172a; cursor: help; }
+.tooltip-target .tooltip-tip { visibility: hidden; opacity: 0; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-4px); background: #0f172a; color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 4px; white-space: nowrap; transition: opacity .15s ease; pointer-events: none; }
+.tooltip-target .tooltip-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #0f172a; }
+.tooltip-target:hover .tooltip-tip { visibility: visible; opacity: 1; }
+
+/* 32 Toggle */
+.toggle-row { display: flex; gap: 14px; align-items: center; }
+.toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: #cbd5e1; border-radius: 24px; cursor: pointer; transition: .2s; }
+.toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.toggle input:checked + .toggle-slider { background: #6366f1; }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+</style>
+</head>
+<body>
+
+<div class="ui-container">
+
+  <header class="ui-header">
+    <h1><span class="num">32</span>가지 UI Components — 실습 카탈로그</h1>
+    <p class="subtitle">클로드 코드 CLI 실습용 컴포넌트 시스템 미리보기</p>
+    <p class="help">
+      각 카드는 <b>Preview</b>(실제 동작) · <b>HTML</b> · <b>CSS</b> · <b>JS</b> 4개 탭으로 구성됩니다.
+      탭의 <b>복사</b> 버튼으로 코드를 가져가 새 HTML 파일에 붙여넣으면 그대로 동작합니다.
+      각 컴포넌트의 CSS 클래스명은 self-contained로 작성되어 있어 다른 페이지에 이식하기 쉽습니다.
+    </p>
+    <div class="source">
+      원본 참고: <a href="https://careerfoundry.com/en/blog/ui-design/ui-element-glossary" target="_blank" rel="noopener">CareerFoundry — 32 UI Elements Designers Need To Know</a>
+    </div>
+  </header>
+
+  <section class="ui-categories">
+    <div class="ui-cat-card" data-cat="input">
+      <div class="lbl">Input Controls</div>
+      <div class="nm">입력 제어</div>
+      <div class="ds">사용자가 시스템에 값을 입력하거나 액션을 일으키는 요소</div>
+    </div>
+    <div class="ui-cat-card" data-cat="nav">
+      <div class="lbl">Navigational</div>
+      <div class="nm">네비게이션</div>
+      <div class="ds">화면·페이지·섹션 사이를 이동시키는 요소</div>
+    </div>
+    <div class="ui-cat-card" data-cat="info">
+      <div class="lbl">Informational</div>
+      <div class="nm">정보 전달</div>
+      <div class="ds">시스템 상태·진행·결과를 사용자에게 알리는 요소</div>
+    </div>
+    <div class="ui-cat-card" data-cat="container">
+      <div class="lbl">Containers</div>
+      <div class="nm">컨테이너</div>
+      <div class="ds">관련 콘텐츠를 묶어서 구조를 부여하는 요소</div>
+    </div>
+  </section>
+
+  <div class="ui-filter-bar">
+    <button class="ui-filter-btn active" data-filter="all">전체 (32)</button>
+    <button class="ui-filter-btn" data-filter="input">Input</button>
+    <button class="ui-filter-btn" data-filter="nav">Navigation</button>
+    <button class="ui-filter-btn" data-filter="info">Information</button>
+    <button class="ui-filter-btn" data-filter="container">Container</button>
+    <span class="ui-progress-info">완료 <strong id="done-count">0</strong> / 32</span>
+    <input type="text" class="ui-search" placeholder="컴포넌트 검색..." id="search">
+  </div>
+
+  <div class="ui-grid" id="grid"></div>
+
+  <footer class="ui-footer">
+    출처: <a href="https://careerfoundry.com/en/blog/ui-design/ui-element-glossary" target="_blank" rel="noopener">CareerFoundry — 32 UI Elements (Maria de la Riva)</a>
+    <br>
+    설명·예시·코드는 강의 학습 목적에 맞게 작성되었으며, 컴포넌트 정의·분류는 원문을 참고했습니다.
+  </footer>
+
+</div>
+
+<script>
+const components = [
+  { id: 'accordion', num: 1, name: 'Accordion', nameKo: '아코디언', cat: 'container',
+    desc: '제목을 클릭하면 섹션이 펼쳐지거나 접히는 컴포넌트. 좁은 공간에 많은 정보를 단계적으로 노출할 수 있다.',
+    usecase: 'FAQ · 상품 상세 설명 · 설정 메뉴',
+    feature: '콘텐츠 토글 / 단계적 정보 노출 (Progressive Disclosure)',
+    html: `<div class="accordion">
+  <div class="accordion-item">
+    <button class="accordion-header">결제는 어떻게 하나요?</button>
+    <div class="accordion-body">신용카드, 계좌이체, 간편결제를 지원합니다.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-header">배송은 얼마나 걸리나요?</button>
+    <div class="accordion-body">평일 오후 2시 이전 주문 시 당일 출고됩니다.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-header">환불 정책이 궁금합니다</button>
+    <div class="accordion-body">수령 후 7일 이내 무료 반품 가능합니다.</div>
+  </div>
+</div>`,
+    css: `.accordion-item { border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px; overflow: hidden; background: #fff; }
+.accordion-header {
+  width: 100%; text-align: left; background: #fff; border: none;
+  padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.accordion-header::after { content: '+'; color: #64748b; transition: transform .2s; }
+.accordion-item.open .accordion-header::after { transform: rotate(45deg); }
+.accordion-body { display: none; padding: 4px 14px 12px; color: #64748b; font-size: 12px; }
+.accordion-item.open .accordion-body { display: block; }`,
+    js: `document.querySelectorAll('.accordion-header').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.parentElement.classList.toggle('open');
+  });
+});` },
+
+  { id: 'bento', num: 2, name: 'Bento Menu', nameKo: '벤토 메뉴', cat: 'nav',
+    desc: '도시락(벤토) 칸막이처럼 격자 형태로 항목을 나열한 메뉴. 여러 앱/기능을 한 화면에 노출할 때 사용.',
+    usecase: 'Google 앱 런처 · MS 365 앱 스위처',
+    feature: '그리드 형태의 앱·기능 진입점 제공',
+    html: `<div class="bento-wrap">
+  <button class="bento-trigger" aria-label="앱 메뉴 열기">
+    <span class="brow"><span class="bdot"></span><span class="bdot"></span><span class="bdot"></span></span>
+    <span class="brow"><span class="bdot"></span><span class="bdot"></span><span class="bdot"></span></span>
+    <span class="brow"><span class="bdot"></span><span class="bdot"></span><span class="bdot"></span></span>
+  </button>
+  <div class="bento-popover">
+    <div class="bapp" title="메일">📧</div>
+    <div class="bapp" title="캘린더">📅</div>
+    <div class="bapp" title="드라이브">📁</div>
+    <div class="bapp" title="문서">📝</div>
+    <div class="bapp" title="채팅">💬</div>
+    <div class="bapp" title="지도">🗺️</div>
+  </div>
+</div>`,
+    css: `.bento-wrap { position: relative; display: inline-block; }
+.bento-trigger {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 3px;
+}
+.bento-trigger .brow { display: flex; gap: 3px; }
+.bento-trigger .bdot { width: 5px; height: 5px; background: #0f172a; border-radius: 1px; }
+.bento-popover {
+  display: none; position: absolute; background: #fff;
+  border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08);
+  grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; z-index: 10;
+}
+.bento-wrap.open .bento-popover { display: grid; }
+.bento-popover .bapp {
+  width: 48px; height: 48px; background: #f1f5f9; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer;
+}
+.bento-popover .bapp:hover { background: #e0e7ff; }`,
+    js: `document.querySelectorAll('.bento-trigger').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    btn.parentElement.classList.toggle('open');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.bento-wrap.open').forEach(w => w.classList.remove('open'));
+});` },
+
+  { id: 'breadcrumb', num: 3, name: 'Breadcrumb', nameKo: '브레드크럼', cat: 'nav',
+    desc: '사이트 계층 구조에서 현재 위치를 표시하고 상위 경로로 돌아갈 수 있게 하는 링크 경로.',
+    usecase: '이커머스 카테고리 · 문서/위키 네비게이션',
+    feature: '현재 위치 표시 / 상위 경로 역추적',
+    html: `<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="#">홈</a>
+  <span class="sep">/</span>
+  <a href="#">전자제품</a>
+  <span class="sep">/</span>
+  <a href="#">노트북</a>
+  <span class="sep">/</span>
+  <span class="current">맥북 프로 16</span>
+</nav>`,
+    css: `.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: #64748b; flex-wrap: wrap;
+}
+.breadcrumb a { color: #6366f1; text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb .sep { color: #cbd5e1; }
+.breadcrumb .current { color: #0f172a; font-weight: 500; }`,
+    js: '' },
+
+  { id: 'button', num: 4, name: 'Button', nameKo: '버튼', cat: 'input',
+    desc: '라벨이 붙은 클릭 가능한 영역. 액션을 명확하게 트리거하는 가장 기본적인 입력 컴포넌트.',
+    usecase: '제출 · 저장 · 결제 · CTA',
+    feature: '사용자 액션 트리거 / 시각적 위계(Primary/Secondary/Danger) 표현',
+    html: `<button class="btn btn-primary">저장</button>
+<button class="btn btn-secondary">취소</button>
+<button class="btn btn-danger">삭제</button>
+<button class="btn btn-primary" disabled>비활성</button>`,
+    css: `.btn {
+  padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1px solid transparent; font-family: inherit;
+  transition: all .15s ease;
+}
+.btn-primary { background: #6366f1; color: #fff; }
+.btn-primary:hover { background: #4f46e5; }
+.btn-secondary { background: #fff; color: #0f172a; border-color: #e2e8f0; }
+.btn-secondary:hover { background: #f8fafc; }
+.btn-danger { background: #f43f5e; color: #fff; }
+.btn-danger:hover { background: #e11d48; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }`,
+    js: `document.querySelectorAll('.btn:not(:disabled)').forEach(btn => {
+  btn.addEventListener('click', () => console.log('Clicked:', btn.textContent));
+});` },
+
+  { id: 'card', num: 5, name: 'Card', nameKo: '카드', cat: 'container',
+    desc: '이미지·텍스트·버튼 등 이질적인 콘텐츠를 하나의 직사각형 단위로 묶어 진입점 역할을 하는 모듈.',
+    usecase: '상품 목록 · 블로그 미리보기 · 대시보드 위젯',
+    feature: '콘텐츠 묶음 + 클릭 진입점 / 그리드 레이아웃의 기본 단위',
+    html: `<div class="product-card">
+  <div class="pc-image"></div>
+  <div class="pc-body">
+    <h3 class="pc-title">맥북 프로 16</h3>
+    <p class="pc-desc">M3 Pro · 36GB · 512GB</p>
+    <div class="pc-price">₩3,490,000</div>
+  </div>
+</div>
+<div class="product-card">
+  <div class="pc-image" style="background:linear-gradient(135deg,#fde68a,#fca5a5);"></div>
+  <div class="pc-body">
+    <h3 class="pc-title">아이패드 프로</h3>
+    <p class="pc-desc">M4 · 11형 · 256GB</p>
+    <div class="pc-price">₩1,499,000</div>
+  </div>
+</div>`,
+    css: `.product-card {
+  width: 160px; background: #fff; border: 1px solid #e2e8f0;
+  border-radius: 8px; overflow: hidden; cursor: pointer;
+  transition: box-shadow .15s ease;
+}
+.product-card:hover { box-shadow: 0 4px 12px rgba(15,23,42,.08); }
+.product-card .pc-image { height: 90px; background: linear-gradient(135deg,#c7d2fe,#a5f3fc); }
+.product-card .pc-body { padding: 10px; }
+.product-card .pc-title { font-size: 13px; font-weight: 600; margin: 0 0 4px; }
+.product-card .pc-desc { font-size: 12px; color: #64748b; margin: 0 0 6px; }
+.product-card .pc-price { font-size: 13px; font-weight: 700; color: #6366f1; }`,
+    js: '' },
+
+  { id: 'carousel', num: 6, name: 'Carousel', nameKo: '캐러셀', cat: 'container',
+    desc: '같은 영역에서 슬라이드를 좌우로 넘기며 여러 콘텐츠를 순환 노출. 화면 면적 절약이 가장 큰 장점.',
+    usecase: '랜딩 페이지 배너 · 상품 이미지 갤러리',
+    feature: '콘텐츠 순환 노출 / 자동·수동 슬라이드 전환',
+    html: `<div class="carousel" id="carousel-demo">
+  <div class="carousel-track">
+    <div class="carousel-slide s1">슬라이드 1</div>
+    <div class="carousel-slide s2">슬라이드 2</div>
+    <div class="carousel-slide s3">슬라이드 3</div>
+  </div>
+  <div class="carousel-controls">
+    <button class="carousel-btn prev">‹</button>
+    <div class="carousel-dots">
+      <span class="carousel-dot active" data-i="0"></span>
+      <span class="carousel-dot" data-i="1"></span>
+      <span class="carousel-dot" data-i="2"></span>
+    </div>
+    <button class="carousel-btn next">›</button>
+  </div>
+</div>`,
+    css: `.carousel { width: 100%; max-width: 320px; position: relative; }
+.carousel-track { display: flex; overflow: hidden; border-radius: 8px; background: #f1f5f9; }
+.carousel-slide {
+  min-width: 100%; height: 100px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 700; color: #fff;
+  transition: margin-left .3s ease;
+}
+.carousel-slide.s1 { background: linear-gradient(135deg,#6366f1,#a855f7); }
+.carousel-slide.s2 { background: linear-gradient(135deg,#14b8a6,#06b6d4); }
+.carousel-slide.s3 { background: linear-gradient(135deg,#f59e0b,#f43f5e); }
+.carousel-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.carousel-btn {
+  background: #fff; border: 1px solid #e2e8f0;
+  width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; font-size: 14px;
+}
+.carousel-dots { display: flex; gap: 6px; }
+.carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; cursor: pointer; }
+.carousel-dot.active { background: #6366f1; }`,
+    js: `(function() {
+  const car = document.getElementById('carousel-demo');
+  if (!car) return;
+  const slides = car.querySelectorAll('.carousel-slide');
+  const dots = car.querySelectorAll('.carousel-dot');
+  let idx = 0;
+  function go(i) {
+    idx = (i + slides.length) % slides.length;
+    slides[0].style.marginLeft = (-idx * 100) + '%';
+    dots.forEach((d, j) => d.classList.toggle('active', j === idx));
+  }
+  car.querySelector('.prev').addEventListener('click', () => go(idx - 1));
+  car.querySelector('.next').addEventListener('click', () => go(idx + 1));
+  dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.i)));
+})();` },
+
+  { id: 'checkbox', num: 7, name: 'Checkbox', nameKo: '체크박스', cat: 'input',
+    desc: '독립적으로 켜고 끌 수 있는 사각형 체크 박스. 목록에서 0~N개 항목의 다중 선택을 표현한다.',
+    usecase: '필터 · 약관 동의 · 할 일 목록',
+    feature: '독립적 boolean 다중 선택 / 부분 선택(indeterminate) 상태 표현',
+    html: `<div class="cb-group">
+  <label class="cb-label"><input type="checkbox" checked> 이용약관 동의 (필수)</label>
+  <label class="cb-label"><input type="checkbox" checked> 개인정보 수집 동의 (필수)</label>
+  <label class="cb-label"><input type="checkbox"> 마케팅 정보 수신 (선택)</label>
+  <label class="cb-label"><input type="checkbox" disabled> 비활성 항목</label>
+</div>`,
+    css: `.cb-group { display: flex; flex-direction: column; gap: 8px; }
+.cb-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: #0f172a; cursor: pointer;
+}
+.cb-label input[type="checkbox"] { accent-color: #6366f1; width: 16px; height: 16px; }`,
+    js: '' },
+
+  { id: 'comment', num: 8, name: 'Comment', nameKo: '댓글', cat: 'info',
+    desc: '사용자가 입력한 텍스트를 시간순으로 누적해서 보여주는 영역. 아바타·이름·시간 메타가 함께 표시된다.',
+    usecase: '블로그·뉴스 댓글 · 코드 리뷰 코멘트',
+    feature: '시간순 사용자 입력 표시 / 답글·좋아요 등 인터랙션 부착',
+    html: `<div class="comment-list">
+  <div class="comment">
+    <div class="comment-avatar">홍</div>
+    <div class="comment-body">
+      <span class="comment-author">홍길동</span>
+      <span class="comment-time">3분 전</span>
+      <div class="comment-text">정말 유익한 글이네요 👍</div>
+    </div>
+  </div>
+  <div class="comment">
+    <div class="comment-avatar b">김</div>
+    <div class="comment-body">
+      <span class="comment-author">김개발</span>
+      <span class="comment-time">12분 전</span>
+      <div class="comment-text">동의합니다. 저도 같은 경험이 있어요.</div>
+    </div>
+  </div>
+</div>`,
+    css: `.comment-list { width: 100%; max-width: 320px; }
+.comment {
+  display: flex; gap: 8px; padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.comment:last-child { border-bottom: none; }
+.comment-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg,#6366f1,#a855f7); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.comment-avatar.b { background: linear-gradient(135deg,#14b8a6,#06b6d4); }
+.comment-body { font-size: 12px; flex: 1; }
+.comment-author { font-weight: 700; color: #0f172a; margin-right: 6px; }
+.comment-time { color: #94a3b8; font-size: 11px; }
+.comment-text { color: #475569; margin-top: 2px; }`,
+    js: '' },
+
+  { id: 'doner', num: 9, name: 'Döner Menu', nameKo: '되너 메뉴', cat: 'nav',
+    desc: '길이가 점점 짧아지는 가로선 3개로 표현되는 아이콘. 필터·정렬 옵션 패널의 진입점을 의미한다.',
+    usecase: '상품 리스트 필터 · 지도 검색 옵션',
+    feature: '필터·정렬 패널 토글 / 햄버거와 의미 구분',
+    html: `<div class="doner-wrap">
+  <button class="doner-trigger" aria-label="필터 열기">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="doner-panel">
+    <div class="filter-title">정렬</div>
+    <label><input type="radio" name="sort" checked> 인기순</label>
+    <label><input type="radio" name="sort"> 최신순</label>
+    <label><input type="radio" name="sort"> 가격순</label>
+  </div>
+</div>`,
+    css: `.doner-wrap { position: relative; }
+.doner-trigger {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 9px 12px; display: flex; flex-direction: column; gap: 3px; cursor: pointer;
+}
+.doner-trigger span { height: 2px; background: #0f172a; border-radius: 1px; }
+.doner-trigger span:nth-child(1) { width: 18px; }
+.doner-trigger span:nth-child(2) { width: 14px; }
+.doner-trigger span:nth-child(3) { width: 10px; }
+.doner-panel {
+  display: none; position: absolute; top: 100%; left: 0; margin-top: 6px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08);
+  padding: 8px; min-width: 160px; z-index: 10;
+}
+.doner-wrap.open .doner-panel { display: block; }
+.doner-panel .filter-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  color: #64748b; padding: 4px 8px;
+}
+.doner-panel label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; padding: 4px 8px; cursor: pointer;
+}`,
+    js: `document.querySelectorAll('.doner-trigger').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    btn.parentElement.classList.toggle('open');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.doner-wrap.open').forEach(w => w.classList.remove('open'));
+});` },
+
+  { id: 'dropdown', num: 10, name: 'Dropdown', nameKo: '드롭다운', cat: 'input',
+    desc: '클릭 시 옵션 목록이 아래로 펼쳐지며 한 항목을 선택하는 컴포넌트.',
+    usecase: '국가/지역 선택 · 정렬 기준 변경',
+    feature: '긴 옵션 목록의 단일 선택 / 화면 공간 절약',
+    html: `<div class="dropdown" id="dd-demo">
+  <button class="dropdown-trigger">
+    <span class="dd-value">한국</span>
+  </button>
+  <div class="dropdown-menu">
+    <div class="dropdown-item">한국</div>
+    <div class="dropdown-item">일본</div>
+    <div class="dropdown-item">미국</div>
+    <div class="dropdown-item">독일</div>
+  </div>
+</div>`,
+    css: `.dropdown { position: relative; }
+.dropdown-trigger {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 14px; font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; gap: 10px; min-width: 140px;
+}
+.dropdown-trigger::after { content: '▾'; margin-left: auto; color: #94a3b8; font-size: 10px; }
+.dropdown-menu {
+  display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08); overflow: hidden; z-index: 10;
+}
+.dropdown.open .dropdown-menu { display: block; }
+.dropdown-item { padding: 8px 14px; font-size: 13px; cursor: pointer; }
+.dropdown-item:hover { background: #f1f5f9; }`,
+    js: `(function() {
+  document.querySelectorAll('.dropdown').forEach(dd => {
+    const trigger = dd.querySelector('.dropdown-trigger');
+    const value = dd.querySelector('.dd-value');
+    trigger.addEventListener('click', e => {
+      e.stopPropagation();
+      document.querySelectorAll('.dropdown.open').forEach(d => d !== dd && d.classList.remove('open'));
+      dd.classList.toggle('open');
+    });
+    dd.querySelectorAll('.dropdown-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (value) value.textContent = item.textContent;
+        dd.classList.remove('open');
+      });
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+  });
+})();` },
+
+  { id: 'feed', num: 11, name: 'Feed', nameKo: '피드', cat: 'info',
+    desc: '다수 사용자/소스의 활동을 시간순(또는 알고리즘 순)으로 흘려보여주는 스트림. 텍스트·이미지·영상이 혼재.',
+    usecase: '소셜 미디어 타임라인 · 알림 센터',
+    feature: '시간순 스트림 / 무한 스크롤·페이지네이션',
+    html: `<div class="feed">
+  <div class="feed-post">
+    <div class="feed-post-head">
+      <div class="feed-avatar"></div>
+      <span class="feed-name">@codevillain</span>
+      <span class="feed-time">2분 전</span>
+    </div>
+    <div class="feed-text">새 강의 영상이 업로드되었습니다 🎬</div>
+  </div>
+  <div class="feed-post">
+    <div class="feed-post-head">
+      <div class="feed-avatar" style="background:#fbbf24;"></div>
+      <span class="feed-name">@dev_kim</span>
+      <span class="feed-time">15분 전</span>
+    </div>
+    <div class="feed-text">Claude Code로 작업 시간을 절반으로 줄였어요!</div>
+  </div>
+</div>`,
+    css: `.feed { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 8px; }
+.feed-post {
+  background: #fff; border: 1px solid #e2e8f0;
+  border-radius: 8px; padding: 10px 12px;
+}
+.feed-post-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.feed-avatar { width: 24px; height: 24px; border-radius: 50%; background: #c7d2fe; }
+.feed-name { font-size: 12px; font-weight: 700; }
+.feed-time { font-size: 11px; color: #94a3b8; margin-left: auto; }
+.feed-text { font-size: 12px; color: #475569; }`,
+    js: '' },
+
+  { id: 'form', num: 12, name: 'Form', nameKo: '폼', cat: 'input',
+    desc: '여러 입력 필드를 묶어 한 번에 제출하는 단위. 검증·에러 메시지·제출 상태 관리가 핵심 책임.',
+    usecase: '회원가입 · 결제 정보 입력 · 문의하기',
+    feature: '필드 묶음 + 유효성 검증 + 제출 처리',
+    html: `<form class="form" id="form-demo" novalidate>
+  <div class="form-field">
+    <label class="form-label">이메일</label>
+    <input type="email" class="form-input" name="email" placeholder="you@example.com">
+    <div class="form-error"></div>
+  </div>
+  <div class="form-field">
+    <label class="form-label">비밀번호 (8자 이상)</label>
+    <input type="password" class="form-input" name="password" placeholder="••••••••">
+    <div class="form-error"></div>
+  </div>
+  <button type="submit" class="form-submit">가입하기</button>
+</form>`,
+    css: `.form { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-label { font-size: 12px; font-weight: 600; }
+.form-input {
+  border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 12px; font-size: 13px; font-family: inherit;
+}
+.form-input:focus { outline: none; border-color: #6366f1; }
+.form-input.error { border-color: #f43f5e; }
+.form-error { font-size: 11px; color: #f43f5e; min-height: 14px; }
+.form-submit {
+  background: #6366f1; color: #fff; border: none;
+  padding: 9px 14px; border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}`,
+    js: `(function() {
+  const form = document.getElementById('form-demo');
+  if (!form) return;
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const email = form.email, pw = form.password;
+    let ok = true;
+    [email, pw].forEach(f => {
+      f.classList.remove('error');
+      f.nextElementSibling.textContent = '';
+    });
+    if (!email.value.includes('@')) {
+      email.classList.add('error');
+      email.nextElementSibling.textContent = '올바른 이메일을 입력하세요';
+      ok = false;
+    }
+    if (pw.value.length < 8) {
+      pw.classList.add('error');
+      pw.nextElementSibling.textContent = '비밀번호는 8자 이상이어야 합니다';
+      ok = false;
+    }
+    if (ok) alert('가입 요청이 전송되었습니다');
+  });
+})();` },
+
+  { id: 'hamburger', num: 13, name: 'Hamburger Menu', nameKo: '햄버거 메뉴', cat: 'nav',
+    desc: '동일한 길이의 가로선 3개로 표현되는 아이콘. 보통 좌측 상단에 위치하며 주요 네비게이션 메뉴를 토글한다.',
+    usecase: '모바일 웹의 사이드 네비게이션 토글',
+    feature: '메인 네비게이션 표시/숨김 토글',
+    html: `<div class="hamburger-wrap">
+  <button class="hamburger-trigger" aria-label="메뉴 열기">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="hamburger-drawer">
+    <a href="#">홈</a>
+    <a href="#">상품</a>
+    <a href="#">장바구니</a>
+    <a href="#">마이페이지</a>
+    <a href="#">로그아웃</a>
+  </div>
+</div>`,
+    css: `.hamburger-wrap { position: relative; }
+.hamburger-trigger {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 9px 12px; display: flex; flex-direction: column; gap: 4px; cursor: pointer;
+}
+.hamburger-trigger span { width: 18px; height: 2px; background: #0f172a; border-radius: 1px; }
+.hamburger-drawer {
+  display: none; position: absolute; top: 100%; left: 0; margin-top: 6px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08); min-width: 160px; z-index: 10;
+}
+.hamburger-wrap.open .hamburger-drawer { display: block; }
+.hamburger-drawer a {
+  display: block; padding: 9px 14px; font-size: 13px; color: #0f172a;
+  text-decoration: none; border-bottom: 1px solid #f1f5f9;
+}
+.hamburger-drawer a:last-child { border-bottom: none; }
+.hamburger-drawer a:hover { background: #f8fafc; }`,
+    js: `document.querySelectorAll('.hamburger-trigger').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    btn.parentElement.classList.toggle('open');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.hamburger-wrap.open').forEach(w => w.classList.remove('open'));
+});` },
+
+  { id: 'icon', num: 14, name: 'Icon', nameKo: '아이콘', cat: 'info',
+    desc: '의미를 압축한 작은 이미지/문자. 정보 표시 또는 액션 트리거(아이콘 버튼)로 쓰인다.',
+    usecase: '툴바 · 메뉴 항목 · 상태 표시',
+    feature: '의미의 시각적 압축 / 텍스트 없는 액션 전달',
+    html: `<div class="icon-row">
+  <button class="icon-btn">🏠</button>
+  <button class="icon-btn primary">🔍</button>
+  <button class="icon-btn success">✓</button>
+  <button class="icon-btn warn">⚠</button>
+  <button class="icon-btn">⚙️</button>
+</div>`,
+    css: `.icon-row { display: flex; gap: 14px; align-items: center; }
+.icon-btn {
+  width: 36px; height: 36px; background: #fff;
+  border: 1px solid #e2e8f0; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px;
+}
+.icon-btn:hover { background: #f1f5f9; }
+.icon-btn.primary { background: #6366f1; color: #fff; border-color: #6366f1; }
+.icon-btn.success { background: #14b8a6; color: #fff; border-color: #14b8a6; }
+.icon-btn.warn    { background: #f59e0b; color: #fff; border-color: #f59e0b; }`,
+    js: '' },
+
+  { id: 'input', num: 15, name: 'Input Field', nameKo: '입력 필드', cat: 'input',
+    desc: '한 줄 또는 여러 줄 텍스트를 입력받는 가장 기본적인 컴포넌트. 검색바도 입력 필드의 한 종류다.',
+    usecase: '로그인 · 검색 · 댓글 작성',
+    feature: '텍스트 입력 / 플레이스홀더·라벨·에러 메시지 처리',
+    html: `<div class="input-group">
+  <label class="input-label" for="ipt-name">이름</label>
+  <input id="ipt-name" type="text" class="input-field" placeholder="홍길동">
+  <span class="input-hint">2자 이상 입력하세요</span>
+</div>`,
+    css: `.input-group { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 280px; }
+.input-label { font-size: 12px; font-weight: 600; }
+.input-field {
+  border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 12px; font-size: 13px; font-family: inherit;
+}
+.input-field:focus {
+  outline: none; border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+.input-hint { font-size: 11px; color: #94a3b8; }`,
+    js: '' },
+
+  { id: 'kebab', num: 16, name: 'Kebab Menu', nameKo: '케밥 메뉴', cat: 'nav',
+    desc: '세로로 쌓인 점 3개. 행/카드 단위의 부가 옵션(수정·삭제·공유 등)을 모아둔 메뉴 트리거.',
+    usecase: '테이블 행 액션 · 모바일 리스트 항목 옵션',
+    feature: '컨텍스트 메뉴 토글 / 보조 액션 모음',
+    html: `<div class="kebab-wrap">
+  <button class="kebab-trigger" aria-label="더보기">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="kebab-menu">
+    <a href="#">수정</a>
+    <a href="#">복제</a>
+    <a href="#">공유</a>
+    <a href="#" class="danger">삭제</a>
+  </div>
+</div>`,
+    css: `.kebab-wrap { position: relative; }
+.kebab-trigger {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 6px 10px; display: flex; flex-direction: column; gap: 3px; cursor: pointer;
+}
+.kebab-trigger span { width: 4px; height: 4px; background: #0f172a; border-radius: 50%; }
+.kebab-menu {
+  display: none; position: absolute; top: 100%; right: 0; margin-top: 6px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08); min-width: 140px; z-index: 10;
+}
+.kebab-wrap.open .kebab-menu { display: block; }
+.kebab-menu a {
+  display: block; padding: 8px 12px; font-size: 12px;
+  color: #0f172a; text-decoration: none;
+}
+.kebab-menu a:hover { background: #f1f5f9; }
+.kebab-menu a.danger { color: #f43f5e; }`,
+    js: `document.querySelectorAll('.kebab-trigger').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    btn.parentElement.classList.toggle('open');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.kebab-wrap.open').forEach(w => w.classList.remove('open'));
+});` },
+
+  { id: 'loader', num: 17, name: 'Loader', nameKo: '로더 / 스피너', cat: 'info',
+    desc: '백그라운드 처리가 진행 중임을 알려 사용자가 기다려야 함을 시각화. 스피너·도트·바 등 다양한 형태.',
+    usecase: '데이터 fetching · 파일 업로드 중',
+    feature: '처리 중 상태 시각화 / 이탈 방지',
+    html: `<div class="loader-row">
+  <div class="loader-spinner"></div>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
+  <div class="loader-bar"></div>
+</div>`,
+    css: `.loader-row { display: flex; gap: 18px; align-items: center; }
+.loader-spinner {
+  width: 28px; height: 28px;
+  border: 3px solid #e2e8f0; border-top-color: #6366f1;
+  border-radius: 50%; animation: loader-spin .8s linear infinite;
+}
+@keyframes loader-spin { to { transform: rotate(360deg); } }
+.loader-dots { display: flex; gap: 5px; }
+.loader-dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #6366f1; animation: loader-bounce 1s infinite;
+}
+.loader-dots span:nth-child(2) { animation-delay: .15s; }
+.loader-dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes loader-bounce {
+  0%, 80%, 100% { transform: scale(.6); opacity: .4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+.loader-bar {
+  width: 80px; height: 4px;
+  background: #e2e8f0; border-radius: 2px;
+  overflow: hidden; position: relative;
+}
+.loader-bar::after {
+  content: ''; position: absolute;
+  width: 30%; height: 100%; background: #6366f1;
+  border-radius: 2px; animation: loader-slide 1.2s ease-in-out infinite;
+}
+@keyframes loader-slide { 0% { left: -30%; } 100% { left: 100%; } }`,
+    js: '' },
+
+  { id: 'meatballs', num: 18, name: 'Meatballs Menu', nameKo: '미트볼 메뉴', cat: 'nav',
+    desc: '가로로 늘어선 점 3개. 케밥과 유사하지만 카드/패널 상단 등 가로 영역에 배치되는 경우가 많다.',
+    usecase: '카드 헤더의 더보기 · 메시지 옵션',
+    feature: '추가 옵션 메뉴 토글 / 가로 배치형 컨텍스트 메뉴',
+    html: `<div class="meatballs-wrap">
+  <button class="meatballs-trigger" aria-label="옵션">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="meatballs-menu">
+    <a href="#">상세 보기</a>
+    <a href="#">즐겨찾기 추가</a>
+    <a href="#">신고하기</a>
+  </div>
+</div>`,
+    css: `.meatballs-wrap { position: relative; }
+.meatballs-trigger {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 10px 8px; display: flex; gap: 4px; cursor: pointer;
+}
+.meatballs-trigger span { width: 4px; height: 4px; background: #0f172a; border-radius: 50%; }
+.meatballs-menu {
+  display: none; position: absolute; top: 100%; left: 0; margin-top: 6px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08); min-width: 140px; z-index: 10;
+}
+.meatballs-wrap.open .meatballs-menu { display: block; }
+.meatballs-menu a {
+  display: block; padding: 8px 12px; font-size: 12px;
+  color: #0f172a; text-decoration: none;
+}
+.meatballs-menu a:hover { background: #f1f5f9; }`,
+    js: `document.querySelectorAll('.meatballs-trigger').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    btn.parentElement.classList.toggle('open');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.meatballs-wrap.open').forEach(w => w.classList.remove('open'));
+});` },
+
+  { id: 'modal', num: 19, name: 'Modal', nameKo: '모달', cat: 'container',
+    desc: '현재 흐름을 막고 응답을 강제하는 다이얼로그. 닫기 전까지 배경 인터랙션이 비활성화된다.',
+    usecase: '삭제 확인 · 로그인 팝업 · 결제 확인',
+    feature: '차단형 의사결정 강제 / 포커스 트랩·ESC 닫기',
+    html: `<button class="modal-trigger-btn" id="modal-open">계정 삭제</button>
+<div class="modal-backdrop" id="modal-bd">
+  <div class="modal-box">
+    <h3 class="modal-title">정말 삭제하시겠습니까?</h3>
+    <p class="modal-text">계정과 관련된 모든 데이터가 영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다.</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="modal-cancel">취소</button>
+      <button class="modal-btn modal-btn-confirm" id="modal-confirm">삭제</button>
+    </div>
+  </div>
+</div>`,
+    css: `.modal-trigger-btn {
+  background: #6366f1; color: #fff; border: none;
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.modal-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,23,42,.4);
+  align-items: center; justify-content: center; z-index: 1000;
+}
+.modal-backdrop.open { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 10px;
+  padding: 24px; width: 320px; max-width: calc(100vw - 32px);
+  box-shadow: 0 20px 50px rgba(0,0,0,.2);
+}
+.modal-title { font-size: 16px; font-weight: 700; margin: 0 0 8px; }
+.modal-text { font-size: 13px; color: #64748b; margin: 0 0 16px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-btn {
+  padding: 7px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 600; cursor: pointer; border: none;
+}
+.modal-btn-cancel { background: #fff; color: #0f172a; border: 1px solid #e2e8f0; }
+.modal-btn-confirm { background: #f43f5e; color: #fff; }`,
+    js: `(function() {
+  const bd = document.getElementById('modal-bd');
+  const open = document.getElementById('modal-open');
+  const cancel = document.getElementById('modal-cancel');
+  const confirm = document.getElementById('modal-confirm');
+  if (!bd) return;
+  open.addEventListener('click', () => bd.classList.add('open'));
+  cancel.addEventListener('click', () => bd.classList.remove('open'));
+  confirm.addEventListener('click', () => {
+    alert('삭제되었습니다');
+    bd.classList.remove('open');
+  });
+  bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') bd.classList.remove('open'); });
+})();` },
+
+  { id: 'notification', num: 20, name: 'Notification', nameKo: '알림', cat: 'info',
+    desc: '새로운 이벤트·메시지·시스템 결과를 전달하는 비차단형 알림. 배지·토스트·배너 등 다양한 형태.',
+    usecase: '새 메시지 배지 · 저장 완료 토스트',
+    feature: '비차단형 정보 전달 / 자동 사라짐 타이머',
+    html: `<div class="noti-row">
+  <div class="noti-bell">
+    🔔
+    <span class="noti-badge">3</span>
+  </div>
+  <div class="noti-toast">
+    <span class="ic">✅</span>
+    <span>저장되었습니다</span>
+  </div>
+  <div class="noti-toast error">
+    <span class="ic">⚠️</span>
+    <span>네트워크 오류</span>
+  </div>
+</div>`,
+    css: `.noti-row { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.noti-bell {
+  position: relative; background: #fff;
+  border: 1px solid #e2e8f0; border-radius: 8px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer;
+}
+.noti-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: #f43f5e; color: #fff;
+  font-size: 10px; font-weight: 700;
+  border-radius: 10px; padding: 1px 6px;
+  min-width: 18px; text-align: center;
+}
+.noti-toast {
+  background: #fff; border: 1px solid #e2e8f0;
+  border-left: 3px solid #14b8a6; border-radius: 6px;
+  padding: 10px 14px; display: flex; gap: 10px; align-items: center;
+  font-size: 12px; box-shadow: 0 4px 12px rgba(15,23,42,.06);
+}
+.noti-toast.error { border-left-color: #f43f5e; }
+.noti-toast .ic { font-size: 16px; }`,
+    js: `document.querySelectorAll('.noti-bell').forEach(b => {
+  b.addEventListener('click', () => {
+    const badge = b.querySelector('.noti-badge');
+    if (badge) badge.remove();
+  });
+});` },
+
+  { id: 'pagination', num: 21, name: 'Pagination', nameKo: '페이지네이션', cat: 'nav',
+    desc: '대량 콘텐츠를 페이지 단위로 나누어 탐색하게 하는 컴포넌트. 현재 페이지와 전체 페이지 수를 함께 표시.',
+    usecase: '게시판 · 검색 결과 · 테이블',
+    feature: '대량 데이터의 페이지 분할 탐색 / 위치 표시',
+    html: `<div class="pagination" id="pg-demo">
+  <button class="pg-btn" data-act="prev">‹</button>
+  <button class="pg-btn active" data-i="1">1</button>
+  <button class="pg-btn" data-i="2">2</button>
+  <button class="pg-btn" data-i="3">3</button>
+  <button class="pg-btn" data-i="4">4</button>
+  <button class="pg-btn" data-i="5">5</button>
+  <button class="pg-btn" data-act="next">›</button>
+</div>`,
+    css: `.pagination { display: flex; gap: 4px; align-items: center; }
+.pg-btn {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  min-width: 32px; height: 32px; padding: 0 8px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.pg-btn:hover:not(:disabled) { background: #f1f5f9; }
+.pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+.pg-btn.active { background: #6366f1; color: #fff; border-color: #6366f1; }`,
+    js: `(function() {
+  const pg = document.getElementById('pg-demo');
+  if (!pg) return;
+  const total = 5;
+  let cur = 1;
+  function set(n) {
+    cur = Math.max(1, Math.min(total, n));
+    pg.querySelectorAll('.pg-btn[data-i]').forEach(b => {
+      b.classList.toggle('active', +b.dataset.i === cur);
+    });
+    pg.querySelector('[data-act="prev"]').disabled = cur === 1;
+    pg.querySelector('[data-act="next"]').disabled = cur === total;
+  }
+  pg.addEventListener('click', e => {
+    const b = e.target.closest('.pg-btn');
+    if (!b) return;
+    if (b.dataset.act === 'prev') set(cur - 1);
+    else if (b.dataset.act === 'next') set(cur + 1);
+    else if (b.dataset.i) set(+b.dataset.i);
+  });
+  set(1);
+})();` },
+
+  { id: 'picker', num: 22, name: 'Picker', nameKo: '피커 (날짜)', cat: 'input',
+    desc: '날짜·시간 등 포맷이 정해진 값을 표준화된 UI로 선택. 자유 입력 대비 데이터 무결성을 확보한다.',
+    usecase: '예약 시스템 · 일정 등록 · 생년월일 입력',
+    feature: '표준 포맷 강제 / 입력 오류 감소',
+    html: `<div class="picker-wrap" id="picker-demo">
+  <input type="text" class="picker-input" id="picker-input" readonly placeholder="날짜 선택">
+  <div class="picker-calendar">
+    <div class="picker-header">
+      <button data-act="prev">‹</button>
+      <span class="month"></span>
+      <button data-act="next">›</button>
+    </div>
+    <div class="picker-grid"></div>
+  </div>
+</div>`,
+    css: `.picker-wrap { position: relative; }
+.picker-input {
+  border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 12px; font-size: 13px; cursor: pointer;
+  background: #fff; width: 160px;
+}
+.picker-calendar {
+  display: none; position: absolute; top: 100%; left: 0; margin-top: 4px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08); padding: 12px; z-index: 10;
+}
+.picker-wrap.open .picker-calendar { display: block; }
+.picker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.picker-header button {
+  background: transparent; border: none;
+  font-size: 14px; cursor: pointer; color: #64748b; padding: 4px 8px;
+}
+.picker-header .month { font-size: 13px; font-weight: 700; }
+.picker-grid { display: grid; grid-template-columns: repeat(7, 28px); gap: 2px; }
+.picker-grid .pday-head {
+  font-size: 10px; font-weight: 600;
+  color: #94a3b8; text-align: center; padding: 4px 0;
+}
+.picker-grid .pday {
+  width: 28px; height: 28px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; cursor: pointer;
+}
+.picker-grid .pday:hover { background: #f1f5f9; }
+.picker-grid .pday.selected { background: #6366f1; color: #fff; font-weight: 700; }
+.picker-grid .pday.empty { visibility: hidden; }`,
+    js: `(function() {
+  const wrap = document.getElementById('picker-demo');
+  if (!wrap) return;
+  const input = wrap.querySelector('.picker-input');
+  const grid = wrap.querySelector('.picker-grid');
+  const monthEl = wrap.querySelector('.month');
+  const today = new Date();
+  let view = new Date(today.getFullYear(), today.getMonth(), 1);
+  let selected = null;
+  function render() {
+    monthEl.textContent = view.getFullYear() + '년 ' + (view.getMonth() + 1) + '월';
+    grid.innerHTML = '';
+    ['일','월','화','수','목','금','토'].forEach(d => {
+      const h = document.createElement('div');
+      h.className = 'pday-head'; h.textContent = d;
+      grid.appendChild(h);
+    });
+    const firstDay = view.getDay();
+    const daysInMonth = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    for (let i = 0; i < firstDay; i++) {
+      const e = document.createElement('div');
+      e.className = 'pday empty'; grid.appendChild(e);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const day = document.createElement('div');
+      day.className = 'pday'; day.textContent = d;
+      if (selected && selected.getFullYear() === view.getFullYear() &&
+          selected.getMonth() === view.getMonth() && selected.getDate() === d) {
+        day.classList.add('selected');
+      }
+      day.addEventListener('click', () => {
+        selected = new Date(view.getFullYear(), view.getMonth(), d);
+        input.value = selected.toISOString().slice(0, 10);
+        wrap.classList.remove('open');
+        render();
+      });
+      grid.appendChild(day);
+    }
+  }
+  input.addEventListener('click', e => {
+    e.stopPropagation();
+    wrap.classList.toggle('open');
+  });
+  wrap.querySelector('[data-act="prev"]').addEventListener('click', e => {
+    e.stopPropagation();
+    view.setMonth(view.getMonth() - 1); render();
+  });
+  wrap.querySelector('[data-act="next"]').addEventListener('click', e => {
+    e.stopPropagation();
+    view.setMonth(view.getMonth() + 1); render();
+  });
+  document.addEventListener('click', e => {
+    if (!wrap.contains(e.target)) wrap.classList.remove('open');
+  });
+  render();
+})();` },
+
+  { id: 'progress', num: 23, name: 'Progress Bar', nameKo: '진행 바', cat: 'info',
+    desc: '전체 단계 중 현재 어디까지 진행되었는지 비율로 시각화. 로더와 달리 진행도가 정량적으로 측정 가능할 때 사용.',
+    usecase: '파일 업로드 · 결제 스텝 · 회원가입 단계',
+    feature: '정량적 진행률 표시 / 단계 라벨링',
+    html: `<div class="progress-wrap">
+  <div class="progress-row"><span>업로드 중</span><span id="prg-pct">0%</span></div>
+  <div class="progress"><div class="progress-bar" id="prg-bar" style="width: 0%;"></div></div>
+  <div class="progress-steps">
+    <div class="step done">정보 입력</div>
+    <div class="step done">배송지</div>
+    <div class="step">결제</div>
+    <div class="step">완료</div>
+  </div>
+</div>`,
+    css: `.progress-wrap { width: 100%; max-width: 280px; }
+.progress-row {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: #64748b; margin-bottom: 4px;
+}
+.progress {
+  width: 100%; height: 8px;
+  background: #e2e8f0; border-radius: 4px; overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg,#14b8a6,#6366f1);
+  transition: width .3s ease; border-radius: 4px;
+}
+.progress-steps {
+  display: flex; justify-content: space-between; margin-top: 10px;
+}
+.progress-steps .step { font-size: 10px; color: #94a3b8; text-align: center; }
+.progress-steps .step.done { color: #6366f1; font-weight: 700; }`,
+    js: `(function() {
+  const bar = document.getElementById('prg-bar');
+  const pct = document.getElementById('prg-pct');
+  if (!bar) return;
+  let v = 0;
+  setInterval(() => {
+    v = (v + 7) % 100;
+    bar.style.width = v + '%';
+    pct.textContent = v + '%';
+  }, 600);
+})();` },
+
+  { id: 'radio', num: 24, name: 'Radio Buttons', nameKo: '라디오 버튼', cat: 'input',
+    desc: '원형 토글 그룹. 체크박스와 달리 그룹 내에서 단 하나만 선택 가능한 상호 배타적 선택지를 표현.',
+    usecase: '결제 방법 선택 · 설문 단답형 응답',
+    feature: '상호 배타적 단일 선택 (mutually exclusive)',
+    html: `<div class="radio-group">
+  <label class="radio-label"><input type="radio" name="pay" value="card" checked> 신용카드</label>
+  <label class="radio-label"><input type="radio" name="pay" value="bank"> 계좌이체</label>
+  <label class="radio-label"><input type="radio" name="pay" value="kakao"> 카카오페이</label>
+  <label class="radio-label"><input type="radio" name="pay" value="naver"> 네이버페이</label>
+</div>`,
+    css: `.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; cursor: pointer;
+}
+.radio-label input[type="radio"] {
+  accent-color: #6366f1; width: 16px; height: 16px;
+}`,
+    js: '' },
+
+  { id: 'search', num: 25, name: 'Search Field', nameKo: '검색 필드', cat: 'input',
+    desc: '시스템 내 콘텐츠를 찾기 위한 전용 입력 필드. 돋보기 아이콘과 자동완성·최근 검색어 기능이 결합된다.',
+    usecase: '사이트 검색 · 명령 팔레트(Cmd+K)',
+    feature: '콘텐츠 검색 / 자동완성·최근 검색어 표시',
+    html: `<div class="search-field" id="search-demo">
+  <span class="search-icon">🔍</span>
+  <input type="text" class="search-input" placeholder="검색어를 입력하세요">
+  <div class="search-suggest">
+    <div>Claude Code 강의</div>
+    <div>Claude Code MCP</div>
+    <div>Claude Code Skills</div>
+    <div>Claude Code Hooks</div>
+  </div>
+</div>`,
+    css: `.search-field { position: relative; width: 100%; max-width: 280px; }
+.search-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: #94a3b8;
+}
+.search-input {
+  width: 100%; border: 1px solid #e2e8f0; border-radius: 20px;
+  padding: 8px 12px 8px 32px; font-size: 13px; font-family: inherit;
+}
+.search-input:focus {
+  outline: none; border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+.search-suggest {
+  display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08); overflow: hidden; z-index: 10;
+}
+.search-field.open .search-suggest { display: block; }
+.search-suggest div { padding: 8px 14px; font-size: 12px; cursor: pointer; }
+.search-suggest div:hover { background: #f1f5f9; }`,
+    js: `(function() {
+  const sf = document.getElementById('search-demo');
+  if (!sf) return;
+  const input = sf.querySelector('.search-input');
+  input.addEventListener('focus', () => sf.classList.add('open'));
+  input.addEventListener('blur', () => setTimeout(() => sf.classList.remove('open'), 150));
+  sf.querySelectorAll('.search-suggest div').forEach(d => {
+    d.addEventListener('click', () => {
+      input.value = d.textContent;
+      sf.classList.remove('open');
+    });
+  });
+})();` },
+
+  { id: 'sidebar', num: 26, name: 'Sidebar', nameKo: '사이드바', cat: 'nav',
+    desc: '화면 측면에 고정되는 네비게이션/콘텐츠 패널. 항상 보이거나 토글 가능하며 데스크톱 앱에서 주요 메뉴 역할.',
+    usecase: '관리자 콘솔 · VS Code 탐색기 · 메일함',
+    feature: '상시 네비게이션 / 접기·고정 가능 패널',
+    html: `<div class="sidebar-demo">
+  <nav class="sidebar">
+    <div class="sidebar-item active" data-tab="home">🏠 홈</div>
+    <div class="sidebar-item" data-tab="inbox">📥 받은편지함</div>
+    <div class="sidebar-item" data-tab="sent">📤 보낸편지함</div>
+    <div class="sidebar-item" data-tab="trash">🗑 휴지통</div>
+  </nav>
+  <div class="sidebar-content" id="sidebar-content">홈 화면입니다.</div>
+</div>`,
+    css: `.sidebar-demo {
+  display: flex; width: 100%; max-width: 320px; height: 120px;
+  border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;
+}
+.sidebar {
+  width: 90px; background: #f8fafc;
+  border-right: 1px solid #e2e8f0; padding: 8px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.sidebar-item {
+  padding: 6px 8px; font-size: 11px; color: #64748b;
+  cursor: pointer; border-radius: 4px; font-weight: 500;
+}
+.sidebar-item:hover { background: #e2e8f0; }
+.sidebar-item.active { background: #6366f1; color: #fff; }
+.sidebar-content { flex: 1; padding: 12px; font-size: 12px; color: #64748b; }`,
+    js: `(function() {
+  const map = {
+    home: '홈 화면입니다.',
+    inbox: '받은편지함 (12개의 새 메일)',
+    sent: '보낸편지함 (최근 7일 32개)',
+    trash: '휴지통 (30일 후 자동 삭제)'
+  };
+  document.querySelectorAll('.sidebar-item').forEach(it => {
+    it.addEventListener('click', () => {
+      document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+      it.classList.add('active');
+      document.getElementById('sidebar-content').textContent = map[it.dataset.tab];
+    });
+  });
+})();` },
+
+  { id: 'slider', num: 27, name: 'Slider Controls', nameKo: '슬라이더', cat: 'input',
+    desc: '손잡이를 드래그하여 연속적인 값(또는 범위)을 설정. 정확한 숫자 입력보다 감각적인 조절에 적합.',
+    usecase: '볼륨·밝기 · 가격 범위 필터',
+    feature: '연속값 입력 / 범위(min~max) 입력',
+    html: `<div class="slider-group">
+  <div class="slider-row">
+    <span>볼륨</span>
+    <span class="slider-value" id="sld-val">60</span>
+  </div>
+  <input type="range" class="slider-input" min="0" max="100" value="60" id="sld-input">
+</div>`,
+    css: `.slider-group { width: 100%; max-width: 240px; }
+.slider-row {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: #64748b; margin-bottom: 6px;
+}
+.slider-value { font-weight: 700; color: #6366f1; }
+.slider-input { width: 100%; accent-color: #6366f1; }`,
+    js: `(function() {
+  const sld = document.getElementById('sld-input');
+  const val = document.getElementById('sld-val');
+  if (!sld) return;
+  sld.addEventListener('input', () => val.textContent = sld.value);
+})();` },
+
+  { id: 'stepper', num: 28, name: 'Stepper', nameKo: '스테퍼', cat: 'input',
+    desc: '+/− 버튼으로 사전에 정의된 단위만큼 값을 증감. 슬라이더와 달리 이산값(정수 수량 등)을 정확히 입력.',
+    usecase: '장바구니 수량 · 인원수 선택',
+    feature: '이산값 증감 / 최소·최대값 제약',
+    html: `<div class="stepper" id="stepper-demo">
+  <button data-act="-" aria-label="감소">−</button>
+  <div class="stepper-value">1</div>
+  <button data-act="+" aria-label="증가">+</button>
+</div>`,
+    css: `.stepper {
+  display: flex; align-items: center;
+  border: 1px solid #e2e8f0; border-radius: 6px;
+  overflow: hidden; width: fit-content; background: #fff;
+}
+.stepper button {
+  background: #fff; border: none;
+  width: 32px; height: 32px;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+}
+.stepper button:hover:not(:disabled) { background: #f1f5f9; }
+.stepper button:disabled { color: #cbd5e1; cursor: not-allowed; }
+.stepper .stepper-value {
+  min-width: 40px; text-align: center;
+  font-size: 13px; font-weight: 600;
+  border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;
+  padding: 6px 8px;
+}`,
+    js: `(function() {
+  const st = document.getElementById('stepper-demo');
+  if (!st) return;
+  const val = st.querySelector('.stepper-value');
+  const minus = st.querySelector('[data-act="-"]');
+  const plus = st.querySelector('[data-act="+"]');
+  const MIN = 1, MAX = 99;
+  function update() {
+    const n = +val.textContent;
+    minus.disabled = n <= MIN;
+    plus.disabled = n >= MAX;
+  }
+  minus.addEventListener('click', () => {
+    const n = +val.textContent;
+    if (n > MIN) { val.textContent = n - 1; update(); }
+  });
+  plus.addEventListener('click', () => {
+    const n = +val.textContent;
+    if (n < MAX) { val.textContent = n + 1; update(); }
+  });
+  update();
+})();` },
+
+  { id: 'tag', num: 29, name: 'Tag', nameKo: '태그', cat: 'info',
+    desc: '콘텐츠를 분류·검색하기 위한 작은 키워드 라벨. 보통 클릭 가능하며 필터·이동의 트리거로도 쓰인다.',
+    usecase: '블로그 분류 · 이슈 트래커 라벨 · 상품 속성',
+    feature: '분류·검색용 메타데이터 / 필터 트리거',
+    html: `<div class="tag-row" id="tag-demo">
+  <span class="tag">React</span>
+  <span class="tag teal">TypeScript</span>
+  <span class="tag amber">Performance</span>
+  <span class="tag removable">
+    UI <button class="tag-remove" data-remove>×</button>
+  </span>
+  <span class="tag teal removable">
+    Frontend <button class="tag-remove" data-remove>×</button>
+  </span>
+</div>`,
+    css: `.tag-row { display: flex; gap: 6px; flex-wrap: wrap; max-width: 320px; }
+.tag {
+  background: #e0e7ff; color: #4338ca;
+  padding: 3px 10px; border-radius: 12px;
+  font-size: 12px; font-weight: 500;
+}
+.tag.teal { background: #ccfbf1; color: #0f766e; }
+.tag.amber { background: #fef3c7; color: #92400e; }
+.tag.removable { display: inline-flex; align-items: center; gap: 6px; }
+.tag-remove {
+  background: rgba(67,56,202,.2); border: none;
+  width: 14px; height: 14px; border-radius: 50%;
+  font-size: 10px; cursor: pointer; padding: 0;
+  color: #4338ca;
+  display: inline-flex; align-items: center; justify-content: center;
+}`,
+    js: `document.querySelectorAll('[data-remove]').forEach(b => {
+  b.addEventListener('click', () => b.parentElement.remove());
+});` },
+
+  { id: 'tabbar', num: 30, name: 'Tab Bar', nameKo: '탭 바', cat: 'nav',
+    desc: '모바일 앱 하단에 고정되어 주요 섹션 간 빠른 전환을 제공. 보통 3~5개 항목이 적정 개수다.',
+    usecase: 'iOS/Android 앱의 메인 네비게이션',
+    feature: '주요 섹션 즉시 전환 / 현재 위치 시각 표시',
+    html: `<div class="tabbar" id="tabbar-demo">
+  <button class="tabbar-btn active" data-tab="home">
+    <span class="ic">🏠</span><span>홈</span>
+  </button>
+  <button class="tabbar-btn" data-tab="search">
+    <span class="ic">🔍</span><span>검색</span>
+  </button>
+  <button class="tabbar-btn" data-tab="cart">
+    <span class="ic">🛒</span><span>장바구니</span>
+  </button>
+  <button class="tabbar-btn" data-tab="me">
+    <span class="ic">👤</span><span>마이</span>
+  </button>
+</div>`,
+    css: `.tabbar {
+  display: flex; background: #fff;
+  border: 1px solid #e2e8f0; border-radius: 12px;
+  padding: 6px; width: 100%; max-width: 320px; gap: 4px;
+}
+.tabbar-btn {
+  flex: 1; background: transparent; border: none;
+  padding: 6px 4px; font-size: 11px; color: #64748b;
+  cursor: pointer; border-radius: 8px; font-family: inherit;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.tabbar-btn:hover { background: #f1f5f9; }
+.tabbar-btn.active { background: #eef2ff; color: #6366f1; font-weight: 600; }
+.tabbar-btn .ic { font-size: 18px; }`,
+    js: `document.querySelectorAll('#tabbar-demo .tabbar-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    b.parentElement.querySelectorAll('.tabbar-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+  });
+});` },
+
+  { id: 'tooltip', num: 31, name: 'Tooltip', nameKo: '툴팁', cat: 'info',
+    desc: '호버·포커스 시 잠깐 떠오르는 짧은 보조 설명. 아이콘 버튼처럼 라벨이 없는 요소에 의미를 부여한다.',
+    usecase: '아이콘 버튼 설명 · 폼 필드 도움말',
+    feature: '보조 정보 비동기 노출 / 접근성 보강',
+    html: `<div class="tooltip-row">
+  <div class="tooltip-target">
+    저장 ⓘ
+    <span class="tooltip-tip">Ctrl + S 로도 저장됩니다</span>
+  </div>
+  <div class="tooltip-target">
+    내보내기
+    <span class="tooltip-tip">PDF / CSV 지원</span>
+  </div>
+</div>`,
+    css: `.tooltip-row { display: flex; gap: 14px; }
+.tooltip-target {
+  position: relative; background: #fff;
+  border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 14px; font-size: 13px; cursor: help;
+}
+.tooltip-target .tooltip-tip {
+  visibility: hidden; opacity: 0;
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: #0f172a; color: #fff;
+  font-size: 11px; padding: 4px 8px;
+  border-radius: 4px; white-space: nowrap;
+  transition: opacity .15s ease; pointer-events: none;
+}
+.tooltip-target .tooltip-tip::after {
+  content: ''; position: absolute;
+  top: 100%; left: 50%; transform: translateX(-50%);
+  border: 4px solid transparent; border-top-color: #0f172a;
+}
+.tooltip-target:hover .tooltip-tip { visibility: visible; opacity: 1; }`,
+    js: '' },
+
+  { id: 'toggle', num: 32, name: 'Toggle', nameKo: '토글 / 스위치', cat: 'input',
+    desc: 'on/off 두 상태를 즉시 전환하는 스위치. 체크박스와 달리 변경 즉시 효과가 적용되는 설정값에 어울린다.',
+    usecase: '다크모드 · 알림 켜기/끄기 · 설정 화면',
+    feature: '즉시 반영 boolean / 시스템 설정 토글',
+    html: `<div class="toggle-row">
+  <label class="toggle">
+    <input type="checkbox" checked>
+    <span class="toggle-slider"></span>
+  </label>
+  <label class="toggle">
+    <input type="checkbox">
+    <span class="toggle-slider"></span>
+  </label>
+  <label class="toggle">
+    <input type="checkbox" checked>
+    <span class="toggle-slider"></span>
+  </label>
+</div>`,
+    css: `.toggle-row { display: flex; gap: 14px; align-items: center; }
+.toggle {
+  position: relative; display: inline-block;
+  width: 44px; height: 24px;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: #cbd5e1; border-radius: 24px;
+  cursor: pointer; transition: .2s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; background: #fff;
+  border-radius: 50%; top: 3px; left: 3px;
+  transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+.toggle input:checked + .toggle-slider { background: #6366f1; }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }`,
+    js: '' }
+];
+
+function escapeHtml(s) {
+  return s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+}
+
+const catLabel = { input: 'Input', nav: 'Navigation', info: 'Information', container: 'Container' };
+
+function renderCard(c) {
+  const card = document.createElement('article');
+  card.className = 'ui-card';
+  card.dataset.cat = c.cat;
+  card.dataset.name = (c.name + ' ' + c.nameKo).toLowerCase();
+
+  card.innerHTML = `
+    <div class="ui-card-head">
+      <div class="ui-card-head-left">
+        <span class="ui-card-num">${String(c.num).padStart(2,'0')}</span>
+        <h3 class="ui-card-title">${c.name}<span class="ui-card-title-ko">${c.nameKo}</span></h3>
+      </div>
+      <span class="ui-card-cat" data-cat="${c.cat}">${catLabel[c.cat]}</span>
+    </div>
+    <div class="ui-tabs">
+      <button class="ui-tab active" data-tab="preview">Preview</button>
+      <button class="ui-tab" data-tab="html">HTML</button>
+      <button class="ui-tab" data-tab="css">CSS</button>
+      ${c.js ? '<button class="ui-tab" data-tab="js">JS</button>' : ''}
+    </div>
+    <div class="ui-panel active" data-panel="preview">
+      <div class="ui-preview"><div class="ui-preview-inner" id="prev-${c.id}"></div></div>
+    </div>
+    <div class="ui-panel" data-panel="html">
+      <div class="ui-code-wrap">
+        <button class="ui-code-copy" data-copy>복사</button>
+        <pre class="ui-code-pre"><code>${escapeHtml(c.html)}</code></pre>
+      </div>
+    </div>
+    <div class="ui-panel" data-panel="css">
+      <div class="ui-code-wrap">
+        <button class="ui-code-copy" data-copy>복사</button>
+        <pre class="ui-code-pre"><code>${escapeHtml(c.css)}</code></pre>
+      </div>
+    </div>
+    ${c.js ? `
+    <div class="ui-panel" data-panel="js">
+      <div class="ui-code-wrap">
+        <button class="ui-code-copy" data-copy>복사</button>
+        <pre class="ui-code-pre"><code>${escapeHtml(c.js)}</code></pre>
+      </div>
+    </div>` : ''}
+    <div class="ui-meta">
+      <p>${c.desc}</p>
+      <div class="ui-meta-row"><span class="ui-meta-label">사용례</span><span class="ui-meta-text">${c.usecase}</span></div>
+      <div class="ui-meta-row"><span class="ui-meta-label">담당 기능</span><span class="ui-meta-text">${c.feature}</span></div>
+    </div>
+    <div class="ui-card-foot">
+      <label class="ui-check-label">
+        <input type="checkbox" class="done-check"> 구현 완료
+      </label>
+      <span style="font-size:11px;color:var(--text-dim);">#${c.id}</span>
+    </div>
+  `;
+
+  const tabs = card.querySelectorAll('.ui-tab');
+  const panels = card.querySelectorAll('.ui-panel');
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      t.classList.add('active');
+      card.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+    });
+  });
+
+  card.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('code').textContent;
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.textContent = '복사됨!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '복사';
+        btn.classList.remove('copied');
+      }, 1500);
+    });
+  });
+
+  const doneCb = card.querySelector('.done-check');
+  doneCb.addEventListener('change', () => {
+    card.classList.toggle('done', doneCb.checked);
+    const n = document.querySelectorAll('.done-check:checked').length;
+    document.getElementById('done-count').textContent = n;
+  });
+
+  return card;
+}
+
+const grid = document.getElementById('grid');
+components.forEach(c => {
+  const card = renderCard(c);
+  grid.appendChild(card);
+  card.querySelector(`#prev-${c.id}`).innerHTML = c.html;
+});
+
+components.forEach(c => {
+  if (c.js) {
+    try { new Function(c.js)(); }
+    catch (e) { console.warn('[' + c.id + '] JS error:', e); }
+  }
+});
+
+const filterBtns = document.querySelectorAll('.ui-filter-btn');
+const searchEl = document.getElementById('search');
+let curFilter = 'all', curQuery = '';
+
+function applyFilter() {
+  document.querySelectorAll('.ui-card').forEach(card => {
+    const matchCat = curFilter === 'all' || card.dataset.cat === curFilter;
+    const matchQuery = !curQuery || card.dataset.name.includes(curQuery);
+    card.classList.toggle('hidden', !(matchCat && matchQuery));
+  });
+}
+
+filterBtns.forEach(b => {
+  b.addEventListener('click', () => {
+    filterBtns.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    curFilter = b.dataset.filter;
+    applyFilter();
+  });
+});
+
+searchEl.addEventListener('input', e => {
+  curQuery = e.target.value.trim().toLowerCase();
+  applyFilter();
+});
+</script>
+</body>
+</html>

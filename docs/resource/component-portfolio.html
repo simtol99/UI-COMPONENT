@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>32가지 프론트엔드 UI 엘리먼트 사전</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* 폰트: 본문은 한국어 강의 사이트 가독성을 위해 Noto Sans KR을 의도적으로 선택,
+   코드는 글자 구분이 뚜렷한 JetBrains Mono를 사용. */
+:root{
+  --bg:#ffffff; --bg-soft:#fafafa; --bg-code:#f6f6f7;
+  --ink:#18181b; --ink-2:#52525b; --ink-3:#a1a1aa;
+  --line:#e4e4e7; --line-2:#d4d4d8;
+  --accent:#2563EB; --accent-soft:#eff6ff;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --sans:"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--bg);
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;}
+
+/* 레이아웃 */
+.layout{display:grid; grid-template-columns:288px 1fr; height:100vh;}
+.side{border-right:1px solid var(--line); background:var(--bg-soft); overflow-y:auto; padding:20px 0;}
+.main{overflow-y:auto;}
+
+/* 사이드바 */
+.brand{padding:0 22px 18px; border-bottom:1px solid var(--line); margin-bottom:8px;}
+.brand h1{font-size:16px; margin:0; letter-spacing:-0.01em;}
+.brand .count{font-size:12px; color:var(--ink-3); margin-top:4px;}
+.grp{padding:14px 22px 4px;}
+.grp__title{font-size:11px; font-weight:700; letter-spacing:0.06em; color:var(--ink-3); text-transform:uppercase;}
+.nav-item{
+  display:flex; align-items:center; gap:10px; width:100%;
+  padding:8px 22px; border:0; background:0; text-align:left; cursor:pointer;
+  font-size:14px; color:var(--ink-2);
+}
+.nav-item:hover{background:#f0f0f1;}
+.nav-item.is-active{background:var(--accent-soft); color:var(--accent); font-weight:500;}
+.nav-item.is-active .nav-item__no{color:var(--accent); border-color:var(--accent);}
+.nav-item__no{
+  flex-shrink:0; width:24px; height:24px; line-height:22px; text-align:center;
+  font-family:var(--mono); font-size:11px; color:var(--ink-3);
+  border:1px solid var(--line-2); border-radius:5px;
+}
+.nav-item__ko{color:var(--ink-3); font-size:12px; margin-left:auto;}
+
+/* 메인 디테일 */
+.detail{max-width:860px; margin:0 auto; padding:40px 44px 80px;}
+.detail__head{margin-bottom:6px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+.detail__no{font-family:var(--mono); font-size:13px; color:var(--ink-3);}
+.detail__title{font-size:26px; margin:0; letter-spacing:-0.02em;}
+.detail__ko{font-size:15px; color:var(--ink-3);}
+.badge{
+  font-size:11px; font-weight:500; padding:3px 9px; border-radius:5px;
+  border:1px solid var(--line-2); color:var(--ink-2); background:var(--bg);
+}
+.detail__desc{color:var(--ink-2); margin:14px 0 26px; font-size:15px; max-width:680px;}
+
+/* 탭 */
+.tabs{display:flex; gap:2px; border-bottom:1px solid var(--line); margin-bottom:0;}
+.tab{
+  padding:10px 16px; font-size:13px; font-weight:500; color:var(--ink-2);
+  background:0; border:0; border-bottom:2px solid transparent; cursor:pointer; margin-bottom:-1px;
+}
+.tab:hover{color:var(--ink);}
+.tab.is-active{color:var(--accent); border-bottom-color:var(--accent);}
+
+.panel{border:1px solid var(--line); border-top:0; border-radius:0 0 8px 8px; overflow:hidden;}
+.panel[hidden]{display:none;}
+
+/* 미리보기 */
+.preview-frame{width:100%; height:340px; border:0; display:block; background:#fff;}
+
+/* 코드 */
+.code-wrap{position:relative; background:var(--bg-code);}
+.code-copy{
+  position:absolute; top:10px; right:10px; z-index:2;
+  font-size:11px; padding:5px 10px; color:var(--ink-2); background:var(--bg);
+  border:1px solid var(--line-2); border-radius:5px; cursor:pointer;
+}
+.code-copy:hover{background:#fff; color:var(--ink);}
+pre{margin:0; padding:18px 20px; overflow:auto; max-height:420px;}
+code{font-family:var(--mono); font-size:13px; line-height:1.7; color:#27272a; white-space:pre; tab-size:2;}
+.code-empty{padding:24px 20px; color:var(--ink-3); font-size:14px;}
+
+/* 모바일 토글 */
+.menu-toggle{display:none;}
+@media (max-width:880px){
+  .layout{grid-template-columns:1fr;}
+  .side{position:fixed; z-index:20; top:0; left:0; width:280px; height:100%; transform:translateX(-100%); transition:transform 150ms;}
+  .side.is-open{transform:translateX(0);}
+  .menu-toggle{
+    display:inline-flex; align-items:center; gap:8px; position:fixed; z-index:21; top:14px; left:14px;
+    padding:8px 14px; font-size:13px; background:var(--bg); border:1px solid var(--line-2);
+    border-radius:6px; cursor:pointer;
+  }
+  .detail{padding:64px 22px 60px;}
+}
+</style>
+</head>
+<body>
+<button class="menu-toggle" id="menuToggle">☰ 목록</button>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="brand">
+      <h1>프론트엔드 UI 엘리먼트 사전</h1>
+      <div class="count">32가지 핵심 UI 요소 · 미리보기 + 소스</div>
+    </div>
+    <nav id="navList"></nav>
+  </aside>
+  <main class="main">
+    <div class="detail" id="detail"></div>
+  </main>
+</div>
+
+<script>
+// 32 UI Elements — 데이터
+// 출처: CareerFoundry "32 UI Elements Designers Need To Know"
+// https://careerfoundry.com/en/blog/ui-design/ui-element-glossary/
+// 각 요소: { n, name, ko, cat, desc, html, css, js }
+
+const ELEMENTS = [
+  {
+    n: 1, name: "Accordion", ko: "아코디언", cat: "container",
+    desc: "섹션을 펼치고 접어 좁은 공간에 많은 정보를 담는다. FAQ나 설정 페이지에서 자주 쓴다.",
+    html: `<div class="acc">
+  <button class="acc__head" aria-expanded="false">
+    <span>배송은 얼마나 걸리나요?</span>
+    <span class="acc__sign">+</span>
+  </button>
+  <div class="acc__body" hidden>
+    <p>주문 후 영업일 기준 2~3일 이내 도착합니다.</p>
+  </div>
+</div>
+<div class="acc">
+  <button class="acc__head" aria-expanded="false">
+    <span>교환·반품이 가능한가요?</span>
+    <span class="acc__sign">+</span>
+  </button>
+  <div class="acc__body" hidden>
+    <p>수령 후 7일 이내 미사용 상품에 한해 가능합니다.</p>
+  </div>
+</div>`,
+    css: `.acc { border: 1px solid #d4d4d8; border-radius: 6px; margin-bottom: 8px; overflow: hidden; }
+.acc__head {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; background: #fff; border: 0; cursor: pointer;
+  font-size: 15px; text-align: left; color: #18181b;
+}
+.acc__head[aria-expanded="true"] { background: #f4f4f5; }
+.acc__sign { font-size: 18px; color: #2563EB; }
+.acc__body { padding: 0 16px 14px; color: #52525b; font-size: 14px; line-height: 1.6; }`,
+    js: `document.querySelectorAll('.acc__head').forEach(function (head) {
+  head.addEventListener('click', function () {
+    var open = head.getAttribute('aria-expanded') === 'true';
+    head.setAttribute('aria-expanded', String(!open));
+    head.querySelector('.acc__sign').textContent = open ? '+' : '\u2212';
+    head.nextElementSibling.hidden = open;
+  });
+});`
+  },
+  {
+    n: 2, name: "Bento Menu", ko: "벤토 메뉴", cat: "nav",
+    desc: "도시락(벤토)처럼 격자형 아이콘으로 주요 메뉴를 한눈에 보여준다. 구글 앱 런처가 대표적이다.",
+    html: `<button class="bento__btn" aria-label="앱 메뉴 열기">
+  <span></span><span></span><span></span>
+  <span></span><span></span><span></span>
+  <span></span><span></span><span></span>
+</button>
+<div class="bento__grid" hidden>
+  <a href="#">메일</a><a href="#">캘린더</a><a href="#">드라이브</a>
+  <a href="#">문서</a><a href="#">시트</a><a href="#">슬라이드</a>
+</div>`,
+    css: `.bento__btn {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+  width: 40px; height: 40px; padding: 6px; background: #fff;
+  border: 1px solid #d4d4d8; border-radius: 6px; cursor: pointer;
+}
+.bento__btn span { background: #3f3f46; border-radius: 1px; }
+.bento__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  margin-top: 8px; padding: 12px; width: 240px;
+  border: 1px solid #d4d4d8; border-radius: 8px; background: #fff;
+}
+.bento__grid a {
+  padding: 16px 8px; text-align: center; font-size: 13px; color: #18181b;
+  text-decoration: none; border-radius: 6px;
+}
+.bento__grid a:hover { background: #f4f4f5; }`,
+    js: `var btn = document.querySelector('.bento__btn');
+var grid = document.querySelector('.bento__grid');
+btn.addEventListener('click', function () { grid.hidden = !grid.hidden; });`
+  },
+  {
+    n: 3, name: "Breadcrumb", ko: "브레드크럼", cat: "nav",
+    desc: "현재 위치를 계층 경로로 보여주는 탐색 보조 장치. 사용자가 상위 단계로 쉽게 돌아가게 한다.",
+    html: `<nav class="bc" aria-label="현재 위치">
+  <ol>
+    <li><a href="#">홈</a></li>
+    <li><a href="#">전자기기</a></li>
+    <li><a href="#">노트북</a></li>
+    <li aria-current="page">게이밍 노트북</li>
+  </ol>
+</nav>`,
+    css: `.bc ol { list-style: none; display: flex; flex-wrap: wrap; gap: 4px; padding: 0; margin: 0; font-size: 14px; }
+.bc li { display: flex; align-items: center; color: #71717a; }
+.bc li + li::before { content: "/"; margin: 0 8px; color: #d4d4d8; }
+.bc a { color: #2563EB; text-decoration: none; }
+.bc a:hover { text-decoration: underline; }
+.bc [aria-current="page"] { color: #18181b; font-weight: 600; }`,
+    js: ``
+  },
+  {
+    n: 4, name: "Button", ko: "버튼", cat: "input",
+    desc: "사용자가 특정 동작을 실행할 수 있음을 알리는 가장 기본적인 입력 요소. 위계에 따라 종류를 나눈다.",
+    html: `<div class="btn-row">
+  <button class="btn btn--primary">저장</button>
+  <button class="btn btn--secondary">취소</button>
+  <button class="btn btn--ghost">더 보기</button>
+  <button class="btn btn--primary" disabled>비활성</button>
+</div>`,
+    css: `.btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn {
+  font-size: 14px; padding: 9px 18px; border-radius: 6px; cursor: pointer;
+  border: 1px solid transparent; transition: background-color 120ms, color 120ms;
+}
+.btn--primary { background: #2563EB; color: #fff; }
+.btn--primary:hover { background: #1d4ed8; }
+.btn--secondary { background: #fff; color: #18181b; border-color: #d4d4d8; }
+.btn--secondary:hover { background: #f4f4f5; }
+.btn--ghost { background: transparent; color: #2563EB; }
+.btn--ghost:hover { background: #eff6ff; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }`,
+    js: ``
+  },
+  {
+    n: 5, name: "Card", ko: "카드", cat: "container",
+    desc: "관련 정보를 사각 모듈에 묶어 보여주는 진입점. 목록을 스크롤하지 않고 여러 콘텐츠를 나열할 때 쓴다.",
+    html: `<article class="card">
+  <div class="card__media">이미지 영역</div>
+  <div class="card__body">
+    <span class="card__tag">신규</span>
+    <h3 class="card__title">클로드 코드 마스터</h3>
+    <p class="card__text">AI Agent 기반 개발 방법론을 처음부터 끝까지.</p>
+    <button class="card__cta">자세히 보기</button>
+  </div>
+</article>`,
+    css: `.card {
+  width: 260px; border: 1px solid #e4e4e7; border-radius: 8px;
+  overflow: hidden; background: #fff;
+}
+.card__media {
+  height: 120px; background: #f4f4f5; display: flex; align-items: center;
+  justify-content: center; color: #a1a1aa; font-size: 13px;
+}
+.card__body { padding: 16px; }
+.card__tag { font-size: 11px; color: #2563EB; font-weight: 600; letter-spacing: 0.02em; }
+.card__title { margin: 6px 0; font-size: 17px; color: #18181b; }
+.card__text { margin: 0 0 14px; font-size: 14px; color: #52525b; line-height: 1.5; }
+.card__cta {
+  font-size: 13px; padding: 8px 14px; background: #2563EB; color: #fff;
+  border: 0; border-radius: 6px; cursor: pointer;
+}`,
+    js: ``
+  },
+  {
+    n: 6, name: "Carousel", ko: "캐러셀", cat: "container",
+    desc: "같은 공간에서 여러 콘텐츠를 좌우로 넘겨 본다. 한 영역에 둘 이상의 콘텐츠를 담는 게 장점이다.",
+    html: `<div class="car">
+  <div class="car__track">
+    <div class="car__slide" style="--c:#2563EB">슬라이드 1</div>
+    <div class="car__slide" style="--c:#0891b2">슬라이드 2</div>
+    <div class="car__slide" style="--c:#7c3aed">슬라이드 3</div>
+  </div>
+  <button class="car__nav car__prev" aria-label="이전">&#8249;</button>
+  <button class="car__nav car__next" aria-label="다음">&#8250;</button>
+  <div class="car__dots"></div>
+</div>`,
+    css: `.car { position: relative; width: 280px; overflow: hidden; border-radius: 8px; }
+.car__track { display: flex; transition: transform 200ms ease; }
+.car__slide {
+  min-width: 280px; height: 150px; display: flex; align-items: center;
+  justify-content: center; color: #fff; font-size: 18px; background: var(--c);
+}
+.car__nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; border: 0; border-radius: 50%;
+  background: rgba(255,255,255,0.9); color: #18181b; font-size: 18px; cursor: pointer;
+}
+.car__prev { left: 8px; } .car__next { right: 8px; }
+.car__dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+.car__dots button { width: 8px; height: 8px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.5); cursor: pointer; padding: 0; }
+.car__dots button.is-active { background: #fff; }`,
+    js: `var track = document.querySelector('.car__track');
+var slides = document.querySelectorAll('.car__slide');
+var dots = document.querySelector('.car__dots');
+var i = 0;
+slides.forEach(function (_, idx) {
+  var d = document.createElement('button');
+  if (idx === 0) d.className = 'is-active';
+  d.addEventListener('click', function () { go(idx); });
+  dots.appendChild(d);
+});
+function go(n) {
+  i = (n + slides.length) % slides.length;
+  track.style.transform = 'translateX(' + (-i * 280) + 'px)';
+  dots.querySelectorAll('button').forEach(function (d, idx) {
+    d.className = idx === i ? 'is-active' : '';
+  });
+}
+document.querySelector('.car__prev').addEventListener('click', function () { go(i - 1); });
+document.querySelector('.car__next').addEventListener('click', function () { go(i + 1); });`
+  },
+  {
+    n: 7, name: "Checkbox", ko: "체크박스", cat: "input",
+    desc: "목록에서 여러 항목을 동시에 선택할 수 있는 네모 상자. 각 체크박스는 독립적으로 켜고 끈다.",
+    html: `<fieldset class="cbx">
+  <legend>관심 분야 (복수 선택)</legend>
+  <label><input type="checkbox" checked> 프론트엔드</label>
+  <label><input type="checkbox"> 백엔드</label>
+  <label><input type="checkbox" checked> AI / 머신러닝</label>
+  <label><input type="checkbox"> 데브옵스</label>
+</fieldset>`,
+    css: `.cbx { border: 1px solid #e4e4e7; border-radius: 8px; padding: 16px; }
+.cbx legend { font-size: 13px; color: #71717a; padding: 0 6px; }
+.cbx label { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 15px; color: #18181b; cursor: pointer; }
+.cbx input { width: 17px; height: 17px; accent-color: #2563EB; cursor: pointer; }`,
+    js: ``
+  },
+  {
+    n: 8, name: "Comment", ko: "댓글", cat: "info",
+    desc: "사용자가 입력한 내용을 시간 순으로 보여준다. 소셜 미디어와 블로그에서 흔히 볼 수 있다.",
+    html: `<ul class="cmt">
+  <li class="cmt__item">
+    <div class="cmt__avatar">김</div>
+    <div class="cmt__body">
+      <div class="cmt__meta"><strong>김개발</strong> <span>2시간 전</span></div>
+      <p>강의 너무 알차네요. 다음 편 기대합니다!</p>
+    </div>
+  </li>
+  <li class="cmt__item">
+    <div class="cmt__avatar">박</div>
+    <div class="cmt__body">
+      <div class="cmt__meta"><strong>박코딩</strong> <span>방금</span></div>
+      <p>OAuth 예제 덕분에 막혔던 부분 해결했어요.</p>
+    </div>
+  </li>
+</ul>`,
+    css: `.cmt { list-style: none; padding: 0; margin: 0; width: 300px; }
+.cmt__item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f4f4f5; }
+.cmt__avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: #2563EB; color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+}
+.cmt__meta { font-size: 13px; color: #71717a; margin-bottom: 4px; }
+.cmt__meta strong { color: #18181b; margin-right: 6px; }
+.cmt__body p { margin: 0; font-size: 14px; color: #3f3f46; line-height: 1.5; }`,
+    js: ``
+  },
+  {
+    n: 9, name: "Döner Menu", ko: "되너 메뉴", cat: "nav",
+    desc: "길이가 다른 가로선 3개로 된 메뉴. 햄버거 메뉴와 달리 '필터 그룹'을 의미하는 경우가 많다.",
+    html: `<button class="doner" aria-label="필터 열기">
+  <span style="width:20px"></span>
+  <span style="width:14px"></span>
+  <span style="width:8px"></span>
+</button>
+<div class="doner__panel" hidden>
+  <p>정렬 / 필터</p>
+  <label><input type="radio" name="sort" checked> 최신순</label>
+  <label><input type="radio" name="sort"> 인기순</label>
+  <label><input type="radio" name="sort"> 가격순</label>
+</div>`,
+    css: `.doner {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  width: 40px; height: 40px; padding: 10px; background: #fff;
+  border: 1px solid #d4d4d8; border-radius: 6px; cursor: pointer;
+}
+.doner span { height: 2px; background: #3f3f46; border-radius: 1px; }
+.doner__panel {
+  margin-top: 8px; padding: 14px; width: 180px;
+  border: 1px solid #d4d4d8; border-radius: 8px; background: #fff;
+}
+.doner__panel p { margin: 0 0 10px; font-size: 12px; color: #71717a; }
+.doner__panel label { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 14px; color: #18181b; }`,
+    js: `var d = document.querySelector('.doner');
+var p = document.querySelector('.doner__panel');
+d.addEventListener('click', function () { p.hidden = !p.hidden; });`
+  },
+  {
+    n: 10, name: "Dropdown", ko: "드롭다운", cat: "input",
+    desc: "클릭하면 목록이 '내려오며' 항목을 선택하게 한다. 옵션이 많을 때 공간을 아끼지만 과용은 주의.",
+    html: `<label class="dd">
+  <span>국가 선택</span>
+  <select>
+    <option>대한민국</option>
+    <option>미국</option>
+    <option>일본</option>
+    <option>독일</option>
+  </select>
+</label>`,
+    css: `.dd { display: block; width: 220px; font-size: 14px; }
+.dd span { display: block; margin-bottom: 6px; color: #71717a; }
+.dd select {
+  width: 100%; padding: 10px 12px; font-size: 15px; color: #18181b;
+  border: 1px solid #d4d4d8; border-radius: 6px; background: #fff; cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2371717a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}`,
+    js: ``
+  },
+  {
+    n: 11, name: "Feed", ko: "피드", cat: "info",
+    desc: "사용자 활동을 시간 순으로 흘려보여주는 영역. 텍스트·이미지·영상 등 다양한 콘텐츠가 섞인다.",
+    html: `<div class="feed">
+  <article class="feed__post">
+    <header><strong>brewnet</strong> <span>· 1시간</span></header>
+    <p>클로드 코드 강의 1편이 공개됐습니다.</p>
+    <footer><button>♥ 24</button><button>↩ 답글</button></footer>
+  </article>
+  <article class="feed__post">
+    <header><strong>run-ai.kr</strong> <span>· 3시간</span></header>
+    <p>SDD 방법론 정리 노트를 올렸어요.</p>
+    <footer><button>♥ 51</button><button>↩ 답글</button></footer>
+  </article>
+</div>`,
+    css: `.feed { width: 300px; }
+.feed__post { padding: 14px 0; border-bottom: 1px solid #f4f4f5; }
+.feed__post header { font-size: 14px; color: #71717a; margin-bottom: 6px; }
+.feed__post header strong { color: #18181b; }
+.feed__post p { margin: 0 0 10px; font-size: 15px; color: #27272a; line-height: 1.5; }
+.feed__post footer { display: flex; gap: 16px; }
+.feed__post button { background: 0; border: 0; color: #71717a; font-size: 13px; cursor: pointer; padding: 0; }
+.feed__post button:hover { color: #2563EB; }`,
+    js: ``
+  },
+  {
+    n: 12, name: "Form", ko: "폼", cat: "input",
+    desc: "관련된 입력값을 한데 모아 제출하는 컨테이너. 회원가입·주문서 등 데이터 입력의 기본 단위다.",
+    html: `<div class="form">
+  <h3>문의하기</h3>
+  <label>이름<input type="text" placeholder="홍길동"></label>
+  <label>이메일<input type="email" placeholder="you@example.com"></label>
+  <label>메시지<textarea rows="3" placeholder="내용을 입력하세요"></textarea></label>
+  <button type="button" class="form__submit">보내기</button>
+</div>`,
+    css: `.form { width: 280px; }
+.form h3 { margin: 0 0 14px; font-size: 17px; color: #18181b; }
+.form label { display: block; margin-bottom: 12px; font-size: 13px; color: #52525b; }
+.form input, .form textarea {
+  display: block; width: 100%; margin-top: 5px; padding: 9px 11px;
+  font-size: 14px; color: #18181b; border: 1px solid #d4d4d8; border-radius: 6px;
+  font-family: inherit; box-sizing: border-box;
+}
+.form input:focus, .form textarea:focus { outline: 2px solid #2563EB; outline-offset: -1px; border-color: transparent; }
+.form__submit {
+  width: 100%; padding: 10px; font-size: 14px; background: #2563EB; color: #fff;
+  border: 0; border-radius: 6px; cursor: pointer;
+}`,
+    js: `document.querySelector('.form__submit').addEventListener('click', function () {
+  this.textContent = '전송 완료 \u2713';
+  this.style.background = '#16a34a';
+});`
+  },
+  {
+    n: 13, name: "Hamburger Menu", ko: "햄버거 메뉴", cat: "nav",
+    desc: "길이가 같은 가로선 3개로 된 메뉴 아이콘. 보통 좌측 상단에서 내비게이션 링크 묶음을 연다.",
+    html: `<button class="ham" aria-label="메뉴 열기" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<nav class="ham__menu" hidden>
+  <a href="#">홈</a><a href="#">강의</a><a href="#">블로그</a><a href="#">문의</a>
+</nav>`,
+    css: `.ham {
+  display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  width: 40px; height: 40px; padding: 9px; background: #fff;
+  border: 1px solid #d4d4d8; border-radius: 6px; cursor: pointer;
+}
+.ham span { height: 2px; background: #3f3f46; border-radius: 1px; transition: transform 120ms, opacity 120ms; }
+.ham[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.ham[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.ham[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.ham__menu { margin-top: 8px; width: 160px; border: 1px solid #d4d4d8; border-radius: 8px; overflow: hidden; }
+.ham__menu a { display: block; padding: 11px 14px; font-size: 14px; color: #18181b; text-decoration: none; }
+.ham__menu a:hover { background: #f4f4f5; }`,
+    js: `var h = document.querySelector('.ham');
+var m = document.querySelector('.ham__menu');
+h.addEventListener('click', function () {
+  var open = h.getAttribute('aria-expanded') === 'true';
+  h.setAttribute('aria-expanded', String(!open));
+  m.hidden = open;
+});`
+  },
+  {
+    n: 14, name: "Icon", ko: "아이콘", cat: "info",
+    desc: "내용을 함축적으로 전달하거나 특정 동작을 촉발하는 작은 이미지. SVG로 만들면 선명하고 가볍다.",
+    html: `<div class="icons">
+  <button class="icon" aria-label="홈">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+  </button>
+  <button class="icon" aria-label="검색">
+    <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6"/></svg>
+  </button>
+  <button class="icon" aria-label="설정">
+    <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="currentColor" stroke-width="1.6"/></svg>
+  </button>
+</div>`,
+    css: `.icons { display: flex; gap: 10px; }
+.icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; color: #3f3f46; background: #fff;
+  border: 1px solid #e4e4e7; border-radius: 8px; cursor: pointer;
+}
+.icon:hover { color: #2563EB; background: #eff6ff; }`,
+    js: ``
+  },
+  {
+    n: 15, name: "Input Field", ko: "입력 필드", cat: "input",
+    desc: "사용자가 텍스트를 입력하는 가장 기본 요소. 폼뿐 아니라 검색창도 입력 필드의 일종이다.",
+    html: `<div class="inp">
+  <label for="nm">이름</label>
+  <input id="nm" type="text" placeholder="이름을 입력하세요">
+  <p class="inp__hint">실명을 입력해 주세요.</p>
+</div>`,
+    css: `.inp { width: 240px; }
+.inp label { display: block; margin-bottom: 6px; font-size: 13px; color: #52525b; }
+.inp input {
+  width: 100%; padding: 10px 12px; font-size: 15px; color: #18181b;
+  border: 1px solid #d4d4d8; border-radius: 6px; box-sizing: border-box;
+}
+.inp input:focus { outline: 2px solid #2563EB; outline-offset: -1px; border-color: transparent; }
+.inp__hint { margin: 6px 0 0; font-size: 12px; color: #a1a1aa; }`,
+    js: ``
+  },
+  {
+    n: 16, name: "Kebab Menu", ko: "케밥 메뉴", cat: "nav",
+    desc: "세로 점 3개로 된 메뉴. 해당 항목에 적용 가능한 옵션 묶음을 펼친다.",
+    html: `<button class="keb" aria-label="더보기">
+  <span></span><span></span><span></span>
+</button>
+<div class="keb__menu" hidden>
+  <button>편집</button><button>공유</button><button>삭제</button>
+</div>`,
+    css: `.keb {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  width: 36px; height: 36px; background: #fff; border: 1px solid #e4e4e7;
+  border-radius: 6px; cursor: pointer;
+}
+.keb span { width: 4px; height: 4px; border-radius: 50%; background: #3f3f46; }
+.keb__menu { margin-top: 6px; width: 130px; border: 1px solid #d4d4d8; border-radius: 8px; overflow: hidden; }
+.keb__menu button { display: block; width: 100%; padding: 10px 14px; text-align: left; font-size: 14px; color: #18181b; background: 0; border: 0; cursor: pointer; }
+.keb__menu button:hover { background: #f4f4f5; }`,
+    js: `var k = document.querySelector('.keb');
+var km = document.querySelector('.keb__menu');
+k.addEventListener('click', function () { km.hidden = !km.hidden; });`
+  }
+];
+
+
+// 요소 17~32 (ELEMENTS 배열에 이어붙임)
+const ELEMENTS_2 = [
+  {
+    n: 17, name: "Loader", ko: "로더", cat: "info",
+    desc: "시스템이 백그라운드에서 작업 중임을 알려 사용자가 기다리게 한다. 스피너·스켈레톤 등 형태가 다양하다.",
+    html: `<div class="ldr">
+  <div class="ldr__spin" role="status" aria-label="불러오는 중"></div>
+  <div class="ldr__skel">
+    <span class="ldr__line" style="width:80%"></span>
+    <span class="ldr__line" style="width:60%"></span>
+    <span class="ldr__line" style="width:90%"></span>
+  </div>
+</div>`,
+    css: `.ldr { display: flex; align-items: center; gap: 24px; }
+.ldr__spin {
+  width: 32px; height: 32px; border: 3px solid #e4e4e7; border-top-color: #2563EB;
+  border-radius: 50%; animation: ldr-rot 700ms linear infinite;
+}
+@keyframes ldr-rot { to { transform: rotate(360deg); } }
+.ldr__skel { display: flex; flex-direction: column; gap: 8px; width: 180px; }
+.ldr__line { height: 12px; border-radius: 4px; background: #e4e4e7; animation: ldr-pulse 1.2s ease-in-out infinite; }
+@keyframes ldr-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }`,
+    js: ``
+  },
+  {
+    n: 18, name: "Meatballs Menu", ko: "미트볼 메뉴", cat: "nav",
+    desc: "가로 점 3개로 된 메뉴. 클릭하면 추가 옵션이 펼쳐진다. 케밥(세로)과 방향만 다르다.",
+    html: `<button class="meat" aria-label="옵션">
+  <span></span><span></span><span></span>
+</button>
+<div class="meat__menu" hidden>
+  <button>이름 변경</button><button>복제</button><button>아카이브</button>
+</div>`,
+    css: `.meat {
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  width: 40px; height: 32px; background: #fff; border: 1px solid #e4e4e7;
+  border-radius: 6px; cursor: pointer;
+}
+.meat span { width: 4px; height: 4px; border-radius: 50%; background: #3f3f46; }
+.meat__menu { margin-top: 6px; width: 140px; border: 1px solid #d4d4d8; border-radius: 8px; overflow: hidden; }
+.meat__menu button { display: block; width: 100%; padding: 10px 14px; text-align: left; font-size: 14px; color: #18181b; background: 0; border: 0; cursor: pointer; }
+.meat__menu button:hover { background: #f4f4f5; }`,
+    js: `var mb = document.querySelector('.meat');
+var mm = document.querySelector('.meat__menu');
+mb.addEventListener('click', function () { mm.hidden = !mm.hidden; });`
+  },
+  {
+    n: 19, name: "Modal", ko: "모달", cat: "container",
+    desc: "본문 위에 떠서 상호작용을 강제하는 작은 창. 닫기 전까지 뒤 작업으로 돌아갈 수 없다. 확인 창이 대표적이다.",
+    html: `<button class="modal__open">모달 열기</button>
+<div class="modal" hidden>
+  <div class="modal__backdrop"></div>
+  <div class="modal__box" role="dialog" aria-modal="true">
+    <h3>항목을 삭제할까요?</h3>
+    <p>이 작업은 되돌릴 수 없습니다.</p>
+    <div class="modal__actions">
+      <button class="modal__cancel">취소</button>
+      <button class="modal__confirm">삭제</button>
+    </div>
+  </div>
+</div>`,
+    css: `.modal__open { padding: 9px 16px; font-size: 14px; background: #2563EB; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
+.modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+.modal__backdrop { position: absolute; inset: 0; background: rgba(24,24,27,0.45); }
+.modal__box { position: relative; width: 280px; background: #fff; border-radius: 8px; padding: 22px; }
+.modal__box h3 { margin: 0 0 8px; font-size: 17px; color: #18181b; }
+.modal__box p { margin: 0 0 18px; font-size: 14px; color: #52525b; }
+.modal__actions { display: flex; justify-content: flex-end; gap: 8px; }
+.modal__actions button { padding: 8px 16px; font-size: 14px; border-radius: 6px; cursor: pointer; }
+.modal__cancel { background: #fff; color: #18181b; border: 1px solid #d4d4d8; }
+.modal__confirm { background: #dc2626; color: #fff; border: 0; }`,
+    js: `var modal = document.querySelector('.modal');
+document.querySelector('.modal__open').addEventListener('click', function () { modal.hidden = false; });
+function close() { modal.hidden = true; }
+document.querySelector('.modal__backdrop').addEventListener('click', close);
+document.querySelector('.modal__cancel').addEventListener('click', close);
+document.querySelector('.modal__confirm').addEventListener('click', close);`
+  },
+  {
+    n: 20, name: "Notification", ko: "알림", cat: "info",
+    desc: "새 소식·성공·오류 등을 알리는 표식. 작은 빨간 점부터 토스트 메시지까지 형태가 다양하다.",
+    html: `<div class="noti">
+  <button class="noti__bell" aria-label="알림">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 9a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 19a2 2 0 004 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    <span class="noti__dot">3</span>
+  </button>
+  <div class="noti__toast noti__toast--ok">저장되었습니다.</div>
+  <div class="noti__toast noti__toast--err">네트워크 오류가 발생했습니다.</div>
+</div>`,
+    css: `.noti { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.noti__bell { position: relative; width: 44px; height: 44px; background: #fff; border: 1px solid #e4e4e7; border-radius: 8px; color: #3f3f46; cursor: pointer; }
+.noti__dot {
+  position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px;
+  padding: 0 4px; background: #dc2626; color: #fff; font-size: 10px; line-height: 16px;
+  border-radius: 8px; box-sizing: border-box;
+}
+.noti__toast { padding: 11px 14px; font-size: 13px; border-radius: 6px; border: 1px solid; }
+.noti__toast--ok { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.noti__toast--err { background: #fef2f2; color: #991b1b; border-color: #fecaca; }`,
+    js: ``
+  },
+  {
+    n: 21, name: "Pagination", ko: "페이지네이션", cat: "nav",
+    desc: "콘텐츠를 여러 페이지로 나눠 현재 위치를 알리고 이동하게 한다. 보통 페이지 하단에 둔다.",
+    html: `<nav class="pg" aria-label="페이지">
+  <button class="pg__btn" data-step="-1">이전</button>
+  <div class="pg__nums"></div>
+  <button class="pg__btn" data-step="1">다음</button>
+</nav>`,
+    css: `.pg { display: flex; align-items: center; gap: 6px; }
+.pg__nums { display: flex; gap: 4px; }
+.pg__btn, .pg__num {
+  min-width: 36px; height: 36px; padding: 0 10px; font-size: 14px;
+  background: #fff; color: #18181b; border: 1px solid #d4d4d8; border-radius: 6px; cursor: pointer;
+}
+.pg__num.is-active { background: #2563EB; color: #fff; border-color: #2563EB; }
+.pg__btn:disabled { opacity: 0.4; cursor: not-allowed; }`,
+    js: `var total = 5, cur = 1;
+var nums = document.querySelector('.pg__nums');
+function render() {
+  nums.innerHTML = '';
+  for (var p = 1; p <= total; p++) {
+    var b = document.createElement('button');
+    b.className = 'pg__num' + (p === cur ? ' is-active' : '');
+    b.textContent = p;
+    (function (pp) { b.addEventListener('click', function () { cur = pp; render(); }); })(p);
+    nums.appendChild(b);
+  }
+  document.querySelectorAll('.pg__btn')[0].disabled = cur === 1;
+  document.querySelectorAll('.pg__btn')[1].disabled = cur === total;
+}
+document.querySelectorAll('.pg__btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    cur = Math.min(total, Math.max(1, cur + Number(btn.dataset.step)));
+    render();
+  });
+});
+render();`
+  },
+  {
+    n: 22, name: "Picker", ko: "피커", cat: "input",
+    desc: "날짜·시간 등을 고르게 하는 요소. 입력 필드보다 데이터 형식을 일관되게 유지할 수 있다.",
+    html: `<div class="pick">
+  <label>날짜<input type="date" value="2026-04-01"></label>
+  <label>시간<input type="time" value="14:30"></label>
+</div>`,
+    css: `.pick { display: flex; gap: 14px; }
+.pick label { display: block; font-size: 13px; color: #52525b; }
+.pick input {
+  display: block; margin-top: 6px; padding: 9px 11px; font-size: 14px;
+  color: #18181b; border: 1px solid #d4d4d8; border-radius: 6px; font-family: inherit;
+}
+.pick input:focus { outline: 2px solid #2563EB; outline-offset: -1px; border-color: transparent; }`,
+    js: ``
+  },
+  {
+    n: 23, name: "Progress Bar", ko: "진행 표시줄", cat: "info",
+    desc: "여러 단계 중 현재 위치를 시각화한다. 결제·온보딩처럼 순차 과정에서 자주 쓴다.",
+    html: `<div class="prog">
+  <div class="prog__bar"><div class="prog__fill" style="width:60%"></div></div>
+  <div class="prog__label">3 / 5 단계 · 60%</div>
+  <button class="prog__btn">진행</button>
+</div>`,
+    css: `.prog { width: 280px; }
+.prog__bar { height: 8px; background: #e4e4e7; border-radius: 4px; overflow: hidden; }
+.prog__fill { height: 100%; background: #2563EB; border-radius: 4px; transition: width 200ms ease; }
+.prog__label { margin: 8px 0 12px; font-size: 13px; color: #71717a; }
+.prog__btn { padding: 8px 16px; font-size: 14px; background: #fff; color: #18181b; border: 1px solid #d4d4d8; border-radius: 6px; cursor: pointer; }`,
+    js: `var fill = document.querySelector('.prog__fill');
+var label = document.querySelector('.prog__label');
+var step = 3;
+document.querySelector('.prog__btn').addEventListener('click', function () {
+  step = step >= 5 ? 1 : step + 1;
+  var pct = step * 20;
+  fill.style.width = pct + '%';
+  label.textContent = step + ' / 5 단계 \u00b7 ' + pct + '%';
+});`
+  },
+  {
+    n: 24, name: "Radio Buttons", ko: "라디오 버튼", cat: "input",
+    desc: "목록에서 단 하나만 선택하게 하는 원형 요소. 여러 개를 고를 수 있는 체크박스와 구분된다.",
+    html: `<fieldset class="rad">
+  <legend>결제 수단 (하나만 선택)</legend>
+  <label><input type="radio" name="pay" checked> 신용카드</label>
+  <label><input type="radio" name="pay"> 계좌이체</label>
+  <label><input type="radio" name="pay"> 간편결제</label>
+</fieldset>`,
+    css: `.rad { border: 1px solid #e4e4e7; border-radius: 8px; padding: 16px; }
+.rad legend { font-size: 13px; color: #71717a; padding: 0 6px; }
+.rad label { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 15px; color: #18181b; cursor: pointer; }
+.rad input { width: 17px; height: 17px; accent-color: #2563EB; cursor: pointer; }`,
+    js: ``
+  },
+  {
+    n: 25, name: "Search Field", ko: "검색 필드", cat: "input",
+    desc: "돋보기 아이콘이 들어간 입력 필드로, 시스템 내 정보를 찾게 한다.",
+    html: `<form class="srch" onsubmit="return false">
+  <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="11" cy="11" r="7" fill="none" stroke="#71717a" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke="#71717a" stroke-width="1.6"/></svg>
+  <input type="search" placeholder="강의 검색...">
+  <button type="submit">검색</button>
+</form>`,
+    css: `.srch { display: flex; align-items: center; gap: 8px; width: 300px; padding: 6px 8px 6px 12px; border: 1px solid #d4d4d8; border-radius: 8px; background: #fff; }
+.srch:focus-within { outline: 2px solid #2563EB; outline-offset: -1px; border-color: transparent; }
+.srch svg { flex-shrink: 0; }
+.srch input { flex: 1; border: 0; outline: 0; font-size: 15px; color: #18181b; background: transparent; }
+.srch button { padding: 7px 14px; font-size: 13px; background: #2563EB; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }`,
+    js: ``
+  },
+  {
+    n: 26, name: "Sidebar", ko: "사이드바", cat: "nav",
+    desc: "페이지 한쪽에 탐색 메뉴나 콘텐츠를 세로로 모아 둔다. 항상 보이거나 접어 둘 수 있다.",
+    html: `<div class="sb-demo">
+  <aside class="sb">
+    <a class="is-active" href="#">대시보드</a>
+    <a href="#">강의 목록</a>
+    <a href="#">수강생</a>
+    <a href="#">설정</a>
+  </aside>
+  <div class="sb-main">선택한 메뉴의 콘텐츠가 여기에 표시됩니다.</div>
+</div>`,
+    css: `.sb-demo { display: flex; border: 1px solid #e4e4e7; border-radius: 8px; overflow: hidden; height: 200px; }
+.sb { width: 150px; background: #fafafa; border-right: 1px solid #e4e4e7; padding: 10px; }
+.sb a { display: block; padding: 9px 12px; font-size: 14px; color: #3f3f46; text-decoration: none; border-radius: 6px; margin-bottom: 2px; }
+.sb a:hover { background: #f0f0f1; }
+.sb a.is-active { background: #2563EB; color: #fff; }
+.sb-main { flex: 1; padding: 20px; font-size: 14px; color: #52525b; }`,
+    js: `document.querySelectorAll('.sb a').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelectorAll('.sb a').forEach(function (x) { x.classList.remove('is-active'); });
+    a.classList.add('is-active');
+    document.querySelector('.sb-main').textContent = a.textContent + ' 메뉴를 선택했습니다.';
+  });
+});`
+  },
+  {
+    n: 27, name: "Slider Controls", ko: "슬라이더", cat: "input",
+    desc: "손잡이를 끌어 값이나 범위를 미세하게 조절한다. 볼륨·밝기·가격대 설정에 쓴다.",
+    html: `<div class="sld">
+  <label>볼륨</label>
+  <input type="range" min="0" max="100" value="40">
+  <output class="sld__out">40</output>
+</div>`,
+    css: `.sld { width: 280px; }
+.sld label { display: block; margin-bottom: 10px; font-size: 13px; color: #52525b; }
+.sld input[type=range] { width: 220px; accent-color: #2563EB; vertical-align: middle; }
+.sld__out { display: inline-block; margin-left: 12px; min-width: 28px; font-size: 14px; color: #18181b; font-variant-numeric: tabular-nums; }`,
+    js: `var range = document.querySelector('.sld input');
+var out = document.querySelector('.sld__out');
+range.addEventListener('input', function () { out.textContent = range.value; });`
+  },
+  {
+    n: 28, name: "Stepper", ko: "스테퍼", cat: "input",
+    desc: "정해진 단위만큼 값을 늘리거나 줄이는 두 칸짜리 컨트롤. 슬라이더와 달리 증분이 고정이다.",
+    html: `<div class="stp">
+  <label>수량</label>
+  <div class="stp__box">
+    <button class="stp__btn" data-d="-1" aria-label="감소">\u2212</button>
+    <span class="stp__val">1</span>
+    <button class="stp__btn" data-d="1" aria-label="증가">+</button>
+  </div>
+</div>`,
+    css: `.stp label { display: block; margin-bottom: 8px; font-size: 13px; color: #52525b; }
+.stp__box { display: inline-flex; align-items: center; border: 1px solid #d4d4d8; border-radius: 6px; overflow: hidden; }
+.stp__btn { width: 40px; height: 40px; font-size: 18px; background: #fff; color: #18181b; border: 0; cursor: pointer; }
+.stp__btn:hover { background: #f4f4f5; }
+.stp__val { min-width: 44px; text-align: center; font-size: 15px; color: #18181b; border-left: 1px solid #e4e4e7; border-right: 1px solid #e4e4e7; line-height: 40px; }`,
+    js: `var val = document.querySelector('.stp__val');
+var n = 1;
+document.querySelectorAll('.stp__btn').forEach(function (b) {
+  b.addEventListener('click', function () {
+    n = Math.max(0, n + Number(b.dataset.d));
+    val.textContent = n;
+  });
+});`
+  },
+  {
+    n: 29, name: "Tag", ko: "태그", cat: "info",
+    desc: "콘텐츠를 분류·표시하는 라벨. 관련 키워드로 찾기와 탐색을 쉽게 한다. 블로그·소셜에서 흔하다.",
+    html: `<div class="tags">
+  <span class="tag">#클로드코드</span>
+  <span class="tag">#AI개발</span>
+  <span class="tag tag--rm">#TDD <button aria-label="제거">\u00d7</button></span>
+  <span class="tag">#SDD</span>
+</div>`,
+    css: `.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px;
+  font-size: 13px; color: #3730a3; background: #eef2ff; border-radius: 6px;
+}
+.tag--rm button { background: 0; border: 0; color: #6366f1; font-size: 15px; line-height: 1; cursor: pointer; padding: 0; }
+.tag--rm button:hover { color: #312e81; }`,
+    js: `document.querySelectorAll('.tag--rm button').forEach(function (b) {
+  b.addEventListener('click', function () { b.closest('.tag').remove(); });
+});`
+  },
+  {
+    n: 30, name: "Tab Bar", ko: "탭 바", cat: "nav",
+    desc: "주요 섹션 사이를 빠르게 오가게 하는 탭. 모바일 앱에서는 화면 하단에 두는 경우가 많다.",
+    html: `<div class="tabbar">
+  <nav class="tabbar__nav">
+    <button class="is-active" data-tab="0">홈</button>
+    <button data-tab="1">검색</button>
+    <button data-tab="2">알림</button>
+    <button data-tab="3">내정보</button>
+  </nav>
+  <div class="tabbar__panel">홈 화면 콘텐츠</div>
+</div>`,
+    css: `.tabbar { width: 300px; border: 1px solid #e4e4e7; border-radius: 8px; overflow: hidden; }
+.tabbar__panel { padding: 28px 20px; font-size: 14px; color: #52525b; text-align: center; }
+.tabbar__nav { display: flex; border-top: 1px solid #e4e4e7; }
+.tabbar__nav button { flex: 1; padding: 12px 0; font-size: 13px; color: #71717a; background: #fafafa; border: 0; cursor: pointer; }
+.tabbar__nav button.is-active { color: #2563EB; background: #fff; font-weight: 600; }`,
+    js: `var labels = ['홈 화면 콘텐츠', '검색 화면 콘텐츠', '알림 목록', '내 정보 화면'];
+var panel = document.querySelector('.tabbar__panel');
+document.querySelectorAll('.tabbar__nav button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('.tabbar__nav button').forEach(function (x) { x.classList.remove('is-active'); });
+    b.classList.add('is-active');
+    panel.textContent = labels[Number(b.dataset.tab)];
+  });
+});`
+  },
+  {
+    n: 31, name: "Tooltip", ko: "툴팁", cat: "info",
+    desc: "요소 위에 잠깐 떠서 부가 설명을 주는 작은 힌트. 아이콘이나 줄임 텍스트의 의미를 보충한다.",
+    html: `<div class="tip-demo">
+  <span class="tip">
+    <button class="tip__trigger">호버하세요</button>
+    <span class="tip__bubble" role="tooltip">이곳에 설명이 표시됩니다.</span>
+  </span>
+</div>`,
+    css: `.tip-demo { padding: 30px 0; }
+.tip { position: relative; display: inline-block; }
+.tip__trigger { padding: 9px 16px; font-size: 14px; background: #fff; color: #18181b; border: 1px solid #d4d4d8; border-radius: 6px; cursor: help; }
+.tip__bubble {
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  white-space: nowrap; padding: 7px 11px; font-size: 12px; color: #fff;
+  background: #18181b; border-radius: 6px; opacity: 0; pointer-events: none; transition: opacity 120ms;
+}
+.tip__bubble::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #18181b; }
+.tip:hover .tip__bubble, .tip:focus-within .tip__bubble { opacity: 1; }`,
+    js: ``
+  },
+  {
+    n: 32, name: "Toggle", ko: "토글", cat: "input",
+    desc: "켜고 끄는 스위치. 하나의 설정을 즉시 on/off 할 때 쓴다. 체크박스보다 상태 변화가 직관적이다.",
+    html: `<div class="tgl">
+  <label class="tgl__row">
+    <span>다크 모드</span>
+    <button class="tgl__sw" role="switch" aria-checked="false"><span class="tgl__knob"></span></button>
+  </label>
+  <p class="tgl__state">현재: 꺼짐</p>
+</div>`,
+    css: `.tgl { width: 220px; }
+.tgl__row { display: flex; align-items: center; justify-content: space-between; font-size: 15px; color: #18181b; }
+.tgl__sw { width: 46px; height: 26px; padding: 3px; background: #d4d4d8; border: 0; border-radius: 13px; cursor: pointer; transition: background-color 150ms; }
+.tgl__sw[aria-checked="true"] { background: #2563EB; }
+.tgl__knob { display: block; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: transform 150ms; }
+.tgl__sw[aria-checked="true"] .tgl__knob { transform: translateX(20px); }
+.tgl__state { margin: 12px 0 0; font-size: 13px; color: #71717a; }`,
+    js: `var sw = document.querySelector('.tgl__sw');
+var state = document.querySelector('.tgl__state');
+sw.addEventListener('click', function () {
+  var on = sw.getAttribute('aria-checked') === 'true';
+  sw.setAttribute('aria-checked', String(!on));
+  state.textContent = '현재: ' + (on ? '꺼짐' : '켜짐');
+});`
+  }
+];
+
+
+var CATS = {
+  input:     { label:"입력 컨트롤", desc:"Input Controls" },
+  nav:       { label:"내비게이션", desc:"Navigational" },
+  info:      { label:"정보 표시", desc:"Informational" },
+  container: { label:"컨테이너", desc:"Containers" }
+};
+var CAT_ORDER = ["input","nav","info","container"];
+
+var DATA = ELEMENTS.concat(ELEMENTS_2);
+var navList = document.getElementById("navList");
+var detail  = document.getElementById("detail");
+var side    = document.getElementById("side");
+
+// 사이드바 렌더 (카테고리 그룹)
+CAT_ORDER.forEach(function(catKey){
+  var items = DATA.filter(function(e){ return e.cat === catKey; });
+  var grp = document.createElement("div");
+  grp.className = "grp";
+  grp.innerHTML = '<span class="grp__title">' + CATS[catKey].label + ' (' + items.length + ')</span>';
+  navList.appendChild(grp);
+  items.forEach(function(e){
+    var b = document.createElement("button");
+    b.className = "nav-item";
+    b.dataset.n = e.n;
+    b.innerHTML = '<span class="nav-item__no">' + e.n + '</span>' +
+                  '<span>' + e.name + '</span>' +
+                  '<span class="nav-item__ko">' + e.ko + '</span>';
+    b.addEventListener("click", function(){ select(e.n); side.classList.remove("is-open"); });
+    navList.appendChild(b);
+  });
+});
+
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// iframe 미리보기 문서 생성
+function buildSrcdoc(e){
+  var base =
+    'body{font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
+    'margin:0;padding:28px;color:#18181b;background:#fff;display:flex;align-items:center;' +
+    'justify-content:center;min-height:100vh;box-sizing:border-box;}' +
+    '*{box-sizing:border-box;}';
+  return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
+         '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+         '<style>' + base + e.css + '</style></head><body>' +
+         '<div class="demo-root">' + e.html + '</div>' +
+         '<script>' + (e.js || '') + '<\/script></body></html>';
+}
+
+function codeBlock(label, source, lang){
+  if(!source || !source.trim()){
+    return '<div class="panel" data-tab="' + lang + '" hidden>' +
+           '<div class="code-empty">이 요소는 ' + label + ' 코드가 필요하지 않습니다.</div></div>';
+  }
+  return '<div class="panel" data-tab="' + lang + '" hidden>' +
+         '<div class="code-wrap"><button class="code-copy" data-src="' + lang + '">복사</button>' +
+         '<pre><code>' + escapeHtml(source.trim()) + '</code></pre></div></div>';
+}
+
+function select(n){
+  var e = DATA.find(function(x){ return x.n === n; });
+  if(!e) return;
+
+  // 사이드바 활성화
+  document.querySelectorAll(".nav-item").forEach(function(b){
+    b.classList.toggle("is-active", Number(b.dataset.n) === n);
+  });
+
+  detail.innerHTML =
+    '<div class="detail__head">' +
+      '<span class="detail__no">' + (e.n < 10 ? "0"+e.n : e.n) + '</span>' +
+      '<h2 class="detail__title">' + e.name + '</h2>' +
+      '<span class="detail__ko">' + e.ko + '</span>' +
+      '<span class="badge">' + CATS[e.cat].label + '</span>' +
+    '</div>' +
+    '<p class="detail__desc">' + e.desc + '</p>' +
+    '<div class="tabs">' +
+      '<button class="tab is-active" data-tab="preview">미리보기</button>' +
+      '<button class="tab" data-tab="html">HTML</button>' +
+      '<button class="tab" data-tab="css">CSS</button>' +
+      '<button class="tab" data-tab="js">JS</button>' +
+    '</div>' +
+    '<div class="panel" data-tab="preview"><iframe class="preview-frame" title="미리보기"></iframe></div>' +
+    codeBlock("HTML", e.html, "html") +
+    codeBlock("CSS", e.css, "css") +
+    codeBlock("JavaScript", e.js, "js");
+
+  // 미리보기 주입 (srcdoc은 속성 escape 문제를 피하려 프로퍼티로 할당)
+  detail.querySelector(".preview-frame").srcdoc = buildSrcdoc(e);
+
+  // 탭 전환
+  detail.querySelectorAll(".tab").forEach(function(t){
+    t.addEventListener("click", function(){
+      var key = t.dataset.tab;
+      detail.querySelectorAll(".tab").forEach(function(x){ x.classList.toggle("is-active", x===t); });
+      detail.querySelectorAll(".panel").forEach(function(p){ p.hidden = p.dataset.tab !== key; });
+    });
+  });
+
+  // 복사 버튼
+  detail.querySelectorAll(".code-copy").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var src = btn.dataset.src;
+      var text = src === "html" ? e.html : src === "css" ? e.css : e.js;
+      navigator.clipboard && navigator.clipboard.writeText(text.trim());
+      var old = btn.textContent; btn.textContent = "복사됨 \u2713";
+      setTimeout(function(){ btn.textContent = old; }, 1200);
+    });
+  });
+
+  detail.parentElement.scrollTop = 0;
+}
+
+document.getElementById("menuToggle").addEventListener("click", function(){
+  side.classList.toggle("is-open");
+});
+
+// 최초 선택
+select(1);
+</script>
+</body>
+</html>
