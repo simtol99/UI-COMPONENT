@@ -13,6 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- 아이콘: 이모지 대신 lucide.dev 스트로크 아이콘으로 룩앤필 통일 (docs/resource/ui-component.html과 동일한 CDN 패턴) -->
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
   :root {
     --bg: #ffffff;
@@ -30,6 +32,8 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
+  /* lucide 아이콘 기본 크기 — 글자 크기(em)에 맞춰 함께 스케일되도록 통일 */
+  .lucide { width: 1em; height: 1em; stroke-width: 2px; vertical-align: -0.15em; flex-shrink: 0; }
   body {
     font-family: 'IBM Plex Sans', sans-serif;
     color: var(--text);
@@ -226,15 +230,15 @@ const components = [
     feature: '콘텐츠 토글 / 단계적 정보 노출 (Progressive Disclosure)',
     html: `<div class="accordion">
   <div class="accordion-item">
-    <button class="accordion-header">결제는 어떻게 하나요?</button>
+    <button class="accordion-header">결제는 어떻게 하나요?<i data-lucide="chevron-down" class="lucide accordion-caret"></i></button>
     <div class="accordion-body">신용카드, 계좌이체, 간편결제를 지원합니다.</div>
   </div>
   <div class="accordion-item">
-    <button class="accordion-header">배송은 얼마나 걸리나요?</button>
+    <button class="accordion-header">배송은 얼마나 걸리나요?<i data-lucide="chevron-down" class="lucide accordion-caret"></i></button>
     <div class="accordion-body">평일 오후 2시 이전 주문 시 당일 출고됩니다.</div>
   </div>
   <div class="accordion-item">
-    <button class="accordion-header">환불 정책이 궁금합니다</button>
+    <button class="accordion-header">환불 정책이 궁금합니다<i data-lucide="chevron-down" class="lucide accordion-caret"></i></button>
     <div class="accordion-body">수령 후 7일 이내 무료 반품 가능합니다.</div>
   </div>
 </div>`,
@@ -245,9 +249,9 @@ const components = [
   padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center;
 }
-.accordion-header::after { content: '+'; color: #64748b; }
+.accordion-header .accordion-caret { color: #64748b; transition: transform .15s ease; }
 .accordion-item.open .accordion-header { background: #f1f5f9; }
-.accordion-item.open .accordion-header::after { content: '−'; }
+.accordion-item.open .accordion-header .accordion-caret { transform: rotate(180deg); }
 .accordion-body { display: none; padding: 4px 14px 12px; color: #64748b; font-size: 12px; }
 .accordion-item.open .accordion-body { display: block; }`,
     js: `document.querySelectorAll('.accordion-header').forEach(btn => {
@@ -267,12 +271,12 @@ const components = [
     <span class="brow"><span class="bdot"></span><span class="bdot"></span><span class="bdot"></span></span>
   </button>
   <div class="bento-popover">
-    <div class="bapp" title="메일">📧</div>
-    <div class="bapp" title="캘린더">📅</div>
-    <div class="bapp" title="드라이브">📁</div>
-    <div class="bapp" title="문서">📝</div>
-    <div class="bapp" title="채팅">💬</div>
-    <div class="bapp" title="지도">🗺️</div>
+    <div class="bapp" title="메일"><i data-lucide="mail" class="lucide"></i></div>
+    <div class="bapp" title="캘린더"><i data-lucide="calendar" class="lucide"></i></div>
+    <div class="bapp" title="드라이브"><i data-lucide="folder" class="lucide"></i></div>
+    <div class="bapp" title="문서"><i data-lucide="file-text" class="lucide"></i></div>
+    <div class="bapp" title="채팅"><i data-lucide="message-circle" class="lucide"></i></div>
+    <div class="bapp" title="지도"><i data-lucide="map" class="lucide"></i></div>
   </div>
 </div>`,
     css: `.bento-wrap { position: relative; display: inline-block; }
@@ -395,13 +399,13 @@ document.addEventListener('click', () => {
     <div class="carousel-slide s3">슬라이드 3</div>
   </div>
   <div class="carousel-controls">
-    <button class="carousel-btn prev">‹</button>
+    <button class="carousel-btn prev"><i data-lucide="chevron-left" class="lucide"></i></button>
     <div class="carousel-dots">
       <span class="carousel-dot active" data-i="0"></span>
       <span class="carousel-dot" data-i="1"></span>
       <span class="carousel-dot" data-i="2"></span>
     </div>
-    <button class="carousel-btn next">›</button>
+    <button class="carousel-btn next"><i data-lucide="chevron-right" class="lucide"></i></button>
   </div>
 </div>`,
     css: `.carousel { width: 100%; max-width: 320px; position: relative; }
@@ -468,7 +472,7 @@ document.addEventListener('click', () => {
     <div class="comment-body">
       <span class="comment-author">홍길동</span>
       <span class="comment-time">3분 전</span>
-      <div class="comment-text">정말 유익한 글이네요 👍</div>
+      <div class="comment-text">정말 유익한 글이네요 <i data-lucide="thumbs-up" class="lucide"></i></div>
     </div>
   </div>
   <div class="comment">
@@ -555,6 +559,7 @@ document.addEventListener('click', () => {
     html: `<div class="dropdown" id="dd-demo">
   <button class="dropdown-trigger">
     <span class="dd-value">한국</span>
+    <i data-lucide="chevron-down" class="lucide dropdown-caret"></i>
   </button>
   <div class="dropdown-menu">
     <div class="dropdown-item">한국</div>
@@ -569,7 +574,7 @@ document.addEventListener('click', () => {
   padding: 8px 14px; font-size: 13px; cursor: pointer;
   display: flex; align-items: center; gap: 10px; min-width: 140px;
 }
-.dropdown-trigger::after { content: '▾'; margin-left: auto; color: #94a3b8; font-size: 10px; }
+.dropdown-trigger .dropdown-caret { margin-left: auto; color: #94a3b8; font-size: 12px; }
 .dropdown-menu {
   display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px;
   background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
@@ -610,7 +615,7 @@ document.addEventListener('click', () => {
       <span class="feed-name">@codevillain</span>
       <span class="feed-time">2분 전</span>
     </div>
-    <div class="feed-text">새 강의 영상이 업로드되었습니다 🎬</div>
+    <div class="feed-text">새 강의 영상이 업로드되었습니다 <i data-lucide="video" class="lucide"></i></div>
   </div>
   <div class="feed-post">
     <div class="feed-post-head">
@@ -739,11 +744,11 @@ document.addEventListener('click', () => {
     usecase: '툴바 · 메뉴 항목 · 상태 표시',
     feature: '의미의 시각적 압축 / 텍스트 없는 액션 전달',
     html: `<div class="icon-row">
-  <button class="icon-btn">🏠</button>
-  <button class="icon-btn primary">🔍</button>
-  <button class="icon-btn success">✓</button>
-  <button class="icon-btn warn">⚠</button>
-  <button class="icon-btn">⚙️</button>
+  <button class="icon-btn"><i data-lucide="home" class="lucide"></i></button>
+  <button class="icon-btn primary"><i data-lucide="search" class="lucide"></i></button>
+  <button class="icon-btn success"><i data-lucide="check" class="lucide"></i></button>
+  <button class="icon-btn warn"><i data-lucide="triangle-alert" class="lucide"></i></button>
+  <button class="icon-btn"><i data-lucide="settings" class="lucide"></i></button>
 </div>`,
     css: `.icon-row { display: flex; gap: 14px; align-items: center; }
 .icon-btn {
@@ -953,15 +958,15 @@ document.addEventListener('click', () => {
     feature: '비차단형 정보 전달 / 자동 사라짐 타이머',
     html: `<div class="noti-row">
   <div class="noti-bell">
-    🔔
+    <i data-lucide="bell" class="lucide"></i>
     <span class="noti-badge">3</span>
   </div>
   <div class="noti-toast">
-    <span class="ic">✅</span>
+    <span class="ic"><i data-lucide="check-circle" class="lucide"></i></span>
     <span>저장되었습니다</span>
   </div>
   <div class="noti-toast error">
-    <span class="ic">⚠️</span>
+    <span class="ic"><i data-lucide="triangle-alert" class="lucide"></i></span>
     <span>네트워크 오류</span>
   </div>
 </div>`,
@@ -1000,13 +1005,13 @@ document.addEventListener('click', () => {
     usecase: '게시판 · 검색 결과 · 테이블',
     feature: '대량 데이터의 페이지 분할 탐색 / 위치 표시',
     html: `<div class="pagination" id="pg-demo">
-  <button class="pg-btn" data-act="prev">‹</button>
+  <button class="pg-btn" data-act="prev"><i data-lucide="chevron-left" class="lucide"></i></button>
   <button class="pg-btn active" data-i="1">1</button>
   <button class="pg-btn" data-i="2">2</button>
   <button class="pg-btn" data-i="3">3</button>
   <button class="pg-btn" data-i="4">4</button>
   <button class="pg-btn" data-i="5">5</button>
-  <button class="pg-btn" data-act="next">›</button>
+  <button class="pg-btn" data-act="next"><i data-lucide="chevron-right" class="lucide"></i></button>
 </div>`,
     css: `.pagination { display: flex; gap: 4px; align-items: center; }
 .pg-btn {
@@ -1048,9 +1053,9 @@ document.addEventListener('click', () => {
   <input type="text" class="picker-input" id="picker-input" readonly placeholder="날짜 선택">
   <div class="picker-calendar">
     <div class="picker-header">
-      <button data-act="prev">‹</button>
+      <button data-act="prev"><i data-lucide="chevron-left" class="lucide"></i></button>
       <span class="month"></span>
-      <button data-act="next">›</button>
+      <button data-act="next"><i data-lucide="chevron-right" class="lucide"></i></button>
     </div>
     <div class="picker-grid"></div>
   </div>
@@ -1213,7 +1218,7 @@ document.addEventListener('click', () => {
     usecase: '사이트 검색 · 명령 팔레트(Cmd+K)',
     feature: '콘텐츠 검색 / 자동완성·최근 검색어 표시',
     html: `<div class="search-field" id="search-demo">
-  <span class="search-icon">🔍</span>
+  <span class="search-icon"><i data-lucide="search" class="lucide"></i></span>
   <input type="text" class="search-input" placeholder="검색어를 입력하세요">
   <div class="search-suggest">
     <div>Claude Code 강의</div>
@@ -1262,10 +1267,10 @@ document.addEventListener('click', () => {
     feature: '상시 네비게이션 / 접기·고정 가능 패널',
     html: `<div class="sidebar-demo">
   <nav class="sidebar">
-    <div class="sidebar-item active" data-tab="home">🏠 홈</div>
-    <div class="sidebar-item" data-tab="inbox">📥 받은편지함</div>
-    <div class="sidebar-item" data-tab="sent">📤 보낸편지함</div>
-    <div class="sidebar-item" data-tab="trash">🗑 휴지통</div>
+    <div class="sidebar-item active" data-tab="home"><i data-lucide="home" class="lucide"></i> 홈</div>
+    <div class="sidebar-item" data-tab="inbox"><i data-lucide="inbox" class="lucide"></i> 받은편지함</div>
+    <div class="sidebar-item" data-tab="sent"><i data-lucide="send" class="lucide"></i> 보낸편지함</div>
+    <div class="sidebar-item" data-tab="trash"><i data-lucide="trash-2" class="lucide"></i> 휴지통</div>
   </nav>
   <div class="sidebar-content" id="sidebar-content">홈 화면입니다.</div>
 </div>`,
@@ -1281,6 +1286,7 @@ document.addEventListener('click', () => {
 .sidebar-item {
   padding: 6px 8px; font-size: 11px; color: #64748b;
   cursor: pointer; border-radius: 4px; font-weight: 500;
+  display: flex; align-items: center; gap: 6px;
 }
 .sidebar-item:hover { background: #e2e8f0; }
 .sidebar-item.active { background: #2563eb; color: #fff; }
@@ -1385,10 +1391,10 @@ document.addEventListener('click', () => {
   <span class="tag teal">TypeScript</span>
   <span class="tag amber">Performance</span>
   <span class="tag removable">
-    UI <button class="tag-remove" data-remove>×</button>
+    UI <button class="tag-remove" data-remove><i data-lucide="x" class="lucide"></i></button>
   </span>
   <span class="tag teal removable">
-    Frontend <button class="tag-remove" data-remove>×</button>
+    Frontend <button class="tag-remove" data-remove><i data-lucide="x" class="lucide"></i></button>
   </span>
 </div>`,
     css: `.tag-row { display: flex; gap: 6px; flex-wrap: wrap; max-width: 320px; }
@@ -1417,16 +1423,16 @@ document.addEventListener('click', () => {
     feature: '주요 섹션 즉시 전환 / 현재 위치 시각 표시',
     html: `<div class="tabbar" id="tabbar-demo">
   <button class="tabbar-btn active" data-tab="home">
-    <span class="ic">🏠</span><span>홈</span>
+    <span class="ic"><i data-lucide="home" class="lucide"></i></span><span>홈</span>
   </button>
   <button class="tabbar-btn" data-tab="search">
-    <span class="ic">🔍</span><span>검색</span>
+    <span class="ic"><i data-lucide="search" class="lucide"></i></span><span>검색</span>
   </button>
   <button class="tabbar-btn" data-tab="cart">
-    <span class="ic">🛒</span><span>장바구니</span>
+    <span class="ic"><i data-lucide="shopping-cart" class="lucide"></i></span><span>장바구니</span>
   </button>
   <button class="tabbar-btn" data-tab="me">
-    <span class="ic">👤</span><span>마이</span>
+    <span class="ic"><i data-lucide="user" class="lucide"></i></span><span>마이</span>
   </button>
 </div>`,
     css: `.tabbar {
@@ -1456,7 +1462,7 @@ document.addEventListener('click', () => {
     feature: '보조 정보 비동기 노출 / 접근성 보강',
     html: `<div class="tooltip-row">
   <div class="tooltip-target">
-    저장 ⓘ
+    저장 <i data-lucide="info" class="lucide"></i>
     <span class="tooltip-tip">Ctrl + S 로도 저장됩니다</span>
   </div>
   <div class="tooltip-target">
@@ -1595,7 +1601,7 @@ const overlays = [
   <button class="ov-trigger">파일 삭제 시도</button>
   <div class="al-backdrop">
     <div class="al-dialog" role="alertdialog">
-      <div class="al-mark">!</div>
+      <div class="al-mark"><i data-lucide="triangle-alert" class="lucide"></i></div>
       <h3 class="al-title">삭제할 수 없습니다</h3>
       <p class="al-text">이 파일은 다른 사용자가 사용 중이라 지금은 삭제할 수 없습니다.</p>
       <button class="al-ok">확인</button>
@@ -1662,17 +1668,18 @@ const overlays = [
   if (!stage) return;
   const stack = stage.querySelector('.to-stack');
   const kinds = [
-    { cls: '', ic: '✓', msg: '저장되었습니다.' },
-    { cls: 'error', ic: '✕', msg: '전송에 실패했습니다.' },
-    { cls: 'warn', ic: '!', msg: '저장 공간이 부족합니다.' }
+    { cls: '', icon: 'check-circle', msg: '저장되었습니다.' },
+    { cls: 'error', icon: 'x-circle', msg: '전송에 실패했습니다.' },
+    { cls: 'warn', icon: 'triangle-alert', msg: '저장 공간이 부족합니다.' }
   ];
   let i = 0;
   stage.querySelector('.ov-trigger').addEventListener('click', () => {
     const k = kinds[i % kinds.length]; i++;
     const el = document.createElement('div');
     el.className = 'to-item ' + k.cls;
-    el.innerHTML = '<span class="to-ic">' + k.ic + '</span><span class="to-msg">' + k.msg + '</span><button class="to-x">×</button>';
+    el.innerHTML = '<span class="to-ic"><i data-lucide="' + k.icon + '" class="lucide"></i></span><span class="to-msg">' + k.msg + '</span><button class="to-x"><i data-lucide="x" class="lucide"></i></button>';
     stack.appendChild(el);
+    if (window.lucide) lucide.createIcons();
     requestAnimationFrame(() => el.classList.add('show'));
     const kill = () => { el.classList.remove('show'); setTimeout(() => el.remove(), 150); };
     el.querySelector('.to-x').addEventListener('click', kill);
@@ -1804,8 +1811,9 @@ const overlays = [
       stage.querySelectorAll('.bn-bar').forEach(b => b.remove());
       const bar = document.createElement('div');
       bar.className = 'bn-bar ' + kind;
-      bar.innerHTML = '<span class="bn-msg">' + msgs[kind] + '</span><button class="bn-x">×</button>';
+      bar.innerHTML = '<span class="bn-msg">' + msgs[kind] + '</span><button class="bn-x"><i data-lucide="x" class="lucide"></i></button>';
       stage.appendChild(bar);
+      if (window.lucide) lucide.createIcons();
       requestAnimationFrame(() => bar.classList.add('show'));
       bar.querySelector('.bn-x').addEventListener('click', () => {
         bar.classList.remove('show'); setTimeout(() => bar.remove(), 150);
@@ -1820,15 +1828,15 @@ const overlays = [
     feature: '맥락 내 상태 표시 / 성공·경고·위험 변형',
     html: `<div class="ia-list">
   <div class="ia-item success">
-    <span class="ia-ic">✓</span>
+    <span class="ia-ic"><i data-lucide="check-circle" class="lucide"></i></span>
     <div><div class="ia-title">인증 완료</div><div>이메일 인증이 처리되었습니다.</div></div>
   </div>
   <div class="ia-item warn">
-    <span class="ia-ic">!</span>
+    <span class="ia-ic"><i data-lucide="triangle-alert" class="lucide"></i></span>
     <div><div class="ia-title">비밀번호 만료 예정</div><div>3일 내에 비밀번호를 변경하세요.</div></div>
   </div>
   <div class="ia-item danger">
-    <span class="ia-ic">✕</span>
+    <span class="ia-ic"><i data-lucide="x-circle" class="lucide"></i></span>
     <div><div class="ia-title">결제 실패</div><div>카드 정보를 확인하고 다시 시도하세요.</div></div>
   </div>
 </div>`,
@@ -1841,7 +1849,7 @@ const overlays = [
 .ia-item.success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
 .ia-item.warn    { background: #fffbeb; border-color: #fde68a; color: #92400e; }
 .ia-item.danger  { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
-.ia-ic { font-weight: 700; flex-shrink: 0; }
+.ia-ic { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
 .ia-title { font-weight: 600; margin-bottom: 2px; }`,
     js: '' },
 
@@ -1855,7 +1863,7 @@ const overlays = [
   <div class="so-panel">
     <div class="so-head">
       <span class="so-title">프로젝트 삭제</span>
-      <button class="so-x">×</button>
+      <button class="so-x"><i data-lucide="x" class="lucide"></i></button>
     </div>
     <div class="so-body">
       <p><b>"Tika"</b> 프로젝트를 삭제하면 다음 항목이 영구 삭제됩니다.</p>
@@ -2009,6 +2017,7 @@ GROUPS.forEach(g => {
 
 // ── 선택 · 렌더 ──
 const liveStyle = document.getElementById('live-style');
+
 function select(id) {
   const it = ALL.find(x => x.id === id);
   if (!it) return;
@@ -2022,7 +2031,9 @@ function select(id) {
   document.getElementById('kit-feature').textContent = it.feature;
 
   liveStyle.textContent = it.css || '';
-  document.getElementById('kit-preview-host').innerHTML = it.html;
+  const previewHost = document.getElementById('kit-preview-host');
+  previewHost.innerHTML = it.html;
+  if (window.lucide) lucide.createIcons();
 
   document.getElementById('code-html').innerHTML = highlight(it.html, 'html');
   document.getElementById('code-css').innerHTML = highlight(it.css || '/* 별도 CSS 없음 */', 'css');
