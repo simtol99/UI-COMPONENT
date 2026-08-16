@@ -68,12 +68,13 @@
     display: flex; align-items: baseline; gap: 8px;
     padding: 7px 12px; border-radius: 6px; cursor: pointer;
     font: inherit; font-size: 13px; color: var(--muted);
-    background: none; border: none; border-left: 2px solid transparent;
+    background: none; border: none;
   }
   .kit-item:hover { background: var(--surface-2); color: var(--text); }
-  .kit-item.active { background: var(--accent-weak); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+  /* 활성 상태 — 색 채움·테두리색·라운드 강조 없이 굵기·색 대비(무채색)만으로 위계를 표시 */
+  .kit-item.active { color: var(--text); font-weight: 700; }
   .kit-item .kit-num { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim); min-width: 18px; }
-  .kit-item.active .kit-num { color: var(--accent); }
+  .kit-item.active .kit-num { color: var(--text); font-weight: 700; }
   .kit-item .kit-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .kit-item .kit-ko { font-size: 11px; color: var(--dim); font-weight: 400; }
   .kit-item.hidden { display: none; }
@@ -237,14 +238,16 @@ const components = [
     <div class="accordion-body">수령 후 7일 이내 무료 반품 가능합니다.</div>
   </div>
 </div>`,
-    css: `.accordion-item { border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px; overflow: hidden; background: #fff; }
+    css: `.accordion { width: 300px; }
+.accordion-item { border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px; overflow: hidden; background: #fff; }
 .accordion-header {
   width: 100%; text-align: left; background: #fff; border: none;
   padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center;
 }
-.accordion-header::after { content: '+'; color: #64748b; transition: transform .2s; }
-.accordion-item.open .accordion-header::after { transform: rotate(45deg); }
+.accordion-header::after { content: '+'; color: #64748b; }
+.accordion-item.open .accordion-header { background: #f1f5f9; }
+.accordion-item.open .accordion-header::after { content: '−'; }
 .accordion-body { display: none; padding: 4px 14px 12px; color: #64748b; font-size: 12px; }
 .accordion-item.open .accordion-body { display: block; }`,
     js: `document.querySelectorAll('.accordion-header').forEach(btn => {
